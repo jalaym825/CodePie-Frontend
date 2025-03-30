@@ -1,6 +1,6 @@
 export const languageMap = {
     c: 'c',
-    cpp: 'cpp',
+    'c++': 'c++',
     java: 'java',
     python: 'python',
     javascript: 'javascript',
@@ -52,20 +52,56 @@ export const problems = [
         difficulty: 'Easy',
         timeLimit: 1.0,
         memoryLimit: 256,
-        description: `
-        Given two integers A and B, find their sum.
-  
-        ## Input Format
-        The first line contains an integer T, the number of test cases.
-        Each of the next T lines contains two space-separated integers A and B.
-  
-        ## Output Format
-        For each test case, output a single line containing the sum of A and B.
-  
-        ## Constraints
-        - 1 ≤ T ≤ 1000
-        - -10^9 ≤ A, B ≤ 10^9
-      `,
+        description: `# Sum of Two Numbers
+
+## Problem Statement
+Given two integers **A** and **B**, compute their sum.
+
+## Input/Output Format
+### Input Format
+- The first line contains an integer **T**, the number of test cases
+- Each of the next **T** lines contains two space-separated integers **A** and **B**
+
+### Output Format
+- For each test case, output a single line containing the sum of **A** and **B**
+
+## Examples
+### Example 1
+**Input:**
+\`\`\`
+2
+1 2
+3 4
+\`\`\`
+
+**Output:**
+\`\`\`
+3
+7
+\`\`\`
+
+**Explanation:**
+| Test Case | Calculation | Result |
+|-----------|-------------|--------|
+| 1         | 1 + 2       | 3      |
+| 2         | 3 + 4       | 7      |
+
+### Example 2
+**Input:**
+\`\`\`
+3
+-5 10
+0 0
+1000000000 1000000000
+\`\`\`
+
+**Output:**
+\`\`\`
+5
+0
+2000000000
+\`\`\`
+`,
         examples: [
             {
                 input: '2\n1 2\n3 4',
@@ -94,22 +130,71 @@ export const problems = [
         difficulty: 'Easy',
         timeLimit: 1.0,
         memoryLimit: 256,
-        description: `
-        Given a positive integer N, determine whether it is a prime number or not.
-        
-        A prime number is a natural number greater than 1 that is not a product of two smaller natural numbers.
-  
-        ## Input Format
-        The first line contains an integer T, the number of test cases.
-        Each of the next T lines contains a single integer N.
-  
-        ## Output Format
-        For each test case, output "Prime" if N is a prime number, otherwise output "Not Prime".
-  
-        ## Constraints
-        - 1 ≤ T ≤ 100
-        - 1 ≤ N ≤ 10^6
-      `,
+        description: `# Prime Number Check
+
+## Problem Statement
+Determine if a given positive integer **N** is a prime number.
+
+> A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.
+
+## Algorithm Approach
+We can use the following optimized approach:
+1. Check if N ≤ 1 → Not prime
+2. Check if N ≤ 3 → Prime
+3. Check if N is divisible by 2 or 3 → Not prime
+4. Check divisors up to √N in the form 6k ± 1
+
+## Input/Output Format
+### Input Format
+\`\`\`
+T       # Number of test cases
+N₁      # First number to check
+N₂      # Second number to check
+...
+N_T     # T-th number to check
+\`\`\`
+
+### Output Format
+\`\`\`
+Prime       # If number is prime
+Not Prime   # If number is not prime
+\`\`\`
+
+## Examples
+### Example 1
+**Input:**
+\`\`\`text
+3
+2
+4
+17
+\`\`\`
+
+**Output:**
+\`\`\`text
+Prime
+Not Prime
+Prime
+\`\`\`
+
+### Example 2
+**Edge Cases:**
+\`\`\`text
+4
+1
+0
+97
+1000000
+\`\`\`
+
+**Output:**
+\`\`\`text
+Not Prime
+Not Prime
+Prime
+Not Prime
+\`\`\`
+`,
         examples: [
             {
                 input: '3\n2\n4\n17',
@@ -137,23 +222,71 @@ export const problems = [
         difficulty: 'Easy',
         timeLimit: 1.0,
         memoryLimit: 256,
-        description: `
-        Given an array of integers, find the sum of all its elements.
-  
-        ## Input Format
-        The first line contains an integer T, the number of test cases.
-        For each test case:
-        - The first line contains an integer N, the size of the array.
-        - The second line contains N space-separated integers, the elements of the array.
-  
-        ## Output Format
-        For each test case, output a single line containing the sum of the array elements.
-  
-        ## Constraints
-        - 1 ≤ T ≤ 100
-        - 1 ≤ N ≤ 10^5
-        - -10^3 ≤ array elements ≤ 10^3
-      `,
+        description: `# Array Summation
+
+## Problem Statement
+Given an array of integers, compute the sum of all elements.
+
+## Performance Considerations
+- The solution should efficiently handle large arrays (up to 10⁵ elements)
+- Time complexity should be O(N) per test case
+- Space complexity should be O(1) additional space
+
+## Input/Output Specification
+### Input
+\`\`\`text
+T           # Test cases
+N₁          # Size of first array
+a₁ a₂ ...   # Array elements
+N₂          # Size of second array
+b₁ b₂ ...   # Array elements
+...
+\`\`\`
+
+### Output
+\`\`\`text
+sum₁        # Sum of first array
+sum₂        # Sum of second array
+...
+\`\`\`
+
+## Sample Cases
+### Sample 1
+**Input:**
+\`\`\`text
+2
+5
+1 2 3 4 5
+3
+10 20 30
+\`\`\`
+
+**Output:**
+\`\`\`text
+15
+60
+\`\`\`
+
+### Sample 2
+**Negative Numbers:**
+**Input:**
+\`\`\`text
+3
+3
+-1 -2 -3
+1
+0
+4
+5 -5 10 -10
+\`\`\`
+
+**Output:**
+\`\`\`text
+-6
+0
+0
+\`\`\`
+`,
         examples: [
             {
                 input: '2\n5\n1 2 3 4 5\n3\n10 20 30',
