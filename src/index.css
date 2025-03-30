@@ -1,10 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-mona-sans: "Mona Sans", sans-serif; 
+  --font-geist-mono: "Geist Mono", monospace;
+}
+
 *{
   box-sizing: border-box;
+  font-family: "Mona Sans", sans-serif;
+  /* font-weight: 500; */
+}
+
+.editor-font{
+  font-family: "Geist Mono", monospace !important;
+  font-weight: 400;
 }
 
 :root {
@@ -113,6 +127,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 }
+
 
 @layer base {
   * {

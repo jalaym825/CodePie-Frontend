@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from '@/components/ui/button';
 import {
@@ -270,6 +270,64 @@ const CodeEditor = () => {
 	const [customTestCase, setCustomTestCase] = useState('');
 	const [isTestingAll, setIsTestingAll] = useState(false);
 	// const [editorHeight, setEditorHeight] = useState('65vh'); // Set a default height for the editor
+
+	const [panelWidth, setPanelWidth] = useState(350); // Initial width for problem panel
+	const [editorHeight, setEditorHeight] = useState('60%'); // Initial height for editor
+	const [isResizing, setIsResizing] = useState(false);
+	const [isVerticalResizing, setIsVerticalResizing] = useState(false);
+
+	// Horizontal resize handler (for problem panel)
+	const startResizing = useCallback(() => {
+		setIsResizing(true);
+	}, []);
+
+	// Vertical resize handler (for editor/IO split)
+	const startVerticalResizing = useCallback(() => {
+		setIsVerticalResizing(true);
+	}, []);
+
+	const stopResizing = useCallback(() => {
+		setIsResizing(false);
+		setIsVerticalResizing(false);
+	}, []);
+
+	const resize = useCallback(
+		(mouseMoveEvent) => {
+			if (isResizing) {
+				const newWidth = mouseMoveEvent.clientX;
+				// Set min and max width constraints
+				setPanelWidth(Math.min(Math.max(newWidth, 250), 600));
+			}
+		},
+		[isResizing]
+	);
+
+	const verticalResize = useCallback(
+		(mouseMoveEvent) => {
+			if (isVerticalResizing) {
+				const container = editorContainerRef.current;
+				if (container) {
+					const containerRect = container.getBoundingClientRect();
+					const newHeight = ((mouseMoveEvent.clientY - containerRect.top) / containerRect.height) * 100;
+					// Set min and max height constraints (20% to 80% of container)
+					const constrainedHeight = Math.min(Math.max(newHeight, 30), 80);
+					setEditorHeight(`${constrainedHeight}%`);
+				}
+			}
+		},
+		[isVerticalResizing]
+	);
+
+	useEffect(() => {
+		window.addEventListener('mousemove', resize);
+		window.addEventListener('mousemove', verticalResize);
+		window.addEventListener('mouseup', stopResizing);
+		return () => {
+			window.removeEventListener('mousemove', resize);
+			window.removeEventListener('mousemove', verticalResize);
+			window.removeEventListener('mouseup', stopResizing);
+		};
+	}, [resize, verticalResize, stopResizing]);
 
 	// Set initial code based on the selected problem
 	useEffect(() => {
@@ -928,7 +986,10 @@ const CodeEditor = () => {
 				<div className="flex flex-1 gap-2 overflow-hidden p-2">
 					{/* Problem Statement Panel */}
 					{showProblem && (
-						<div className="w-1/3 min-w-[300px]  rounded-xl border overflow-hidden flex flex-col">
+						<div
+							className="flex flex-col overflow-hidden"
+							style={{ width: `${panelWidth}px`, minWidth: '250px' }}
+						>
 							<Card className="flex flex-col bg-white border-0 text-gray-800 h-full rounded-none p-0 gap-0">
 								{/* ... (keep problem card content, but adjust padding and spacing) ... */}
 								<CardHeader className="py-2 px-3 bg-gray-50">
@@ -1172,241 +1233,262 @@ const CodeEditor = () => {
 									</Button>
 								</CardFooter>
 							</Card>
+							<div
+								className="w-4 h-full bg-gray-200 cursor-col-resize hover:bg-blue-500 active:bg-blue-600 absolute top-0 right-0 z-10"
+								onMouseDown={startResizing}
+							/>
 						</div>
 					)}
 
 					{/* Editor and IO Sections */}
 					<div className={`flex flex-col flex-1 gap-2 ${showProblem ? 'w-2/3' : 'w-full'}`}>
 						{/* Code Editor - made more compact */}
-						<div className="flex h-[70%] flex-col bg-white border text-gray-800 flex-grow p-0 gap-0 overflow-auto rounded-xl border">
-							<CardHeader className="py-2 px-2 flex flex-row items-center justify-between bg-gray-50">
-								<CardTitle className="flex items-center text-xs font-medium">
-									<FileCode className="mr-1 h-4 w-4 text-blue-600" />
-									<span className="text-gray-700">
-										{monacoLanguage.toUpperCase()}
-									</span>
-								</CardTitle>
-								<div className="flex space-x-1">
-									<TooltipProvider>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													variant="ghost"
-													size="icon"
-													onClick={formatCode}
-													className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-												>
-													<Settings className="h-4 w-4" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent>Format Code</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
+						<div
+							className={`flex flex-col flex-1 overflow-hidden ${showProblem ? '' : 'w-full'}`}
+						>
+							{/* Code Editor - now resizable vertically */}
+							<div
+								className="flex flex-col bg-white border text-gray-800 overflow-hidden"
+								style={{ height: editorHeight }}
+							>
+								<CardHeader className="py-2 px-2 flex flex-row items-center justify-between bg-gray-50">
+									<CardTitle className="flex items-center text-xs font-medium">
+										<FileCode className="mr-1 h-4 w-4 text-blue-600" />
+										<span className="text-gray-700">
+											{monacoLanguage.toUpperCase()}
+										</span>
+									</CardTitle>
+									<div className="flex space-x-1">
+										<TooltipProvider>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Button
+														variant="ghost"
+														size="icon"
+														onClick={formatCode}
+														className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+													>
+														<Settings className="h-4 w-4" />
+													</Button>
+												</TooltipTrigger>
+												<TooltipContent>Format Code</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
 
-									<TooltipProvider>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													variant="ghost"
-													size="icon"
-													onClick={copyCode}
-													className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-												>
-													<Copy className="h-4 w-4" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent>Copy Code</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
+										<TooltipProvider>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Button
+														variant="ghost"
+														size="icon"
+														onClick={copyCode}
+														className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+													>
+														<Copy className="h-4 w-4" />
+													</Button>
+												</TooltipTrigger>
+												<TooltipContent>Copy Code</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
 
-									<TooltipProvider>
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													variant="ghost"
-													size="icon"
-													onClick={downloadCode}
-													className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-												>
-													<Download className="h-4 w-4" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent>Download Code</TooltipContent>
-										</Tooltip>
-									</TooltipProvider>
-								</div>
-							</CardHeader>
-							<CardContent className="p-0 flex-grow">
-								<Editor
-									// height="100%"
-									language={monacoLanguage}
-									value={code}
-									theme={theme}
-									onChange={handleEditorChange}
-									onMount={handleEditorDidMount}
-									options={{
-										minimap: { enabled: false },
-										fontSize: {editorFontSize},
-										scrollBeyondLastLine: false,
-										automaticLayout: true,
-										tabSize: 2,
-										suggestOnTriggerCharacters: true,
-										quickSuggestions: true,
-										bracketPairColorization: { enabled: true },
-										scrollbar: {
-											verticalScrollbarSize: 6,
-											horizontalScrollbarSize: 6,
-										},
-									}}
-								/>
-							</CardContent>
-							<CardFooter className="justify-between py-2 px-2 bg-gray-100 border-t-1">
-								<div className="flex items-center space-x-2">
-									<Badge className={`${statusBadge.color} text-white px-2 py-1 text-xs`}>
-										{statusBadge.label}
-									</Badge>
-									{executionTime && (
-										<Badge variant="outline" className="bg-white text-gray-700 border-gray-300 text-xs">
-											<Clock className="mr-1 h-3 w-3" />
-											{executionTime}s
-										</Badge>
-									)}
-								</div>
-								<Button
-									onClick={() => {
-										if (autoFormat && editorInstance) {
-											editorInstance.getAction('editor.action.formatDocument').run();
-										}
-										runCustomTest();
-									}}
-									disabled={isRunning}
-									className={`bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs ${isRunning ? 'opacity-70' : ''}`}
-								>
-									{isRunning ? (
-										<>
-											<Loader2 className="mr-1 h-3 w-3 animate-spin" />
-											Running...
-										</>
-									) : (
-										<>
-											<Play className="mr-1 h-3 w-3" />
-											Run
-										</>
-									)}
-								</Button>
-							</CardFooter>
-						</div>
-
-						{/* Input/Output/History - made more compact */}
-						<div className="flex-grow h-[30%] overflow-auto rounded-xl border">
-							<Tabs defaultValue="output" className="h-full gap-0">
-								<CardHeader className="p-2 m-0 bg-gray-50">
-									<TabsList className="bg-gray-100 gap-x-2">
-										<TabsTrigger value="output" className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-											<Terminal className="mr-1 h-3 w-3" />
-											Output
-										</TabsTrigger>
-										<TabsTrigger value="input" className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-											<FileInput className="mr-1 h-3 w-3" />
-											Input
-										</TabsTrigger>
-										<TabsTrigger value="history" className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
-											<History className="mr-1 h-3 w-3" />
-											History
-										</TabsTrigger>
-									</TabsList>
+										<TooltipProvider>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Button
+														variant="ghost"
+														size="icon"
+														onClick={downloadCode}
+														className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+													>
+														<Download className="h-4 w-4" />
+													</Button>
+												</TooltipTrigger>
+												<TooltipContent>Download Code</TooltipContent>
+											</Tooltip>
+										</TooltipProvider>
+									</div>
 								</CardHeader>
-								<CardContent className="p-0 h-full">
-									<TabsContent value="output" className="h-full m-0">
-										<div className="bg-gray-50 text-gray-800 h-full p-4 font-mono text-sm overflow-auto">
-											{output ? (
-												<pre>{output}</pre>
-											) : (
-												<div className="flex flex-col items-center justify-center h-full text-gray-400">
-													<Terminal className="h-10 w-10 mb-2" />
-													<p>Run your code to see output here</p>
-												</div>
-											)}
-										</div>
-									</TabsContent>
-									<TabsContent value="input" className="h-full m-0">
-										<Editor
-											height="100%"
-											language="plaintext"
-											value={stdin}
-											theme={theme}
-											onChange={handleStdinChange}
-											options={{
-												minimap: { enabled: false },
-												fontSize: editorFontSize,
-												lineNumbers: 'off',
-												scrollBeyondLastLine: false,
-												wordWrap: 'on',
-												automaticLayout: true,
-												scrollbar: {
-													verticalScrollbarSize: 8,
-													horizontalScrollbarSize: 8,
-												},
-											}}
-										/>
-									</TabsContent>
-									<TabsContent value="history" className="h-full m-0 p-0">
-										<div className="bg-gray-50 text-gray-800 h-full overflow-auto">
-											{recentSubmissions.length > 0 ? (
-												<div className="divide-y divide-gray-200">
-													{recentSubmissions.map((submission) => (
-														<div
-															key={submission.id}
-															className="p-3 hover:bg-gray-100"
-														>
-															<div className="flex justify-between items-center">
-																<span className="font-medium">
-																	{submission.language}
-																</span>
-																<span className="text-xs text-gray-500">
-																	{submission.timestamp}
-																</span>
-															</div>
-															<div className="flex justify-between items-center mt-1">
-																<Badge
-																	className={
-																		submission.status === 'Success'
-																			? 'bg-green-500'
-																			: submission.status ===
-																				'Compilation Error'
-																				? 'bg-red-500'
-																				: 'bg-yellow-500'
-																	}
-																>
-																	{submission.status}
-																</Badge>
-																<span className="text-xs text-gray-500">
-																	{submission.time}s
-																</span>
-															</div>
-														</div>
-													))}
-												</div>
-											) : (
-												<div className="flex flex-col items-center justify-center h-full text-gray-400">
-													<History className="h-10 w-10 mb-2" />
-													<p>No recent submissions</p>
-												</div>
-											)}
-										</div>
-									</TabsContent>
+								<CardContent className="p-0 flex-grow">
+									<Editor
+										// height="100%"
+										language={monacoLanguage}
+										value={code}
+										theme={theme}
+										onChange={handleEditorChange}
+										onMount={handleEditorDidMount}
+										options={{
+											minimap: { enabled: false },
+											fontSize: { editorFontSize },
+											scrollBeyondLastLine: false,
+											automaticLayout: true,
+											tabSize: 2,
+											suggestOnTriggerCharacters: true,
+											quickSuggestions: true,
+											bracketPairColorization: { enabled: true },
+											scrollbar: {
+												verticalScrollbarSize: 6,
+												horizontalScrollbarSize: 6,
+											},
+										}}
+									/>
 								</CardContent>
-							</Tabs>
+								<CardFooter className="justify-between py-2 px-2 bg-gray-100 border-t-1">
+									<div className="flex items-center space-x-2">
+										<Badge className={`${statusBadge.color} text-white px-2 py-1 text-xs`}>
+											{statusBadge.label}
+										</Badge>
+										{executionTime && (
+											<Badge variant="outline" className="bg-white text-gray-700 border-gray-300 text-xs">
+												<Clock className="mr-1 h-3 w-3" />
+												{executionTime}s
+											</Badge>
+										)}
+									</div>
+									<Button
+										onClick={() => {
+											if (autoFormat && editorInstance) {
+												editorInstance.getAction('editor.action.formatDocument').run();
+											}
+											runCustomTest();
+										}}
+										disabled={isRunning}
+										className={`bg-blue-600 hover:bg-blue-700 text-white h-7 text-xs ${isRunning ? 'opacity-70' : ''}`}
+									>
+										{isRunning ? (
+											<>
+												<Loader2 className="mr-1 h-3 w-3 animate-spin" />
+												Running...
+											</>
+										) : (
+											<>
+												<Play className="mr-1 h-3 w-3" />
+												Run
+											</>
+										)}
+									</Button>
+								</CardFooter>
+							</div>
+
+							{/* Vertical resize handle */}
+							<div
+								className="h-2 w-full bg-gray-200 cursor-row-resize hover:bg-blue-500 active:bg-blue-600"
+								onMouseDown={startVerticalResizing}
+							/>
+
+							{/* Input/Output/History - made more compact */}
+							<div
+								className="flex-grow overflow-hidden"
+								style={{ height: `calc(100% - ${editorHeight} - 8px)` }}
+							>
+								<Tabs defaultValue="output" className="h-full gap-0">
+									<CardHeader className="p-2 m-0 bg-gray-50">
+										<TabsList className="bg-gray-100 gap-x-2">
+											<TabsTrigger value="output" className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+												<Terminal className="mr-1 h-3 w-3" />
+												Output
+											</TabsTrigger>
+											<TabsTrigger value="input" className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+												<FileInput className="mr-1 h-3 w-3" />
+												Input
+											</TabsTrigger>
+											<TabsTrigger value="history" className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+												<History className="mr-1 h-3 w-3" />
+												History
+											</TabsTrigger>
+										</TabsList>
+									</CardHeader>
+									<CardContent className="p-0 h-full">
+										<TabsContent value="output" className="h-full m-0">
+											<div className="bg-gray-50 text-gray-800 h-full p-4 font-mono text-sm overflow-auto">
+												{output ? (
+													<pre>{output}</pre>
+												) : (
+													<div className="flex flex-col items-center justify-center h-full text-gray-400">
+														<Terminal className="h-10 w-10 mb-2" />
+														<p>Run your code to see output here</p>
+													</div>
+												)}
+											</div>
+										</TabsContent>
+										<TabsContent value="input" className="h-full m-0">
+											<Editor
+												height="100%"
+												language="plaintext"
+												value={stdin}
+												theme={theme}
+												onChange={handleStdinChange}
+												options={{
+													minimap: { enabled: false },
+													fontSize: editorFontSize,
+													lineNumbers: 'off',
+													scrollBeyondLastLine: false,
+													wordWrap: 'on',
+													automaticLayout: true,
+													scrollbar: {
+														verticalScrollbarSize: 8,
+														horizontalScrollbarSize: 8,
+													},
+												}}
+											/>
+										</TabsContent>
+										<TabsContent value="history" className="h-full m-0 p-0">
+											<div className="bg-gray-50 text-gray-800 h-full overflow-auto">
+												{recentSubmissions.length > 0 ? (
+													<div className="divide-y divide-gray-200">
+														{recentSubmissions.map((submission) => (
+															<div
+																key={submission.id}
+																className="p-3 hover:bg-gray-100"
+															>
+																<div className="flex justify-between items-center">
+																	<span className="font-medium">
+																		{submission.language}
+																	</span>
+																	<span className="text-xs text-gray-500">
+																		{submission.timestamp}
+																	</span>
+																</div>
+																<div className="flex justify-between items-center mt-1">
+																	<Badge
+																		className={
+																			submission.status === 'Success'
+																				? 'bg-green-500'
+																				: submission.status ===
+																					'Compilation Error'
+																					? 'bg-red-500'
+																					: 'bg-yellow-500'
+																		}
+																	>
+																		{submission.status}
+																	</Badge>
+																	<span className="text-xs text-gray-500">
+																		{submission.time}s
+																	</span>
+																</div>
+															</div>
+														))}
+													</div>
+												) : (
+													<div className="flex flex-col items-center justify-center h-full text-gray-400">
+														<History className="h-10 w-10 mb-2" />
+														<p>No recent submissions</p>
+													</div>
+												)}
+											</div>
+										</TabsContent>
+									</CardContent>
+								</Tabs>
+							</div>
 						</div>
 					</div>
-				</div>
 
-				<div className="text-xs text-gray-500 text-center p-2 border-t border-gray-200">
-					<p>Connected to Judge0 API at {BASE_URL}</p>
+					{/* <div className="text-xs text-gray-500 text-center p-2 border-t border-gray-200">
+						<p>Connected to Judge0 API at {BASE_URL}</p>
+					</div> */}
 				</div>
 			</div>
 		</>
 	);
 };
 
-export default CodeEditor;
+export default CodeEditor

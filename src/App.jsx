@@ -1,6 +1,6 @@
 import { BrowserRouter as Router } from "react-router";
 import { Routes, Route } from "react-router";
-import CodeEditor from "./Test";
+import CodeEditor from "./CodeEditor";
 
 function App() {
 
