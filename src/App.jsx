@@ -1,22 +1,21 @@
 import CodeEditor from "./pages/UpdatedEditor";
 import { BrowserRouter as Router } from "react-router";
 import { Routes, Route } from "react-router";
-<<<<<<< Updated upstream
-
 import 'prismjs/themes/prism-tomorrow.css';
-=======
-import CodeEditor from "./CodeEditor";
 import LoginSignUp from "./Pages/LoginSignUp";
->>>>>>> Stashed changes
+import Homepage from "./Pages/Homepage";
+import MainHeader from "./components/Header/MainHeader";
 
 function App() {
-
   return (
     <>
       <Router>
         <Routes>
           <Route path="/account/login" element={<LoginSignUp />} />
-          <Route path="/" element={<CodeEditor />} />
+          <Route path="/code" element={<CodeEditor />} />
+          <Route path="/" element={<MainHeader />}>
+            <Route path="" element={<Homepage />} />
+          </Route>
         </Routes>
       </Router>
     </>

@@ -22,14 +22,14 @@ const LoginSignUp = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-10">
                     {toggleActive === 'login' ? 'Log in to' : 'Sign up for'}
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600"> CodePi</span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">CodePi</span>
                 </h2>
 
                 <div className="w-full max-w-[60%] flex shadow-lg rounded-lg overflow-hidden">
                     {toggleActive === 'login' ? <LoginContent /> : <SignUpContent />}
 
-                    <div className="w-1/2 p-8 bg-gray-50 border-l border-gray-100">
-                        <div className="mb-6 flex items-center">
+                    <div className="w-1/2 p-8 flex flex-col justify-center bg-blue-50 border-l border-gray-100">
+                        <div className="mb-6 flex justify-center items-center">
                             <span className="text-gray-500 text-sm font-medium">OR</span>
                         </div>
 
