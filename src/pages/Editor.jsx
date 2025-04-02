@@ -109,7 +109,7 @@ const CodeEditor = () => {
     return (
         <>
             <Toaster position="bottom-right" richColors />
-            <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-auto md:max-h-[100vh] flex flex-col'}`}>
+            <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-auto md:h-[100vh] flex flex-col'}`}>
                 <Header
                     language={language}
                     setLanguage={setLanguage}

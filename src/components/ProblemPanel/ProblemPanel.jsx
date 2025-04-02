@@ -17,7 +17,7 @@ const ProblemPanel = ({
     submitSolution
 }) => {
     return (
-        <div className="md:w-1/3 md:min-w-[300px] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col">
+        <div className="md:w-1/3 md:min-w-[300px] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col h-full">
             <Card className="flex flex-col bg-white dark:bg-gray-800 border-0 text-gray-800 dark:text-gray-100 h-full rounded-none p-0 gap-0">
                 <CardHeader className="py-2 px-3 bg-gray-50 dark:bg-gray-900">
                     <div className="flex items-center justify-between">
