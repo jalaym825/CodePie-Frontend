@@ -175,11 +175,6 @@ const CodeEditor = () => {
                         />
                     </div>
                 </div>
-
-                <StatusBar
-                    memoryUsage={memoryUsage}
-                    executionTime={executionTime}
-                />
             </div>
 
             {/* Fullscreen Prompt Dialog */}

@@ -142,3 +142,129 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Light Theme Variables */
+:root {
+  --icon-fill: #333; /* Default dark color for light theme */
+  --icon-fill-hover: #7a7a7a; /* Dark grey for hover */
+}
+
+/* Dark Theme Variables */
+.dark {
+  --icon-fill: #f1f1f1; /* Light grey for dark theme */
+  --icon-fill-hover: #fbfcff; /* White for hover */
+}
+
+.sun-and-moon {
+  position: relative;
+
+  & > :is(.moon, .sun, .sun-beams) {
+      transform-origin: center center;
+  }
+
+  & > .sun-beams {
+      stroke: var(--icon-fill);
+      stroke-width: 2px;
+
+      &:hover,
+      &:focus-visible {
+          stroke: var(--icon-fill-hover);
+      }
+  }
+
+  /* Dark Theme Styles */
+  .dark & > .sun {
+      transform: scale(1.75);
+  }
+
+  .dark & > .sun-beams {
+      opacity: 0;
+  }
+
+  .dark & > .moon > circle {
+      transform: translateX(-7px);
+  }
+
+  @supports (cx: 1px) {
+      .dark & > .moon > circle {
+          transform: translateX(0);
+          cx: 17px;
+      }
+  }
+
+  /* Animations */
+  @media (prefers-reduced-motion: no-preference) {
+      & > .sun {
+          transition: transform 0.5s var(--ease-elastic-3);
+      }
+
+      & > .sun-beams {
+          transition: transform 0.5s var(--ease-elastic-4), opacity 0.5s var(--ease-3);
+      }
+
+      & .moon > circle {
+          transition: transform 0.25s var(--ease-out-5);
+
+          @supports (cx: 1px) {
+              transition: cx 0.25s var(--ease-out-5);
+          }
+      }
+
+      /* Dark Theme Animation */
+      .dark & > .sun {
+          transform: scale(1.75);
+          transition-timing-function: var(--ease-3);
+          transition-duration: 0.25s;
+      }
+
+      .dark & > .sun-beams {
+          transform: rotateZ(-25deg);
+          transition-duration: 0.15s;
+      }
+
+      .dark & > .moon > circle {
+          transition-delay: 0.25s;
+          transition-duration: 0.5s;
+      }
+  }
+}
+
+.theme-toggle {
+  --size: 1.8rem;
+  --icon-fill: hsl(210 10% 30%);
+  --icon-fill-hover: hsl(210 10% 15%);
+
+  background: none;
+  border: none;
+  padding: 0;
+
+  inline-size: var(--size);
+  block-size: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  /* outline-offset: 2px; */
+  display: flex;
+  align-items: center;
+
+  & > svg {
+      inline-size: 100%;
+      block-size: 100%;
+      stroke-linecap: round;
+  }
+
+  /* Dark Theme Overrides */
+  .dark & {
+      --icon-fill: hsl(210 10% 70%);
+      --icon-fill-hover: hsl(210 15% 90%);
+  }
+
+  @media (hover: none) {
+      --size: 48px;
+  }
+}
+

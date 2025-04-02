@@ -11,14 +11,14 @@ const InputPanel = ({
 }) => {
     return (
         <div className="h-full">
-            <Card className="h-full border-0 p-0 gap-0">
+            <Card className="h-full border-0 dark:border-0 p-0 gap-0">
                 <CardContent className="p-0 h-full">
                     <div className="h-full flex flex-col">
-                        <div className="p-2 bg-gray-50 border-b flex items-center">
-                            <FileInput className="h-4 w-4 mr-2 text-gray-600" />
-                            <span className="text-sm text-gray-600">Custom Input</span>
+                        <div className="p-2 bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700 flex items-center">
+                            <FileInput className="h-4 w-4 mr-2 text-gray-600 dark:text-gray-400" />
+                            <span className="text-sm text-gray-600 dark:text-gray-400">Custom Input</span>
                         </div>
-                        <div className="flex-grow ">
+                        <div className="flex-grow">
                             <Editor
                                 height="100%"
                                 language="plaintext"
