@@ -177,7 +177,7 @@ const EditorPanel = ({
                         fontLigatures: true,
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
-                        tabSize: 2,
+                        tabSize: 4,
                         suggestOnTriggerCharacters: true,
                         quickSuggestions: true,
                         bracketPairColorization: { enabled: true },

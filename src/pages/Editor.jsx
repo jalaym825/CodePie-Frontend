@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import Header from '../components/Header/Header';
-import EditorPanel from '../components/EditorPanel/EditorPanel';
-import ProblemPanel from '../components/ProblemPanel/ProblemPanel';
-import IOPanel from '../components/IOPanel/IOPanel';
-import StatusBar from '../components/StatusBar/StatusBar';
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Toaster } from '@/components/ui/sonner';
+import { Maximize2 } from "lucide-react";
+import { useEffect, useState } from 'react';
+import EditorPanel from '../components/EditorPanel/EditorPanel';
+import Header from '../components/Header/Header';
+import IOPanel from '../components/IOPanel/IOPanel';
+import ProblemPanel from '../components/ProblemPanel/ProblemPanel';
 import { problems } from "../helpers/editorData";
 import useCodeExecution from '../hooks/useCodeExecution';
 import useEditorSettings from '../hooks/useEditorSettings';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Maximize2 } from "lucide-react";
 
 const CodeEditor = () => {
     const [code, setCode] = useState('');
@@ -24,7 +23,7 @@ const CodeEditor = () => {
     const languages = [
         { id: '71', name: 'Python' },
         { id: '62', name: 'Java' },
-        { id: '50', name: 'C++' },
+        { id: '54', name: 'C++' },
         { id: '63', name: 'JavaScript' },
         // { id: '64', name: 'C#' },
         // { id: '70', name: 'Go' },
