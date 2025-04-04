@@ -51,7 +51,7 @@ export const problems = [
         title: 'Sum of Two Numbers',
         difficulty: 'Easy',
         timeLimit: 1.0,
-        memoryLimit: 256,
+        memoryLimit: 250,
         description: `# Sum of Two Numbers
 
 ## Problem Statement

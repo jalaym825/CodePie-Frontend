@@ -23,4 +23,5 @@ export const CodeExecutionContext = createContext({
     runTestCase: () => {},
     runAllTests: () => {},
     submitSolution: () => {},
+    fetchProblem: () => {},
 });

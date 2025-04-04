@@ -7,7 +7,7 @@ const ProblemExamples = () => {
     
     return (
         <div className="space-y-6 p-2">
-            {selectedProblem.examples.map((example, index) => (
+            {selectedProblem.examples?.map((example, index) => (
                 <div key={index} className="mb-6">
                     <h3 className="text-lg font-semibold mb-2 dark:text-gray-100">
                         Example {index + 1}
