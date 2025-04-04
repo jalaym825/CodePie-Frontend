@@ -28,8 +28,8 @@ const EditorSettings = () => {
     } = useContext(EditorSettingsContext);
 
     return (
-        <Drawer open={true} onOpenChange={(open) => !open && setShowSettings(false)}>
-            <DrawerContent className="bg-white dark:bg-gray-900">
+        <Drawer open={true} direction="right" onOpenChange={(open) => !open && setShowSettings(false)}>
+            <DrawerContent className="bg-white">
                 <div className="mx-auto w-full max-w-4xl">
                     <DrawerHeader>
                         <div className="flex items-center">
@@ -46,7 +46,7 @@ const EditorSettings = () => {
                         </div>
                     </DrawerHeader>
                     <div className="p-4 pb-0">
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        <div className="flex flex-col gap-6">
                             {/* Font Size Control */}
                             <div className="flex flex-col space-y-2">
                                 <label htmlFor="font-size" className="text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -48,7 +48,7 @@ const LoginSignUp = () => {
                 </h2>
 
                 <div className="w-full max-w-[60%] flex shadow-lg rounded-lg overflow-hidden">
-                    {toggleActive === 'login' ? <LoginContent /> : <SignUpContent />}
+                    {toggleActive === 'login' ? <LoginContent /> : <SignUpContent handleTogglePage={handleTogglePage} />}
 
                     <div className="w-1/2 p-8 flex flex-col justify-center bg-blue-50 border-l border-gray-100">
                         <div className="mb-6 flex justify-center items-center">
