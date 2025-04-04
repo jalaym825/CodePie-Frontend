@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -7,42 +7,42 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { FileCode, Settings as SettingsIcon, Copy, Download, Play, Loader2 } from 'lucide-react';
 import { Clock, Database } from 'lucide-react';
 import EditorSettings from './EditorSettings';
-import { useTheme } from "../../context/ThemeContext";
+import { ThemeContext } from '../../context/ThemeContext';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 
-const EditorPanel = ({
-    code,
-    setCode,
-    statusBadge,
-    executionTime,
-    memoryUsage,
-    isRunning,
-    runCustomTest,
-    showSettings,
-    setShowSettings,
-    monacoLanguage,
-    editorFontSize,
-    setEditorFontSize,
-    lineWrap,
-    setLineWrap,
-    autoFormat,
-    setAutoFormat,
-    showProblem,
-    setShowProblem,
-    handleEditorDidMount,
-    formatCode,
-    copyCode,
-    downloadCode
-}) => {
+const EditorPanel = () => {
+    const {
+        code,
+        setCode,
+        statusBadge,
+        executionTime,
+        memoryUsage,
+        isRunning,
+        runCustomTest
+    } = useContext(CodeExecutionContext);
+
+    const {
+        monacoLanguage,
+        editorFontSize,
+        lineWrap,
+        autoFormat,
+        showSettings,
+        toggleSettings,
+        handleEditorDidMount,
+        formatCode,
+        copyCode,
+        downloadCode
+    } = useContext(EditorSettingsContext);
+
+    const { theme } = useContext(ThemeContext);
+
     const editorRef = useRef(null);
     const containerRef = useRef(null);
 
-    const { theme } = useTheme();
-
     const handleEditorMount = (editor, monaco) => {
         editorRef.current = editor;
-        if (handleEditorDidMount) {
-            handleEditorDidMount(editor, monaco);
-        }
+        handleEditorDidMount(editor, monaco);
     };
 
     useEffect(() => {
@@ -71,19 +71,7 @@ const EditorPanel = ({
             className="flex flex-col flex-grow p-0 gap-0 overflow-hidden rounded-xl border dark:border-gray-700"
             style={{ height: '70%', minHeight: '300px' }}
         >
-            {showSettings && (
-                <EditorSettings
-                    editorFontSize={editorFontSize}
-                    setEditorFontSize={setEditorFontSize}
-                    lineWrap={lineWrap}
-                    setLineWrap={setLineWrap}
-                    autoFormat={autoFormat}
-                    setAutoFormat={setAutoFormat}
-                    showProblem={showProblem}
-                    setShowProblem={setShowProblem}
-                    setShowSettings={setShowSettings}
-                />
-            )}
+            {showSettings && <EditorSettings />}
 
             <CardHeader className="py-2 px-2 flex flex-row items-center justify-between bg-gray-50 dark:bg-gray-800">
                 <CardTitle className="flex items-center text-xs font-medium">
@@ -99,7 +87,7 @@ const EditorPanel = ({
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => setShowSettings(!showSettings)}
+                                    onClick={toggleSettings}
                                     className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <SettingsIcon className="h-4 w-4" />
@@ -210,9 +198,7 @@ const EditorPanel = ({
                 </div>
                 <Button
                     onClick={() => {
-                        if (autoFormat) {
-                            formatCode();
-                        }
+                        if (autoFormat) formatCode();
                         runCustomTest();
                     }}
                     disabled={isRunning}

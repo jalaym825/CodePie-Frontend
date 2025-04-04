@@ -1,9 +1,9 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { AuthContext } from "./AuthContext";
-import toast from "react-hot-toast";
+import toast from "sonner";
 import getApi from "../helpers/API/getApi";
 import postApi from "../helpers/API/postApi";
-import { UserContext } from "./UserContext";
+// import { UserContext } from "./UserContext";
 
 export default function AuthContextProvider({children}) {
     const [credentials, setCredentials] = useState({
@@ -11,7 +11,7 @@ export default function AuthContextProvider({children}) {
         password: ''
     })
 
-    const { setUserInfo } = useContext(UserContext);
+    // const { setUserInfo } = useContext(UserContext);
     
     async function handleLoginUser() {
         const res = await postApi("/auth/login", {
@@ -20,7 +20,7 @@ export default function AuthContextProvider({children}) {
         });
         if(res.status === 200){
             toast.success("User Logged in Successfully");
-            setUserInfo(res.data.data);
+            // setUserInfo(res.data.data);
             return res.data.data;
         }
         return false;

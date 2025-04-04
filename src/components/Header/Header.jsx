@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Settings, Maximize, Minimize, Code2 } from 'lucide-react';
 import { problems } from '../../helpers/editorData';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 
-const Header = ({
-    language,
-    setLanguage,
-    selectedProblem,
-    handleProblemChange,
-    isFullscreen,
-    toggleFullscreen,
-    languages
-}) => {
+const Header = () => {
+    const { language, setLanguage, selectedProblem, setSelectedProblem } = useContext(CodeExecutionContext);
+    const {
+        isFullscreen,
+        toggleFullscreen,
+        // showSettings,
+        // toggleSettings,
+        languages
+    } = useContext(EditorSettingsContext);
+
     return (
         <div className="flex justify-between items-center p-2 px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
             <div className="flex items-center space-x-1">
@@ -37,7 +40,7 @@ const Header = ({
 
                 <Select
                     value={selectedProblem.id}
-                    onValueChange={handleProblemChange}
+                    onValueChange={(id) => setSelectedProblem(id)}
                 >
                     <SelectTrigger className="w-40 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 h-8 text-xs">
                         <SelectValue placeholder="Problem" />

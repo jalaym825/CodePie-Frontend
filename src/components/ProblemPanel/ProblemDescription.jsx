@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-// import { atomOneDark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
-const ProblemDescription = ({ selectedProblem }) => {
+const ProblemDescription = () => {
+    const { selectedProblem } = useContext(CodeExecutionContext);
 
     return (
         <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 p-2">

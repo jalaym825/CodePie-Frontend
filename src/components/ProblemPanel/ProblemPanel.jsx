@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,17 +7,20 @@ import { Book, AlignLeft, Code2, TestTube, Save, Loader2 } from 'lucide-react';
 import ProblemDescription from './ProblemDescription';
 import ProblemExamples from './ProblemExamples';
 import ProblemTestCases from './ProblemTestCases';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
-const ProblemPanel = ({
-    selectedProblem,
-    testResults,
-    isTestingAll,
-    runTestCase,
-    runAllTests,
-    submitSolution
-}) => {
+const ProblemPanel = ({ className }) => {
+    const {
+        selectedProblem,
+        // testResults,
+        isTestingAll,
+        // runTestCase,
+        // runAllTests,
+        submitSolution
+    } = useContext(CodeExecutionContext);
+
     return (
-        <div className="md:w-1/3 md:min-w-[300px] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col h-full">
+        <div className={`${className} md:w-1/3 md:min-w-[300px] rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col h-full`}>
             <Card className="flex flex-col bg-white dark:bg-gray-800 border-0 text-gray-800 dark:text-gray-100 h-full rounded-none p-0 gap-0">
                 <CardHeader className="py-2 px-3 bg-gray-50 dark:bg-gray-900">
                     <div className="flex items-center justify-between">
@@ -39,7 +42,7 @@ const ProblemPanel = ({
                 </CardHeader>
 
                 <CardContent className="flex-grow p-0 overflow-auto">
-                    <Tabs defaultValue="description" className="h-full">
+                    <Tabs defaultValue="description" className="h-full flex flex-col">
                         <div className='p-2 bg-gray-50 dark:bg-gray-900 border-b border-t border-gray-200 dark:border-gray-700'>
                             <TabsList className="bg-gray-50 dark:bg-gray-900 w-full justify-start rounded-none">
                                 <TabsTrigger value="description" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800">
@@ -57,23 +60,17 @@ const ProblemPanel = ({
                             </TabsList>
                         </div>
 
-                        <div className="overflow-auto h-[calc(100%-40px)] dark:bg-gray-800">
+                        <div className="overflow-auto flex-1 dark:bg-gray-800">
                             <TabsContent value="description" className="mt-0 h-full overflow-auto">
-                                <ProblemDescription selectedProblem={selectedProblem} />
+                                <ProblemDescription />
                             </TabsContent>
 
                             <TabsContent value="examples" className="mt-0 h-full">
-                                <ProblemExamples selectedProblem={selectedProblem} />
+                                <ProblemExamples />
                             </TabsContent>
 
                             <TabsContent value="tests" className="mt-0 h-full">
-                                <ProblemTestCases
-                                    selectedProblem={selectedProblem}
-                                    testResults={testResults}
-                                    isTestingAll={isTestingAll}
-                                    runTestCase={runTestCase}
-                                    runAllTests={runAllTests}
-                                />
+                                <ProblemTestCases />
                             </TabsContent>
                         </div>
                     </Tabs>

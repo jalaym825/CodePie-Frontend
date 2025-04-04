@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
     Card,
     CardHeader,
@@ -14,14 +14,11 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { TestTube, Loader2, Play } from 'lucide-react';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
-const ProblemTestCases = ({
-    selectedProblem,
-    testResults,
-    isTestingAll,
-    runTestCase,
-    runAllTests
-}) => {
+const ProblemTestCases = () => {
+    const { selectedProblem, testResults, isTestingAll, runTestCase, runAllTests } = useContext(CodeExecutionContext);
+    
     return (
         <div className="space-y-4 p-2">
             <div className="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-gray-700 pb-2">

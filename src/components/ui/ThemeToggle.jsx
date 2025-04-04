@@ -1,7 +1,8 @@
-import { useTheme } from "../../context/ThemeContext";
+import { useContext } from "react";
+import { ThemeContext } from "../../context/ThemeContext";
 
 const ThemeToggle = () => {
-    const { theme, toggleTheme } = useTheme(); // Access theme and toggleTheme from context
+    const { theme, toggleTheme } = useContext(ThemeContext); // Access theme and toggleTheme from context
 
     return (
         <button

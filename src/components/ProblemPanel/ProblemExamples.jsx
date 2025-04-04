@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
-const ProblemExamples = ({ selectedProblem }) => {
+const ProblemExamples = () => {
+    const { selectedProblem } = useContext(CodeExecutionContext);
+    
     return (
         <div className="space-y-6 p-2">
             {selectedProblem.examples.map((example, index) => (

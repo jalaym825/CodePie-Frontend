@@ -7,7 +7,7 @@ import OutputPanel from './OutputPanel';
 import InputPanel from './InputPanel';
 import HistoryPanel from './HistoryPanel';
 
-const IOPanel = ({ output, stdin, setStdin, recentSubmissions, editorFontSize, theme, memoryUsage, executionTime }) => {
+const IOPanel = ({ output, stdin, setStdin, recentSubmissions, editorFontSize, memoryUsage, executionTime }) => {
     return (
         <div className="flex-grow h-[30%] overflow-auto rounded-xl border dark:border-gray-700">
             <Tabs defaultValue="output" className="h-full gap-0">
@@ -53,7 +53,6 @@ const IOPanel = ({ output, stdin, setStdin, recentSubmissions, editorFontSize, t
                             stdin={stdin}
                             setStdin={setStdin}
                             editorFontSize={editorFontSize}
-                            theme={theme}
                         />
                     </TabsContent>
 

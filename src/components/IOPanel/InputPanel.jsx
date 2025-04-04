@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Editor from '@monaco-editor/react';
 import { Card, CardContent } from '@/components/ui/card';
 import { FileInput } from 'lucide-react';
+import { ThemeContext } from '../../context/ThemeContext';
 
 const InputPanel = ({
     stdin,
     setStdin,
     editorFontSize,
-    theme
 }) => {
+    const { theme } = useContext(ThemeContext);
+
     return (
         <div className="h-full">
             <Card className="h-full border-0 dark:border-0 p-0 gap-0">
@@ -23,7 +25,7 @@ const InputPanel = ({
                                 height="100%"
                                 language="plaintext"
                                 value={stdin}
-                                theme={theme}
+                                theme={theme === 'dark' ? 'vs-dark' : 'light'}
                                 onChange={setStdin}
                                 options={{
                                     minimap: { enabled: false },
