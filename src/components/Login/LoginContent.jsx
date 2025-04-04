@@ -40,15 +40,16 @@ const LoginContent = () => {
     if (checkEmptyFields()) return;
     setIsPending(true);
     const res = await loginUser();
+    console.log(res);
     if (res?.status === 200) {
-      toast.success(res.data.message);
+      toast.success(res.message);
       navigate('/')
       setCredentials({})
       setIsPending(false);
       return true;
     } else {
       console.log(res)
-      toast.error(res.response.data.message || "An error occurred");
+      toast.error(res.data.message || "An error occurred");
       setIsPending(false);
       return false;
     }

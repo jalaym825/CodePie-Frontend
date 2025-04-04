@@ -24,12 +24,17 @@ export default function AuthContextProvider({ children }) {
             email: credentials.email,
             password: credentials.password
         });
+        console.log(res);
+        
         if(res.status === 200){
-            toast.success("User Logged in Successfully");
+            // toast.success("User Logged in Successfully");
             // setUserInfo(res.data.data);
-            return res.data.data;
+            return {
+                status: res.status,
+                ...res.data
+            };
         }
-        return res;
+        return res.response;
     }
 
     async function handleSignUp() {
@@ -38,7 +43,10 @@ export default function AuthContextProvider({ children }) {
         console.log(res.response);
         if (res?.status === 201) {
             console.log(res.status);
-            return res;
+            return {
+                status: res.status,
+                message: res.data.message
+            };
         }
         return res.response;
     }
