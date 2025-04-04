@@ -1,5 +1,6 @@
 import { axiosInstance } from "./axiosConfig";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+
 
 async function putApi(path, data, parameters = {}) {
     let response;
