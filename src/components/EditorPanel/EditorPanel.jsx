@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -7,53 +7,76 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { FileCode, Settings as SettingsIcon, Copy, Download, Play, Loader2 } from 'lucide-react';
 import { Clock, Database } from 'lucide-react';
 import EditorSettings from './EditorSettings';
+import { ThemeContext } from '../../context/ThemeContext';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 
-const EditorPanel = ({
-    code,
-    setCode,
-    // language,
-    theme,
-    statusBadge,
-    executionTime,
-    memoryUsage,
-    isRunning,
-    runCustomTest,
-    showSettings,
-    setShowSettings,
-    monacoLanguage,
-    editorFontSize,
-    setEditorFontSize,
-    lineWrap,
-    setLineWrap,
-    autoFormat,
-    setAutoFormat,
-    showProblem,
-    setShowProblem,
-    handleEditorDidMount,
-    formatCode,
-    copyCode,
-    downloadCode
-}) => {
+const EditorPanel = () => {
+    const {
+        code,
+        setCode,
+        statusBadge,
+        executionTime,
+        memoryUsage,
+        isRunning,
+        runCustomTest
+    } = useContext(CodeExecutionContext);
+
+    const {
+        monacoLanguage,
+        editorFontSize,
+        lineWrap,
+        autoFormat,
+        showSettings,
+        toggleSettings,
+        handleEditorDidMount,
+        formatCode,
+        copyCode,
+        downloadCode
+    } = useContext(EditorSettingsContext);
+
+    const { theme } = useContext(ThemeContext);
+
+    const editorRef = useRef(null);
+    const containerRef = useRef(null);
+
+    const handleEditorMount = (editor, monaco) => {
+        editorRef.current = editor;
+        handleEditorDidMount(editor, monaco);
+    };
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (editorRef.current) {
+                editorRef.current.layout();
+            }
+        };
+
+        const resizeObserver = new ResizeObserver(handleResize);
+        if (containerRef.current) {
+            resizeObserver.observe(containerRef.current);
+        }
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            resizeObserver.disconnect();
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
     return (
-        <div className="flex flex-col bg-white border text-gray-800 flex-grow p-0 gap-0 overflow-hidden rounded-xl border" style={{ height: '70%' }}>
-            {showSettings && (
-                <EditorSettings
-                    editorFontSize={editorFontSize}
-                    setEditorFontSize={setEditorFontSize}
-                    lineWrap={lineWrap}
-                    setLineWrap={setLineWrap}
-                    autoFormat={autoFormat}
-                    setAutoFormat={setAutoFormat}
-                    showProblem={showProblem}
-                    setShowProblem={setShowProblem}
-                    setShowSettings={setShowSettings}
-                />
-            )}
+        <div
+            ref={containerRef}
+            className="flex flex-col flex-grow p-0 gap-0 overflow-hidden rounded-xl border dark:border-gray-700"
+            style={{ height: '70%', minHeight: '300px' }}
+        >
+            {showSettings && <EditorSettings />}
 
-            <CardHeader className="py-2 px-2 flex flex-row items-center justify-between bg-gray-50">
+            <CardHeader className="py-2 px-2 flex flex-row items-center justify-between bg-gray-50 dark:bg-gray-800">
                 <CardTitle className="flex items-center text-xs font-medium">
-                    <FileCode className="mr-1 h-4 w-4 text-blue-600" />
-                    <span className="text-gray-700">
+                    <FileCode className="mr-1 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <span className="text-gray-700 dark:text-gray-300">
                         {monacoLanguage.toUpperCase()}
                     </span>
                 </CardTitle>
@@ -64,8 +87,8 @@ const EditorPanel = ({
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => setShowSettings(!showSettings)}
-                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                    onClick={toggleSettings}
+                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <SettingsIcon className="h-4 w-4" />
                                 </Button>
@@ -81,7 +104,7 @@ const EditorPanel = ({
                                     variant="ghost"
                                     size="icon"
                                     onClick={formatCode}
-                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M12 20h9"></path>
@@ -100,7 +123,7 @@ const EditorPanel = ({
                                     variant="ghost"
                                     size="icon"
                                     onClick={copyCode}
-                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <Copy className="h-4 w-4" />
                                 </Button>
@@ -116,7 +139,7 @@ const EditorPanel = ({
                                     variant="ghost"
                                     size="icon"
                                     onClick={downloadCode}
-                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
                                 >
                                     <Download className="h-4 w-4" />
                                 </Button>
@@ -127,13 +150,14 @@ const EditorPanel = ({
                 </div>
             </CardHeader>
 
-            <CardContent className="p-0 flex-1 !geist-mono max-h-full">
+            <CardContent className="p-0 flex-1 !geist-mono overflow-hidden bg-white dark:bg-gray-900">
                 <Editor
                     language={monacoLanguage}
                     value={code}
-                    theme={theme}
+                    theme={theme === 'dark' ? 'vs-dark' : 'vs'}
                     onChange={setCode}
-                    onMount={handleEditorDidMount}
+                    onMount={handleEditorMount}
+                    className="h-full"
                     options={{
                         fontFamily: "'Geist Mono', monospace",
                         minimap: { enabled: false },
@@ -141,7 +165,7 @@ const EditorPanel = ({
                         fontLigatures: true,
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
-                        tabSize: 2,
+                        tabSize: 4,
                         suggestOnTriggerCharacters: true,
                         quickSuggestions: true,
                         bracketPairColorization: { enabled: true },
@@ -154,19 +178,19 @@ const EditorPanel = ({
                 />
             </CardContent>
 
-            <CardFooter className="justify-between py-2 px-2 bg-gray-100 border-t-1">
+            <CardFooter className="justify-between py-2 px-2 bg-gray-100 dark:bg-gray-800 border-t-1 dark:border-gray-700">
                 <div className="flex items-center space-x-2">
                     <Badge className={`${statusBadge.color} text-white px-2 py-1 text-xs`}>
                         {statusBadge.label}
                     </Badge>
                     {executionTime && (
-                        <Badge variant="outline" className="flex items-center bg-white text-gray-700 border-gray-300 text-xs">
+                        <Badge variant="outline" className="flex items-center bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 text-xs">
                             <Clock className="mr-1 h-3 w-3" />
                             {executionTime}s
                         </Badge>
                     )}
                     {memoryUsage && (
-                        <Badge variant="outline" className="flex items-center bg-white text-gray-700 border-gray-300 text-xs">
+                        <Badge variant="outline" className="flex items-center bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 text-xs">
                             <Database className="mr-1 h-3 w-3" />
                             {memoryUsage}MB
                         </Badge>
@@ -174,9 +198,7 @@ const EditorPanel = ({
                 </div>
                 <Button
                     onClick={() => {
-                        if (autoFormat) {
-                            formatCode();
-                        }
+                        if (autoFormat) formatCode();
                         runCustomTest();
                     }}
                     disabled={isRunning}

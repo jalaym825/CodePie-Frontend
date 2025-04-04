@@ -1,5 +1,5 @@
 import { axiosInstance } from "./axiosConfig";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 async function postApi(path, body) {
     let response;

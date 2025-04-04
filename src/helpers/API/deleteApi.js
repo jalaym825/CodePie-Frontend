@@ -1,5 +1,6 @@
 import { axiosInstance } from "./axiosConfig";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
+
 
 async function deleteApi(path, parameters) {
     let response;

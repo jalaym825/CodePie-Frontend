@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Loader2, Play, CheckCircle, XCircle } from 'lucide-react';
+import { socket } from '../lib/socket';
 
 const useCodeExecution = ({ code, language, selectedProblem }) => {
-    const BASE_URL = 'http://172.16.103.141:2358';
+    const BASE_URL = 'http://172.16.102.239:2358';
     const [output, setOutput] = useState('');
     const [isRunning, setIsRunning] = useState(false);
     const [statusBadge, setStatusBadge] = useState({
@@ -18,73 +19,96 @@ const useCodeExecution = ({ code, language, selectedProblem }) => {
     const [isTestingAll, setIsTestingAll] = useState(false);
     const [stdin, setStdin] = useState('');
 
+    useEffect(() => {
+        socket.emit('register', "xyz");
+        socket.on("submissionResult", (data) => {
+            console.log("Submission result received:", data);
+            
+            // Set running status to false
+            setIsRunning(false);
+            
+            // Format output
+            let resultOutput = '';
+            if (data.stdout) {
+                resultOutput += data.stdout;
+            }
+            if (data.stderr) {
+                resultOutput += data.stderr;
+            }
+            if (data.compile_output) {
+                resultOutput += data.compile_output;
+            }
+            if (data.message) {
+                resultOutput += data.message;
+            }
+            
+            resultOutput = resultOutput || 'No output';
+            setOutput(resultOutput);
+            
+            // Set status badge based on status id
+            let statusColor = 'bg-gray-500';
+            let statusMessage = data.status.description;
+            
+            if (data.status.id === 3) {
+                statusColor = 'bg-green-500';
+                statusMessage = 'Success';
+                toast.success('Code executed successfully');
+            } else if (data.status.id === 4) {
+                statusColor = 'bg-yellow-500';
+                statusMessage = 'Wrong Answer';
+                toast.warning('Wrong answer');
+            } else if (data.status.id === 5) {
+                statusColor = 'bg-red-500';
+                statusMessage = 'Time Limit';
+                toast.error('Time limit exceeded');
+            } else if (data.status.id === 6) {
+                statusColor = 'bg-red-500';
+                statusMessage = 'Compilation Error';
+                toast.error('Compilation error');
+            } else {
+                toast.info(data.status.description);
+            }
+            
+            setStatusBadge({ label: statusMessage, color: statusColor });
+            
+            // Set execution time and memory usage
+            if (data.time) {
+                setExecutionTime(data.time);
+            }
+            
+            if (data.memory) {
+                setMemoryUsage(data.memory ? (data.memory / 1024).toFixed(2) : null);
+            }
+            
+            // Add to recent submissions
+            const newSubmission = {
+                id: Date.now(),
+                language: language,
+                timestamp: new Date().toLocaleTimeString(),
+                status: statusMessage,
+                time: data.time,
+            };
+            
+            setRecentSubmissions((prev) => [newSubmission, ...prev].slice(0, 5));
+        });        socket.on('connect', () => {
+            console.log('Connected to the socket server');
+        });
+    }, [])
+
     const executeCode = async (input) => {
         try {
             // Create submission
-            const createResponse = await axios.post(`${BASE_URL}/submissions`, {
-                source_code: code,
-                language_id: language,
-                stdin: input,
-                wait: false,
-            });
-
-            const token = createResponse.data.token;
-
-            // Poll for results
-            let status;
-            let pollResponse;
-            let attempts = 0;
-            const maxAttempts = 10;
-
-            return new Promise((resolve, reject) => {
-                const interval = setInterval(async () => {
-                    attempts++;
-
-                    try {
-                        pollResponse = await axios.get(`${BASE_URL}/submissions/${token}`);
-                        status = pollResponse.data.status;
-
-                        // Check if the code has finished executing
-                        if (status.id >= 3) {
-                            clearInterval(interval);
-
-                            // Format output
-                            let resultOutput = '';
-                            if (pollResponse.data.stdout) {
-                                resultOutput += pollResponse.data.stdout;
-                            }
-                            if (pollResponse.data.stderr) {
-                                resultOutput += pollResponse.data.stderr;
-                            }
-                            if (pollResponse.data.compile_output) {
-                                resultOutput += pollResponse.data.compile_output;
-                            }
-                            if (pollResponse.data.message) {
-                                resultOutput += pollResponse.data.message;
-                            }
-
-                            resultOutput = resultOutput || 'No output';
-
-                            resolve({
-                                status: status,
-                                output: resultOutput,
-                                time: pollResponse.data.time,
-                                memory: pollResponse.data.memory
-                                    ? (pollResponse.data.memory / 1024).toFixed(2)
-                                    : null,
-                            });
-                        }
-                    } catch (error) {
-                        console.error('Error polling submission:', error);
-                        clearInterval(interval);
-                        reject(new Error('Error checking submission status'));
-                    }
-
-                    if (attempts >= maxAttempts) {
-                        clearInterval(interval);
-                        reject(new Error('Execution timed out'));
-                    }
-                }, 1000);
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/run`, {
+                problemId: "3e4a401f-1b77-45b5-a2a8-6a2e64f8daaa",
+                sourceCode: code,
+                languageId: language,
+                input,
+                output
+            }, {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json",
+                }
             });
         } catch (error) {
             console.error('Error submitting code:', error);
@@ -98,65 +122,9 @@ const useCodeExecution = ({ code, language, selectedProblem }) => {
         setOutput('Running code...');
         setExecutionTime(null);
         setMemoryUsage(null);
-
-        const startTime = performance.now();
-
+    
         try {
-            const result = await executeCode(stdin);
-
-            const endTime = performance.now();
-            const clientExecutionTime = ((endTime - startTime) / 1000).toFixed(2);
-
-            setIsRunning(false);
-
-            // Set status badge
-            let statusColor = 'bg-gray-500';
-            let statusMessage = result.status.description;
-
-            if (result.status.id === 3) {
-                statusColor = 'bg-green-500';
-                statusMessage = 'Success';
-                toast.success('Code executed successfully');
-            } else if (result.status.id === 4) {
-                statusColor = 'bg-yellow-500';
-                statusMessage = 'Wrong Answer';
-                toast.warning('Wrong answer');
-            } else if (result.status.id === 5) {
-                statusColor = 'bg-red-500';
-                statusMessage = 'Time Limit';
-                toast.error('Time limit exceeded');
-            } else if (result.status.id === 6) {
-                statusColor = 'bg-red-500';
-                statusMessage = 'Compilation Error';
-                toast.error('Compilation error');
-            } else {
-                toast.info(result.status.description);
-            }
-
-            setStatusBadge({ label: statusMessage, color: statusColor });
-            setOutput(result.output);
-
-            // Get execution time and memory usage if available
-            if (result.time) {
-                setExecutionTime(result.time);
-            } else {
-                setExecutionTime(clientExecutionTime);
-            }
-
-            if (result.memory) {
-                setMemoryUsage(result.memory);
-            }
-
-            // Add to recent submissions
-            const newSubmission = {
-                id: Date.now(),
-                language: language,
-                timestamp: new Date().toLocaleTimeString(),
-                status: statusMessage,
-                time: result.time || clientExecutionTime,
-            };
-
-            setRecentSubmissions((prev) => [newSubmission, ...prev].slice(0, 5));
+            await executeCode(stdin);
         } catch (error) {
             console.error('Error running code:', error);
             setIsRunning(false);

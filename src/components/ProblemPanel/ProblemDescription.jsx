@@ -1,24 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Light as SyntaxHighlighter } from 'react-syntax-highlighter';
-// import { atomOneDark } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
-const ProblemDescription = ({ selectedProblem }) => {
+const ProblemDescription = () => {
+    const { selectedProblem } = useContext(CodeExecutionContext);
 
     return (
-        <div className="text-sm leading-relaxed text-gray-800 p-2">
+        <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 p-2">
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                     h1: ({ ...props }) => (
-                        <h1 className="text-xl font-bold mb-2 text-gray-900 pb-2" {...props} />
+                        <h1 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-100 pb-2" {...props} />
                     ),
                     h2: ({ ...props }) => (
-                        <h2 className="text-[1rem] font-semibold mt-3 mb-2 text-gray-900 border-b pb-1" {...props} />
+                        <h2 className="text-[1rem] font-semibold mt-3 mb-2 text-gray-900 dark:text-gray-100 border-b dark:border-gray-700 pb-1" {...props} />
                     ),
                     h3: ({ ...props }) => (
-                        <h3 className="text-md font-medium mt-2 mb-2 text-gray-900" {...props} />
+                        <h3 className="text-md font-medium mt-2 mb-2 text-gray-900 dark:text-gray-100" {...props} />
                     ),
                     p: ({ ...props }) => (
                         <p className="mb-2" {...props} />
@@ -37,7 +38,7 @@ const ProblemDescription = ({ selectedProblem }) => {
 
                         if (inline) {
                             return (
-                                <code className="!font-geist-mono bg-gray-100 px-1.5 py-0.5 rounded text-sm" {...props}>
+                                <code className="!font-geist-mono bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm dark:text-gray-200" {...props}>
                                     {children}
                                 </code>
                             );
@@ -55,6 +56,10 @@ const ProblemDescription = ({ selectedProblem }) => {
                                         padding: '1rem',
                                         borderRadius: '0.5rem',
                                         margin: 0,
+                                        ...(document.documentElement.classList.contains('dark') ? {
+                                            backgroundColor: 'rgb(31 41 55)',
+                                            color: 'rgb(229 231 235)'
+                                        } : {})
                                     }}
                                     codeTagProps={{
                                         style: {
@@ -77,18 +82,18 @@ const ProblemDescription = ({ selectedProblem }) => {
                         );
                     },
                     table: ({ ...props }) => (
-                        <div className="overflow-auto mb-4 border-1 rounded-xl">
+                        <div className="overflow-auto mb-4 border-1 dark:border-gray-700 rounded-xl">
                             <table className="min-w-full border-collapse" {...props} />
                         </div>
                     ),
                     th: ({ ...props }) => (
-                        <th className="px-4 py-2 text-left border-gray-300 bg-gray-100 font-medium" {...props} />
+                        <th className="px-4 py-2 text-left border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 font-medium" {...props} />
                     ),
                     td: ({ ...props }) => (
-                        <td className="px-4 py-2 border-b border-gray-200" {...props} />
+                        <td className="px-4 py-2 border-b border-gray-200 dark:border-gray-700" {...props} />
                     ),
                     blockquote: ({ ...props }) => (
-                        <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-600 mb-4" {...props} />
+                        <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-600 dark:text-gray-400 mb-4" {...props} />
                     ),
                 }}
             >
@@ -97,10 +102,10 @@ const ProblemDescription = ({ selectedProblem }) => {
 
             {selectedProblem.constraints && (
                 <div className="mt-6">
-                    <h3 className="text-base font-medium mb-2 text-gray-900">Constraints</h3>
+                    <h3 className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100">Constraints</h3>
                     <ul className="list-disc pl-5 space-y-1">
                         {selectedProblem.constraints.map((constraint, index) => (
-                            <li key={index} className="text-gray-700">{constraint}</li>
+                            <li key={index} className="text-gray-700 dark:text-gray-300">{constraint}</li>
                         ))}
                     </ul>
                 </div>

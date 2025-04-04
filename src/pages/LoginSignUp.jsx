@@ -3,6 +3,7 @@ import { Mail, Code } from 'lucide-react';
 import LoginContent from '../components/Login/LoginContent';
 import SignUpContent from "../components/SignUp/SignUpContent";
 import { useLocation } from 'react-router';
+import {toast} from "sonner";
 
 const LoginSignUp = () => {
     const location = useLocation();
@@ -12,6 +13,27 @@ const LoginSignUp = () => {
 
     const handleTogglePage = () => {
         setToggleActive(toggleActive === 'login' ? 'register' : 'login');
+    };
+
+    const handleContinueWithGoogle = async () => {
+        try {
+            const searchParams = new URLSearchParams(window.location.search);
+            const redirectUri = searchParams.get('redirect_uri') || '/';
+
+            // Use a simple string instead of JSON
+            const URI = import.meta.env.VITE_BACKEND_URL + '/auth/google-callback'
+            const state = JSON.stringify({
+                redirectUri: URI,
+                from: redirectUri
+            });
+            console.log(URI)
+
+            window.location.href = `https://accounts.google.com/o/oauth2/v2/auth/oauthchooseaccount?response_type=code&redirect_uri=${URI}&scope=email%20profile&state=${encodeURIComponent(state)}&client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}`
+
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || "An error occurred");
+        }
     };
 
     return (
@@ -26,7 +48,7 @@ const LoginSignUp = () => {
                 </h2>
 
                 <div className="w-full max-w-[60%] flex shadow-lg rounded-lg overflow-hidden">
-                    {toggleActive === 'login' ? <LoginContent /> : <SignUpContent />}
+                    {toggleActive === 'login' ? <LoginContent /> : <SignUpContent handleTogglePage={handleTogglePage} />}
 
                     <div className="w-1/2 p-8 flex flex-col justify-center bg-blue-50 border-l border-gray-100">
                         <div className="mb-6 flex justify-center items-center">
@@ -34,7 +56,7 @@ const LoginSignUp = () => {
                         </div>
 
                         <div className="space-y-4">
-                            <button className="w-full bg-white cursor-pointer border border-gray-300 rounded-md p-2 flex items-center justify-center hover:bg-gray-50 transition shadow-sm">
+                            <button className="w-full bg-white cursor-pointer border border-gray-300 rounded-md p-2 flex items-center justify-center hover:bg-gray-50 transition shadow-sm" onClick={handleContinueWithGoogle}>
                                 <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
                                     <path
                                         fill="#4285F4"

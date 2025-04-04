@@ -1,27 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-mona-sans: "Mona Sans", sans-serif; 
+  --font-mona-sans: "Mona Sans", sans-serif;
   --font-geist-mono: "Geist Mono", monospace;
   --font-jetbrains-mono: "JetBrains Mono", monospace;
 }
 
-.monaco-editor *, .code-block * {
+.monaco-editor *,
+.code-block * {
   font-family: var(--font-geist-mono) !important;
 }
 
-*{
+* {
   box-sizing: border-box;
   font-family: "Mona Sans", sans-serif;
   /* font-weight: 500; */
 }
 
-.editor-font{
+.editor-font {
   font-family: "Geist Mono", monospace !important;
   font-weight: 400;
 }
@@ -133,6 +134,55 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Add to your global CSS file */
+/* Default (light mode) scrollbar styles */
+* {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #d4d4d4 #f1f1f1; /* For Firefox (thumb track) */
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #d4d4d4;
+  border-radius: 4px;
+  border: 2px solid #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #a1a1a1;
+}
+
+/* Dark mode scrollbar styles */
+.dark * {
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #444 #1a1a1a; /* For Firefox (thumb track) */
+}
+
+.dark *::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.dark *::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border: 2px solid #1a1a1a;
+}
+
+.dark *::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+
+.dark *::-webkit-scrollbar-corner {
+  background: #1a1a1a;
+}
 
 @layer base {
   * {
@@ -140,5 +190,132 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Light Theme Variables */
+:root {
+  --icon-fill: #333; /* Default dark color for light theme */
+  --icon-fill-hover: #7a7a7a; /* Dark grey for hover */
+}
+
+/* Dark Theme Variables */
+.dark {
+  --icon-fill: #f1f1f1; /* Light grey for dark theme */
+  --icon-fill-hover: #fbfcff; /* White for hover */
+}
+
+.sun-and-moon {
+  position: relative;
+
+  & > :is(.moon, .sun, .sun-beams) {
+    transform-origin: center center;
+  }
+
+  & > .sun-beams {
+    stroke: var(--icon-fill);
+    stroke-width: 2px;
+
+    &:hover,
+    &:focus-visible {
+      stroke: var(--icon-fill-hover);
+    }
+  }
+
+  /* Dark Theme Styles */
+  .dark & > .sun {
+    transform: scale(1.75);
+  }
+
+  .dark & > .sun-beams {
+    opacity: 0;
+  }
+
+  .dark & > .moon > circle {
+    transform: translateX(-7px);
+  }
+
+  @supports (cx: 1px) {
+    .dark & > .moon > circle {
+      transform: translateX(0);
+      cx: 17px;
+    }
+  }
+
+  /* Animations */
+  @media (prefers-reduced-motion: no-preference) {
+    & > .sun {
+      transition: transform 0.5s var(--ease-elastic-3);
+    }
+
+    & > .sun-beams {
+      transition:
+        transform 0.5s var(--ease-elastic-4),
+        opacity 0.5s var(--ease-3);
+    }
+
+    & .moon > circle {
+      transition: transform 0.25s var(--ease-out-5);
+
+      @supports (cx: 1px) {
+        transition: cx 0.25s var(--ease-out-5);
+      }
+    }
+
+    /* Dark Theme Animation */
+    .dark & > .sun {
+      transform: scale(1.75);
+      transition-timing-function: var(--ease-3);
+      transition-duration: 0.25s;
+    }
+
+    .dark & > .sun-beams {
+      transform: rotateZ(-25deg);
+      transition-duration: 0.15s;
+    }
+
+    .dark & > .moon > circle {
+      transition-delay: 0.25s;
+      transition-duration: 0.5s;
+    }
+  }
+}
+
+.theme-toggle {
+  --size: 1.8rem;
+  --icon-fill: hsl(210 10% 30%);
+  --icon-fill-hover: hsl(210 10% 15%);
+
+  background: none;
+  border: none;
+  padding: 0;
+
+  inline-size: var(--size);
+  block-size: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  /* outline-offset: 2px; */
+  display: flex;
+  align-items: center;
+
+  & > svg {
+    inline-size: 100%;
+    block-size: 100%;
+    stroke-linecap: round;
+  }
+
+  /* Dark Theme Overrides */
+  .dark & {
+    --icon-fill: hsl(210 10% 70%);
+    --icon-fill-hover: hsl(210 15% 90%);
+  }
+
+  @media (hover: none) {
+    --size: 48px;
   }
 }
