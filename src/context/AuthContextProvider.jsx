@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AuthContext } from "./AuthContext";
-import toast from "sonner";
+import { toast } from "sonner";
 import getApi from "../helpers/API/getApi";
 import postApi from "../helpers/API/postApi";
 // import { UserContext } from "./UserContext";
