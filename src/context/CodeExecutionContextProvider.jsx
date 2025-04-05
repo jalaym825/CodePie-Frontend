@@ -6,10 +6,11 @@ import { socket } from '../lib/socket';
 import { CodeExecutionContext } from './CodeExecutionContext';
 import { problems } from "../helpers/editorData";
 import { UserContext } from './UserContext';
+import { EditorSettingsContext } from './EditorSettingsContext';
 
 export default function CodeExecutionContextProvider({ children }) {
     const [code, setCode] = useState('');
-    const [language, setLanguage] = useState('71');
+    // const [language, setLanguage] = useState('71');
     const [selectedProblem, setSelectedProblem] = useState(problems[0]);
     const [output, setOutput] = useState('');
     const [isRunning, setIsRunning] = useState(false);
@@ -24,14 +25,17 @@ export default function CodeExecutionContextProvider({ children }) {
     const [isTestingAll, setIsTestingAll] = useState(false);
     const [stdin, setStdin] = useState('');
 
+    const [showResultDialog, setShowResultDialog] = useState(false);
+
     const { userInfo } = useContext(UserContext);
+    const { language } = useContext(EditorSettingsContext);
 
     // Socket effects
     useEffect(() => {
         socket.emit('register', userInfo.id);
         const handleSubmissionResult = (data) => {
             console.log('Submission result:', data);
-            
+
             setIsRunning(false);
 
             let resultOutput = '';
@@ -70,6 +74,15 @@ export default function CodeExecutionContextProvider({ children }) {
             if (data.time) setExecutionTime(data.time);
             if (data.memory) setMemoryUsage((data.memory / 1024).toFixed(2));
 
+            //Add the function here which adds the test case result to the list.
+            setTestResults(prev => [...prev, {
+                ...data,
+                testCaseId: data.testCaseId,
+                status: data.status,
+                time: data.time
+            }]);
+            //
+
             setRecentSubmissions((prev) => [
                 {
                     id: Date.now(),
@@ -80,6 +93,9 @@ export default function CodeExecutionContextProvider({ children }) {
                 },
                 ...prev
             ].slice(0, 5));
+
+            console.log('Recent submissions:', recentSubmissions);
+
         };
 
         socket.on("submissionResult", handleSubmissionResult);
@@ -102,7 +118,7 @@ export default function CodeExecutionContextProvider({ children }) {
             if (response.status === 200) {
                 const problem = response.data.data;
                 console.log('Fetched problem:', problem);
-                
+
                 setSelectedProblem(problem);
                 setCode('');
                 setStdin(problem.stdin || '');
@@ -133,15 +149,18 @@ export default function CodeExecutionContextProvider({ children }) {
         }
     }, []);
 
-    const executeCode = useCallback(async (input) => {
+    const executeCode = useCallback(async (input, expectedOutput = '', testCaseId = '') => {
+        // you can use expectedOutput later if needed
         try {
-            console.log('Executing code with input:', input, 'Code:', code, 'Language:', language);
+            console.log('Executing code with input:', input, 'Expected Output:', expectedOutput);
 
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/run`, {
                 problemId: "3bc05c41-14e5-42de-a983-0bb21828ab8b",
                 sourceCode: code,
-                languageId: language,
+                languageId: language.id,
                 input,
+                testCaseId,
+                output: expectedOutput, // optional: include this in the API call if needed
             }, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" }
@@ -150,6 +169,7 @@ export default function CodeExecutionContextProvider({ children }) {
             throw new Error(`Error submitting code: ${error.message}`);
         }
     }, [code, language]);
+
 
     const runCustomTest = useCallback(async () => {
         setIsRunning(true);
@@ -170,7 +190,7 @@ export default function CodeExecutionContextProvider({ children }) {
 
     const runTestCase = useCallback(async (testCase, index) => {
         try {
-            await executeCode(testCase.input);
+            await executeCode(testCase.input, testCase.output, testCase.id);
         } catch (error) {
             setTestResults((prev) => {
                 const newResults = [...prev];
@@ -207,6 +227,7 @@ export default function CodeExecutionContextProvider({ children }) {
     const submitSolution = useCallback(async () => {
         setIsTestingAll(true);
         setTestResults([]);
+        setShowResultDialog(true);
 
         try {
             const visibleTestCases = selectedProblem.testCases.filter(tc => !tc.isHidden);
@@ -232,8 +253,6 @@ export default function CodeExecutionContextProvider({ children }) {
     const ctxValue = useMemo(() => ({
         code,
         setCode,
-        language,
-        setLanguage,
         selectedProblem,
         setSelectedProblem: handleProblemChange,
         output,
@@ -252,9 +271,10 @@ export default function CodeExecutionContextProvider({ children }) {
         runAllTests,
         submitSolution,
         fetchProblem: handleFetchProblem,
+        showResultDialog,
+        setShowResultDialog,
     }), [
         code,
-        language,
         selectedProblem,
         handleProblemChange,
         output,
@@ -271,6 +291,8 @@ export default function CodeExecutionContextProvider({ children }) {
         runAllTests,
         submitSolution,
         handleFetchProblem,
+        showResultDialog,
+        setShowResultDialog,
     ]);
 
     return (

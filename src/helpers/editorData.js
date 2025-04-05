@@ -25,6 +25,29 @@ export const languageMap = {
     assembly: 'asm',
 };
 
+export const languages = {
+    'Python': {
+        id: '71',
+        name: 'Python',
+        monacoLanguage: 'python'
+    },
+    'Java': {
+        id: '62',
+        name: 'Java',
+        monacoLanguage: 'java'
+    },
+    'C++': {
+        id: '54',
+        name: 'C++',
+        monacoLanguage: 'cpp'
+    },
+    'JavaScript': {
+        id: '63',
+        name: 'JavaScript',
+        monacoLanguage: 'javascript'
+    }
+}
+
 // Sample code templates for different languages
 export const codeTemplates = {
     c: '#include <stdio.h>\n\nint main() {\n    // Your solution here\n    return 0;\n}',

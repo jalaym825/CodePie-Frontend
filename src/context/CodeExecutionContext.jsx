@@ -24,4 +24,6 @@ export const CodeExecutionContext = createContext({
     runAllTests: () => {},
     submitSolution: () => {},
     fetchProblem: () => {},
+    showResultDialog: Boolean,
+    setShowResultDialog: () => {},
 });

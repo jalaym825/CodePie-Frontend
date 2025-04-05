@@ -23,15 +23,16 @@ import { EditorSettingsContext } from '../context/EditorSettingsContext';
 import { Maximize2 } from 'lucide-react';
 import { useParams } from 'react-router';
 import { CodeExecutionContext } from '../context/CodeExecutionContext';
+import TestResultDialog from '../components/Result/TestResultDialog';
 
 const CodeEditor = () => {
     const [loading, setLoading] = useState(true);
 
-    const { fetchProblem } = useContext(CodeExecutionContext);
+    const { fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults } = useContext(CodeExecutionContext);
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
 
     const { id, competitionId, problemId } = useParams();
-    console.log("Params:", id, competitionId, problemId);
+    // console.log("Params:", id, competitionId, problemId);
 
     // Determine if this is a competition problem
     const isCompetition = Boolean(competitionId);
@@ -39,7 +40,7 @@ const CodeEditor = () => {
     // Get the actual problem ID (either from standalone or competition route)
     const currentProblemId = id || problemId;
 
-    async function handleFetchCompetition(){
+    async function handleFetchCompetition() {
         if (!isCompetition && !currentProblemId) return;
         const res = await fetchProblem(currentProblemId, competitionId);
         if (res.status === 200) {
@@ -50,10 +51,10 @@ const CodeEditor = () => {
     async function handleFetchProblem() {
         if (!isCompetition && !currentProblemId) return;
 
-        if(isCompetition){
+        if (isCompetition) {
             await handleFetchCompetition();
         }
-        
+
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
             setLoading(false);
@@ -94,6 +95,12 @@ const CodeEditor = () => {
                 open={showFullscreenPrompt}
                 onClose={closeFullscreenPrompt}
                 onConfirm={enableFullscreen}
+            />
+            <TestResultDialog
+                open={showResultDialog}
+                onOpenChange={setShowResultDialog}
+                testCases={selectedProblem?.testCases || []}
+                testResults={testResults}
             />
         </>
     );

@@ -28,7 +28,7 @@ const EditorSettings = () => {
     } = useContext(EditorSettingsContext);
 
     return (
-        <Drawer open={true} direction="right" onOpenChange={(open) => !open && setShowSettings(false)}>
+        <Drawer open={true} onOpenChange={(open) => !open && setShowSettings(false)}>
             <DrawerContent className="bg-white">
                 <div className="mx-auto w-full max-w-4xl">
                     <DrawerHeader>
@@ -73,53 +73,55 @@ const EditorSettings = () => {
                             </div>
 
                             {/* Word Wrap Toggle */}
-                            <div className="flex flex-col space-y-2">
-                                <label htmlFor="word-wrap" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Word Wrap
-                                </label>
-                                <Switch
-                                    id="word-wrap"
-                                    checked={lineWrap}
-                                    onCheckedChange={setLineWrap}
-                                    className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
-                                />
-                            </div>
+                            <div className='flex justify-between pb-2'>
+                                <div className="flex flex-col space-y-2">
+                                    <label htmlFor="word-wrap" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Word Wrap
+                                    </label>
+                                    <Switch
+                                        id="word-wrap"
+                                        checked={lineWrap}
+                                        onCheckedChange={setLineWrap}
+                                        className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+                                    />
+                                </div>
 
-                            {/* Auto Format Toggle */}
-                            <div className="flex flex-col space-y-2">
-                                <label htmlFor="auto-format" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Auto Format On Run
-                                </label>
-                                <Switch
-                                    id="auto-format"
-                                    checked={autoFormat}
-                                    onCheckedChange={setAutoFormat}
-                                    className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
-                                />
-                            </div>
+                                {/* Auto Format Toggle */}
+                                <div className="flex flex-col space-y-2">
+                                    <label htmlFor="auto-format" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Auto Format On Run
+                                    </label>
+                                    <Switch
+                                        id="auto-format"
+                                        checked={autoFormat}
+                                        onCheckedChange={setAutoFormat}
+                                        className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+                                    />
+                                </div>
 
-                            {/* Problem Panel Toggle */}
-                            <div className="flex flex-col space-y-2">
-                                <label htmlFor="show-problem" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Show Problem Panel
-                                </label>
-                                <Switch
-                                    id="show-problem"
-                                    checked={showProblem}
-                                    onCheckedChange={setShowProblem}
-                                    className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
-                                />
+                                {/* Problem Panel Toggle */}
+                                <div className="flex flex-col space-y-2">
+                                    <label htmlFor="show-problem" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Show Problem Panel
+                                    </label>
+                                    <Switch
+                                        id="show-problem"
+                                        checked={showProblem}
+                                        onCheckedChange={setShowProblem}
+                                        className="data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-blue-500"
+                                    />
+                                </div>
+                            </div>
                             </div>
                         </div>
+                        <DrawerFooter>
+                            <DrawerClose asChild>
+                                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                                    Apply Changes
+                                </Button>
+                            </DrawerClose>
+                        </DrawerFooter>
                     </div>
-                    <DrawerFooter>
-                        <DrawerClose asChild>
-                            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                                Apply Changes
-                            </Button>
-                        </DrawerClose>
-                    </DrawerFooter>
-                </div>
             </DrawerContent>
         </Drawer>
     );

@@ -17,6 +17,7 @@ export const EditorSettingsContext = createContext({
     copyCode: () => {},
     downloadCode: () => {},
     showSettings: false,
+    setShowSettings: () => {},
     toggleSettings: () => {},
     isFullscreen: false,
     toggleFullscreen: () => {},
@@ -25,6 +26,11 @@ export const EditorSettingsContext = createContext({
     closeFullscreenPrompt: () => {},
     showProblem: true,
     toggleProblemPanel: () => {},
-    languages: [],
+    language: {
+        id: Number,
+        name: String,
+        monacoLanguage: String,
+    },
+    setLanguage: () => {},
     updateMonacoLanguage: () => {}
 });
