@@ -18,7 +18,7 @@ const IOPanel = () => {
     const { editorFontSize } = useContext(EditorSettingsContext);
 
     return (
-        <div className="flex-grow h-[30%] overflow-auto rounded-xl border dark:border-gray-700">
+        <div className="flex-grow h-full overflow-auto rounded-xl border dark:border-gray-700">
             <Tabs defaultValue="output" className="h-full gap-0">
                 <CardHeader className="p-2 m-0 bg-gray-50 dark:bg-gray-800 border-b-1">
                     <TabsList className="bg-gray-100 dark:bg-gray-700 gap-x-2">

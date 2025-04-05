@@ -140,14 +140,15 @@ const NewContestPage = () => {
                             <div className="grid md:grid-cols-2 gap-6">
                                 <div>
                                     <Label htmlFor="start-time">Start Time</Label>
-                                    <div className="flex mt-1 items-center">
+                                    <div className="flex mt-1 items-center rounded-lg border-1 pl-3">
                                         <Clock className="h-4 w-4 mr-2 text-gray-500" />
                                         <input
                                             id="start-time"
                                             type="datetime-local"
                                             value={newContest.startTime}
                                             onChange={(e) => setNewContest({ ...newContest, startTime: e.target.value })}
-                                            className={`mt-1 ${errors.startTime ? 'border-red-500' : ''}`}
+                                            onFocus={(e) => e.target.showPicker()}
+                                            className={`outline-none border-none p-2 mb-[2px] flex-1 ${errors.startTime ? 'border-red-500' : ''}`}
                                         />
                                     </div>
                                     {errors.startTime && <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>}
@@ -155,14 +156,15 @@ const NewContestPage = () => {
 
                                 <div>
                                     <Label htmlFor="end-time">End Time</Label>
-                                    <div className="flex mt-1 items-center">
+                                    <div className="flex mt-1 items-center rounded-lg border-1 pl-3">
                                         <Clock className="h-4 w-4 mr-2 text-gray-500" />
                                         <input
                                             id="end-time"
                                             type="datetime-local"
                                             value={newContest.endTime}
                                             onChange={(e) => setNewContest({ ...newContest, endTime: e.target.value })}
-                                            className={`mt-1 ${errors.endTime ? 'border-red-500' : ''}`}
+                                            onFocus={(e) => e.target.showPicker()}
+                                            className={`outline-none border-none p-2 mb-[2px] flex-1 ${errors.endTime ? 'border-red-500' : ''}`}
                                         />
                                     </div>
                                     {errors.endTime && <p className="text-red-500 text-sm mt-1">{errors.endTime}</p>}

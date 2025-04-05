@@ -6,6 +6,11 @@ import EditorPanel from '../components/EditorPanel/EditorPanel';
 import Header from '../components/Header/Header';
 import IOPanel from '../components/IOPanel/IOPanel';
 import ProblemPanel from '../components/ProblemPanel/ProblemPanel';
+import {
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 import {
     Dialog,
@@ -40,20 +45,20 @@ const CodeEditor = () => {
     // Get the actual problem ID (either from standalone or competition route)
     const currentProblemId = id || problemId;
 
-    async function handleFetchCompetition() {
-        if (!isCompetition && !currentProblemId) return;
-        const res = await fetchProblem(currentProblemId, competitionId);
-        if (res.status === 200) {
-            setLoading(false);
-        }
-    }
+    // async function handleFetchCompetition() {
+    //     if (!isCompetition && !currentProblemId) return;
+    //     const res = await fetchProblem(currentProblemId, competitionId);
+    //     if (res.status === 200) {
+    //         setLoading(false);
+    //     }
+    // }
 
     async function handleFetchProblem() {
         if (!isCompetition && !currentProblemId) return;
 
-        if (isCompetition) {
-            await handleFetchCompetition();
-        }
+        // if (isCompetition) {
+        //     await handleFetchCompetition();
+        // }
 
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
@@ -81,13 +86,35 @@ const CodeEditor = () => {
             <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-auto md:h-[100vh] flex flex-col'}`}>
                 <Header />
 
-                <div className={`flex flex-col md:flex-row flex-1 gap-2 overflow-hidden p-2 ${isFullscreen ? 'h-[calc(100vh-96px)]' : ''}`}>
-                    {showProblem && <ProblemPanel className={isFullscreen ? "overflow-auto" : ""} />}
+                <div className={`overflow-hidden p-2 ${isFullscreen ? 'h-[calc(100vh-96px)]' : ''}`}>
+                    <ResizablePanelGroup direction="horizontal" className="h-full">
+                        {showProblem && (
+                            <>
+                                <ResizablePanel defaultSize={33} minSize={25} className="p-1">
+                                    <div className={`h-full ${isFullscreen ? "overflow-auto" : ""}`}>
+                                        <ProblemPanel />
+                                    </div>
+                                </ResizablePanel>
+                                <ResizableHandle withHandle />
+                            </>
+                        )}
 
-                    <div className={`flex flex-col flex-1 gap-2 ${showProblem ? 'md:w-2/3' : 'w-full'}`}>
-                        <EditorPanel className={isFullscreen ? "flex-1 min-h-0" : ""} />
-                        <IOPanel className={isFullscreen ? "flex-1 min-h-0 max-h-[40vh]" : ""} />
-                    </div>
+                        <ResizablePanel defaultSize={showProblem ? 67 : 100} minSize={40}>
+                            <ResizablePanelGroup direction="vertical" minSize={30}>
+                                <ResizablePanel defaultSize={60} minSize={30} className="p-1">
+                                    {/* <div className={`h-full ${isFullscreen ? "min-h-0" : ""}`}> */}
+                                        <EditorPanel />
+                                    {/* </div> */}
+                                </ResizablePanel>
+                                <ResizableHandle withHandle />
+                                <ResizablePanel defaultSize={40} className="p-1">
+                                    {/* <div className={`h-full ${isFullscreen ? "min-h-0" : ""}`}> */}
+                                        <IOPanel />
+                                    {/* </div> */}
+                                </ResizablePanel>
+                            </ResizablePanelGroup>
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
                 </div>
             </div>
 

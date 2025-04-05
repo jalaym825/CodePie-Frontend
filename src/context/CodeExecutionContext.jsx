@@ -2,6 +2,11 @@
 import { createContext } from "react";
 
 export const CodeExecutionContext = createContext({
+    contest: String,
+    setContest: () => {},
+    fetchContest: () => {},
+    problem: String,
+    setProblem: () => {},
     code: '',
     setCode: () => {},
     language: '',

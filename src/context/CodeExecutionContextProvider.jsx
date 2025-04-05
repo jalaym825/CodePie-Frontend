@@ -4,14 +4,15 @@ import axios from 'axios';
 import { toast } from 'sonner';
 import { socket } from '../lib/socket';
 import { CodeExecutionContext } from './CodeExecutionContext';
-import { problems } from "../helpers/editorData";
+// import { problems } from "../helpers/editorData";
 import { UserContext } from './UserContext';
 import { EditorSettingsContext } from './EditorSettingsContext';
 
 export default function CodeExecutionContextProvider({ children }) {
     const [code, setCode] = useState('');
-    // const [language, setLanguage] = useState('71');
-    const [selectedProblem, setSelectedProblem] = useState(problems[0]);
+    const [problems, setProblems] = useState([]);
+    const [selectedProblem, setSelectedProblem] = useState(null);
+    const [contest, setContest] = useState(null);
     const [output, setOutput] = useState('');
     const [isRunning, setIsRunning] = useState(false);
     const [statusBadge, setStatusBadge] = useState({
@@ -93,9 +94,6 @@ export default function CodeExecutionContextProvider({ children }) {
                 },
                 ...prev
             ].slice(0, 5));
-
-            console.log('Recent submissions:', recentSubmissions);
-
         };
 
         socket.on("submissionResult", handleSubmissionResult);
@@ -141,13 +139,36 @@ export default function CodeExecutionContextProvider({ children }) {
         }
     }, []);
 
-    const handleProblemChange = useCallback((problemId) => {
-        const problem = problems.find((p) => p.id === problemId);
-        if (problem) {
-            setSelectedProblem(problem);
-            setTestResults([]);
+    const handleFetchContest = useCallback(async (contestId) => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" }
+            });
+            // console.log('Problem fetched:', response);
+
+            if (response.status === 200) {
+                const contest = response.data.data;
+                console.log('Fetched contest:', contest);
+                setContest(contest);
+            }
+
+            return {
+                status: response.status,
+            };
+        } catch (error) {
+            console.error('Error fetching contest:', error);
+            toast.error('Error fetching contest data');
         }
     }, []);
+
+    // const handleProblemChange = useCallback((problemId) => {
+    //     const problem = problems.find((p) => p.id === problemId);
+    //     if (problem) {
+    //         setSelectedProblem(problem);
+    //         setTestResults([]);
+    //     }
+    // }, []);
 
     const executeCode = useCallback(async (input, expectedOutput = '', testCaseId = '') => {
         // you can use expectedOutput later if needed
@@ -251,10 +272,15 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [runTestCase, selectedProblem]);
 
     const ctxValue = useMemo(() => ({
+        contest,
+        setContest,
+        fetchContest: handleFetchContest,
+        problems,
+        setProblems,
         code,
         setCode,
         selectedProblem,
-        setSelectedProblem: handleProblemChange,
+        // setSelectedProblem: handleProblemChange,
         output,
         isRunning,
         statusBadge,
@@ -274,9 +300,14 @@ export default function CodeExecutionContextProvider({ children }) {
         showResultDialog,
         setShowResultDialog,
     }), [
+        contest,
+        setContest,
+        handleFetchContest,
+        problems,
+        setProblems,
         code,
         selectedProblem,
-        handleProblemChange,
+        // handleProblemChange,
         output,
         isRunning,
         statusBadge,

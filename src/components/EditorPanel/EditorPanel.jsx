@@ -68,8 +68,8 @@ const EditorPanel = () => {
     return (
         <div
             ref={containerRef}
-            className="flex flex-col flex-grow p-0 gap-0 overflow-hidden rounded-xl border dark:border-gray-700"
-            style={{ height: '70%', minHeight: '300px' }}
+            className="flex flex-col h-full flex-grow p-0 gap-0 overflow-hidden rounded-xl border dark:border-gray-700"
+            // style={{ height: '70%', minHeight: '300px' }}
         >
             {showSettings && <EditorSettings />}
 

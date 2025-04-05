@@ -7,6 +7,7 @@ import MainHeader from "./components/Header/MainHeader";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import NewContestPage from "./pages/NewContest";
 import AddProblem from "./Pages/AddProblemsPage"
+import ContestInfo from "./pages/Contest/ContestInfo";
 
 function App() {
   return (
@@ -18,12 +19,13 @@ function App() {
           <Route path="/contests">
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
-            <Route path="/contests/:contestId" element={<AddProblem />} />            //Competition details page
+            <Route path="/contests/addProblem" element={<AddProblem />} />            //Competition details page
             <Route path="/contests/create" element={<NewContestPage />} />                      //Create Competition page
-            <Route path="/contests/:contestId" element={<h1>Contest details</h1>} />            //Competition details page
-            <Route path="/contests/:contestId/problems/:problemId" element={<CodeEditor />} />  //Problem details page inside competition
+            <Route path="/contests/:contestId" element={<ContestInfo />} />            //Competition details page
           </Route>
-          {/* <Route path="/contests/:id" element={<ContestPage />} /> */}
+        </Route>
+        <Route path="/contests">
+          <Route path="/contests/:contestId/problems/:problemId" element={<CodeEditor />} />  //Problem details page inside competition
         </Route>
         <Route path="/problems" >
           <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
