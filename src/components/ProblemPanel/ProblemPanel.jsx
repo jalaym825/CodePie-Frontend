@@ -30,7 +30,7 @@ const ProblemPanel = ({ className }) => {
                                 <div className="flex items-center gap-1 text-md font-bold">
                                     {selectedProblem.title}
                                     <Badge className="ml-1 bg-blue-600 dark:bg-blue-700 text-xs">
-                                        {selectedProblem.difficulty}
+                                        {selectedProblem.difficultyLevel}
                                     </Badge>
                                 </div>
                                 <CardDescription className="text-gray-500 dark:text-gray-400 text-xs mt-0">

@@ -21,9 +21,13 @@ const ProblemDescription = () => {
                     h3: ({ ...props }) => (
                         <h3 className="text-md font-medium mt-2 mb-2 text-gray-900 dark:text-gray-100" {...props} />
                     ),
-                    p: ({ ...props }) => (
-                        <p className="mb-2" {...props} />
-                    ),
+                    p: ({ node, children, ...props }) => {
+                        // Check if the paragraph contains only a block code (pre/code)
+                        const isOnlyCodeBlock = node.children?.length === 1 && node.children[0].tagName === 'code';
+
+                        // Avoid wrapping in <p> to prevent invalid nesting
+                        return isOnlyCodeBlock ? <>{children}</> : <div className="mb-2" {...props}>{children}</div>;
+                    },
                     ul: ({ ...props }) => (
                         <ul className="list-disc pl-5 mb-4 space-y-1" {...props} />
                     ),
@@ -33,19 +37,27 @@ const ProblemDescription = () => {
                     li: ({ ...props }) => (
                         <li className="mb-1" {...props} />
                     ),
-                    code({ inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || '');
+                    code({ className = '', children, ...props }) {
+                        const isMultiline = String(children).includes('\n');
+                        const hasLanguage = /language-\w+/.test(className);
 
-                        if (inline) {
+                        // This is an inline code if it's short, single-line and doesn't have a language
+                        const isInline = !isMultiline && !hasLanguage;
+
+                        if (isInline) {
                             return (
-                                <code className="!font-geist-mono bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded text-sm dark:text-gray-200" {...props}>
+                                <code
+                                    className="!font-geist-mono border-1 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.2 pb-[0.1rem] rounded text-sm dark:text-gray-200"
+                                    {...props}
+                                >
                                     {children}
                                 </code>
                             );
                         }
 
+                        const match = /language-(\w+)/.exec(className || '');
                         return (
-                            <div className="mb-4 rounded-lg overflow-hidden !font-geist-mono code-block">
+                            <div className="my-4 !font-geist-mono">
                                 <SyntaxHighlighter
                                     language={match?.[1] || 'text'}
                                     style={{}}
@@ -53,7 +65,7 @@ const ProblemDescription = () => {
                                         fontSize: '0.85rem',
                                         fontFamily: '"Geist Mono", monospace',
                                         backgroundColor: 'rgb(243 244 246)',
-                                        padding: '1rem',
+                                        padding: '.6rem',
                                         borderRadius: '0.5rem',
                                         margin: 0,
                                         ...(document.documentElement.classList.contains('dark') ? {
@@ -65,7 +77,8 @@ const ProblemDescription = () => {
                                         style: {
                                             fontFamily: '"Geist Mono", monospace',
                                             display: 'block',
-                                        }
+                                        },
+                                        className: 'code-block',
                                     }}
                                     pretagprops={{
                                         style: {
@@ -84,7 +97,7 @@ const ProblemDescription = () => {
                     table: ({ ...props }) => (
                         <div className="overflow-auto mb-4 border-1 dark:border-gray-700 rounded-xl">
                             <table className="min-w-full border-collapse" {...props} />
-                        </div>
+                        </div >
                     ),
                     th: ({ ...props }) => (
                         <th className="px-4 py-2 text-left border-gray-300 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 font-medium" {...props} />
@@ -95,22 +108,29 @@ const ProblemDescription = () => {
                     blockquote: ({ ...props }) => (
                         <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-600 dark:text-gray-400 mb-4" {...props} />
                     ),
+                    pre: ({ children }) => (
+                        <div className="my-4 !font-geist-mono">
+                            {children}
+                        </div>
+                    ),
                 }}
             >
                 {selectedProblem.description}
-            </ReactMarkdown>
+            </ReactMarkdown >
 
-            {selectedProblem.constraints && (
-                <div className="mt-6">
-                    <h3 className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100">Constraints</h3>
-                    <ul className="list-disc pl-5 space-y-1">
-                        {selectedProblem.constraints.map((constraint, index) => (
-                            <li key={index} className="text-gray-700 dark:text-gray-300">{constraint}</li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-        </div>
+            {
+                selectedProblem.constraints && (
+                    <div className="mt-6">
+                        <h3 className="text-base font-medium mb-2 text-gray-900 dark:text-gray-100">Constraints</h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                            {selectedProblem.constraints.map((constraint, index) => (
+                                <li key={index} className="text-gray-700 dark:text-gray-300">{constraint}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )
+            }
+        </div >
     );
 };
 

@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 // import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../context/EditorSettingsContext';
 import { Maximize2 } from 'lucide-react';
-import { useLocation } from 'react-router';
+import { useParams } from 'react-router';
 import { CodeExecutionContext } from '../context/CodeExecutionContext';
 
 const CodeEditor = () => {
@@ -30,20 +30,33 @@ const CodeEditor = () => {
     const { fetchProblem } = useContext(CodeExecutionContext);
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
 
-    const params = useLocation();
-    const { pathname } = params;
-    const isProblemPage = pathname.includes('/problems/');
+    const { id, competitionId, problemId } = useParams();
+    console.log("Params:", id, competitionId, problemId);
 
+    // Determine if this is a competition problem
+    const isCompetition = Boolean(competitionId);
 
-    async function handleFetchProblem() {
-        if (!isProblemPage) return;
-        const problemId = pathname.split('/').pop();
+    // Get the actual problem ID (either from standalone or competition route)
+    const currentProblemId = id || problemId;
 
-        const res = await fetchProblem(problemId);
+    async function handleFetchCompetition(){
+        if (!isCompetition && !currentProblemId) return;
+        const res = await fetchProblem(currentProblemId, competitionId);
         if (res.status === 200) {
             setLoading(false);
-            const data = await res.json();
-            console.log("Problem fetched successfully:", data);
+        }
+    }
+
+    async function handleFetchProblem() {
+        if (!isCompetition && !currentProblemId) return;
+
+        if(isCompetition){
+            await handleFetchCompetition();
+        }
+        
+        const res = await fetchProblem(currentProblemId);
+        if (res.status === 200) {
+            setLoading(false);
         }
     }
 

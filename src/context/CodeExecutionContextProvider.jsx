@@ -26,8 +26,10 @@ export default function CodeExecutionContextProvider({ children }) {
 
     // Socket effects
     useEffect(() => {
-        socket.emit('register', "xyz");
+        socket.emit('register', "94513176-7173-42d7-83ff-e4bbec641744");
         const handleSubmissionResult = (data) => {
+            console.log('Submission result:', data);
+            
             setIsRunning(false);
 
             let resultOutput = '';

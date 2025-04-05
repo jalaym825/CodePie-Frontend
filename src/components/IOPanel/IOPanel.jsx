@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CardHeader, CardContent } from '@/components/ui/card';
 import { Terminal, FileInput, History } from 'lucide-react';
-import Editor from '@monaco-editor/react';
 import OutputPanel from './OutputPanel';
 import InputPanel from './InputPanel';
 import HistoryPanel from './HistoryPanel';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 
-const IOPanel = ({ output, stdin, setStdin, recentSubmissions, editorFontSize, memoryUsage, executionTime }) => {
+const IOPanel = () => {
+    const {
+        stdin,
+        setStdin,
+        recentSubmissions,
+    } = useContext(CodeExecutionContext);
+
+    const { editorFontSize } = useContext(EditorSettingsContext);
+
     return (
         <div className="flex-grow h-[30%] overflow-auto rounded-xl border dark:border-gray-700">
             <Tabs defaultValue="output" className="h-full gap-0">
-                <CardHeader className="p-2 m-0 bg-gray-50 dark:bg-gray-800">
+                <CardHeader className="p-2 m-0 bg-gray-50 dark:bg-gray-800 border-b-1">
                     <TabsList className="bg-gray-100 dark:bg-gray-700 gap-x-2">
                         <TabsTrigger 
                             value="output" 
@@ -35,17 +44,11 @@ const IOPanel = ({ output, stdin, setStdin, recentSubmissions, editorFontSize, m
                             History
                         </TabsTrigger>
                     </TabsList>
-                    {output && (
-                        <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            <span className="mr-2">Memory: {memoryUsage}MB</span>
-                            <span>Time: {executionTime}s</span>
-                        </div>
-                    )}
                 </CardHeader>
 
                 <CardContent className="p-0 h-full">
                     <TabsContent value="output" className="h-full m-0">
-                        <OutputPanel output={output} />
+                        <OutputPanel />
                     </TabsContent>
 
                     <TabsContent value="input" className="h-full m-0">
