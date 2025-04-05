@@ -1,12 +1,11 @@
 // EditorSettingsContextProvider.jsx
 import { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
-import { languageMap } from "../helpers/editorData";
 import { EditorSettingsContext } from './EditorSettingsContext';
+import { languages } from '../helpers/editorData';
 
 export default function EditorSettingsContextProvider({ children }) {
     const editorRef = useRef(null);
-    const [monacoLanguage, setMonacoLanguage] = useState('python');
     const [editorFontSize, setEditorFontSize] = useState(14);
     const [lineWrap, setLineWrap] = useState(true);
     const [autoFormat, setAutoFormat] = useState(true);
@@ -15,13 +14,7 @@ export default function EditorSettingsContextProvider({ children }) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
     const [showProblem, setShowProblem] = useState(true);
-
-    const languages = useMemo(() => [
-        { id: '71', name: 'Python' },
-        { id: '62', name: 'Java' },
-        { id: '54', name: 'C++' },
-        { id: '63', name: 'JavaScript' },
-    ], []);
+    const [language, setLanguage] = useState(languages['Python']);
 
     // Show fullscreen prompt when component mounts
     useEffect(() => {
@@ -57,18 +50,9 @@ export default function EditorSettingsContextProvider({ children }) {
         setShowProblem(prev => !prev);
     }, []);
 
-    // Update Monaco language when language changes
-    const updateMonacoLanguage = useCallback((language) => {
-        const selectedLang = languages.find((lang) => lang.id.toString() === language);
-        if (selectedLang) {
-            const langName = selectedLang.name.toLowerCase().replace(/\s/g, '');
-            const monacoLang =
-                languageMap[langName] ||
-                languageMap[langName.split(/[^a-zA-Z+]/)[0]] ||
-                'plaintext';
-            setMonacoLanguage(monacoLang);
-        }
-    }, [languages]);
+    const updateLanguage = useCallback((lang) => {
+        setLanguage(languages[lang]);
+    }, []);
 
     const handleEditorDidMount = useCallback((editor, monaco) => {
         editorRef.current = editor;
@@ -117,23 +101,20 @@ export default function EditorSettingsContextProvider({ children }) {
         if (!editorRef.current) return;
 
         const code = editorRef.current.getValue();
-        const selectedLang = languages.find((lang) => lang.id === monacoLanguage);
         let extension = 'txt';
 
-        if (selectedLang) {
-            switch (monacoLanguage) {
-                case 'javascript': extension = 'js'; break;
-                case 'python': extension = 'py'; break;
-                case 'java': extension = 'java'; break;
-                case 'c': extension = 'c'; break;
-                case 'cpp': extension = 'cpp'; break;
-                case 'csharp': extension = 'cs'; break;
-                case 'typescript': extension = 'ts'; break;
-                case 'php': extension = 'php'; break;
-                case 'html': extension = 'html'; break;
-                case 'css': extension = 'css'; break;
-                default: extension = 'txt';
-            }
+        switch (language.monacoLanguage) {
+            case 'javascript': extension = 'js'; break;
+            case 'python': extension = 'py'; break;
+            case 'java': extension = 'java'; break;
+            case 'c': extension = 'c'; break;
+            case 'cpp': extension = 'cpp'; break;
+            case 'csharp': extension = 'cs'; break;
+            case 'typescript': extension = 'ts'; break;
+            case 'php': extension = 'php'; break;
+            case 'html': extension = 'html'; break;
+            case 'css': extension = 'css'; break;
+            default: extension = 'txt';
         }
 
         const blob = new Blob([code], { type: 'text/plain' });
@@ -146,10 +127,9 @@ export default function EditorSettingsContextProvider({ children }) {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         toast.success(`Downloaded as code.${extension}`);
-    }, [languages, monacoLanguage]);
+    }, [language]);
 
     const ctxValue = useMemo(() => ({
-        monacoLanguage,
         editorFontSize,
         setEditorFontSize,
         lineWrap,
@@ -164,6 +144,7 @@ export default function EditorSettingsContextProvider({ children }) {
         copyCode,
         downloadCode,
         showSettings,
+        setShowSettings,
         toggleSettings,
         isFullscreen,
         toggleFullscreen,
@@ -172,10 +153,9 @@ export default function EditorSettingsContextProvider({ children }) {
         closeFullscreenPrompt,
         showProblem,
         toggleProblemPanel,
-        languages,
-        updateMonacoLanguage
+        language,
+        setLanguage: updateLanguage,
     }), [
-        monacoLanguage,
         editorFontSize,
         lineWrap,
         autoFormat,
@@ -185,6 +165,7 @@ export default function EditorSettingsContextProvider({ children }) {
         copyCode,
         downloadCode,
         showSettings,
+        setShowSettings,
         toggleSettings,
         isFullscreen,
         toggleFullscreen,
@@ -193,8 +174,8 @@ export default function EditorSettingsContextProvider({ children }) {
         closeFullscreenPrompt,
         showProblem,
         toggleProblemPanel,
-        languages,
-        updateMonacoLanguage
+        language,
+        updateLanguage,
     ]);
 
     return (

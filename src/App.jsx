@@ -13,18 +13,18 @@ function App() {
     <Router>
       <Routes>
         <Route path="/account/login" element={<LoginSignUp />} />
-
         <Route path="/" element={<MainHeader />}>
           <Route index element={<Homepage />} />
           <Route path="/contests">
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
             <Route path="/contests/:contestId" element={<AddProblem />} />            //Competition details page
+            <Route path="/contests/create" element={<NewContestPage />} />                      //Create Competition page
+            <Route path="/contests/:contestId" element={<h1>Contest details</h1>} />            //Competition details page
             <Route path="/contests/:contestId/problems/:problemId" element={<CodeEditor />} />  //Problem details page inside competition
           </Route>
           {/* <Route path="/contests/:id" element={<ContestPage />} /> */}
         </Route>
-
         <Route path="/problems" >
           <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
           <Route path="/problems/create" element={<AddProblem />} />

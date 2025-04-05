@@ -3,18 +3,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Settings, Maximize, Minimize, Code2 } from 'lucide-react';
-import { problems } from '../../helpers/editorData';
+import { languages, problems } from '../../helpers/editorData';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 
 const Header = () => {
-    const { language, setLanguage, selectedProblem, setSelectedProblem } = useContext(CodeExecutionContext);
+    const { selectedProblem, setSelectedProblem } = useContext(CodeExecutionContext);
     const {
         isFullscreen,
         toggleFullscreen,
         // showSettings,
         // toggleSettings,
-        languages
+        language,
+        setLanguage,
     } = useContext(EditorSettingsContext);
 
     return (
@@ -25,14 +26,14 @@ const Header = () => {
             </div>
 
             <div className="flex space-x-2 items-center">
-                <Select value={language} onValueChange={setLanguage}>
+                <Select value={language.name} onValueChange={e => setLanguage(e)}>
                     <SelectTrigger className="w-32 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 h-8 text-xs">
                         <SelectValue placeholder="Language" />
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
-                        {languages.map((lang) => (
-                            <SelectItem key={lang.id} value={lang.id.toString()} className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700">
-                                {lang.name}
+                        {Object.entries(languages).map(([lang, info]) => (
+                            <SelectItem key={info.id} value={lang} className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700">
+                                {lang}
                             </SelectItem>
                         ))}
                     </SelectContent>

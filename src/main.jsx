@@ -8,19 +8,22 @@ import { Toaster } from 'sonner'
 import AuthContextProvider from './context/AuthContextProvider'
 import UserContextProvider from './context/UserContextProvider'
 import AuthInitializer from './Pages/Layouts/AuthInitializer'
+import LanguageSyncProvider from './context/LanguageContextProvider'
 
 createRoot(document.getElementById('root')).render(
   <ThemeContextProvider>
     <Toaster richColors />
     <AuthContextProvider>
       <UserContextProvider>
-        <EditorSettingsContextProvider>
-          <CodeExecutionContextProvider>
-            <AuthInitializer>
-              <App />
-            </AuthInitializer>
-          </CodeExecutionContextProvider>
-        </EditorSettingsContextProvider>
+        <LanguageSyncProvider>
+          <EditorSettingsContextProvider>
+            <CodeExecutionContextProvider>
+              <AuthInitializer>
+                <App />
+              </AuthInitializer>
+            </CodeExecutionContextProvider>
+          </EditorSettingsContextProvider>
+        </LanguageSyncProvider>
       </UserContextProvider>
     </AuthContextProvider>
   </ThemeContextProvider>

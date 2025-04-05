@@ -23,7 +23,7 @@ const EditorPanel = () => {
     } = useContext(CodeExecutionContext);
 
     const {
-        monacoLanguage,
+        language,
         editorFontSize,
         lineWrap,
         autoFormat,
@@ -77,7 +77,7 @@ const EditorPanel = () => {
                 <CardTitle className="flex items-center text-xs font-medium">
                     <FileCode className="mr-1 h-4 w-4 text-blue-600 dark:text-blue-400" />
                     <span className="text-gray-700 dark:text-gray-300">
-                        {monacoLanguage.toUpperCase()}
+                        {language.monacoLanguage.toUpperCase()}
                     </span>
                 </CardTitle>
                 <div className="flex space-x-1">
@@ -152,7 +152,7 @@ const EditorPanel = () => {
 
             <CardContent className="p-0 flex-1 !geist-mono overflow-hidden bg-white dark:bg-gray-900">
                 <Editor
-                    language={monacoLanguage}
+                    language={language.monacoLanguage}
                     value={code}
                     theme={theme === 'dark' ? 'vs-dark' : 'vs'}
                     onChange={e => setCode(e)}
