@@ -29,6 +29,46 @@ export default function UserContextProvider({ children }) {
         return false;
     }
 
+    async function handleCreateContest(newContest) {
+        const res = await postApi("/contests/", newContest);
+        console.log(res);
+        if (res.status === 201) {
+            return ({
+                status: res.status,
+                message: res.data.message
+            })
+        } else {
+            return res.response;
+        }
+    }
+
+    async function handlegetAllContests() {
+        const res = await getApi("/contests/");
+        console.log(res);
+        if (res.status === 200) {
+            return ({
+                status: res.status,
+                message: res.data.message,
+                data: res.data
+            })
+        } else {
+            return res.response;
+        }
+    }
+
+    async function handleCreateProblem(newContest) {
+        const res = await postApi("/problems/", newContest);
+        console.log(res);
+        if (res.status === 201) {
+            return ({
+                status: res.status,
+                message: res.data.message
+            })
+        } else {
+            return res.response;
+        }
+    }
+
 
 
     const ctxValue = {
@@ -36,6 +76,9 @@ export default function UserContextProvider({ children }) {
         setUserInfo: setUserData,
         getUserProfile: handleGetUserProfile,
         logoutUser: handleLogout,
+        createContest: handleCreateContest,
+        getAllContests: handlegetAllContests,
+        createProblem: handleCreateProblem
     }
 
     return (

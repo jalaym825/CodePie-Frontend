@@ -1,111 +1,131 @@
-import React from 'react';
-import { Calendar, Plus, Edit, Trash2, Tag, Award, Check, X, PlusIcon } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent } from '@/components/ui/tabs';
+import React, { useContext } from 'react';
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Calendar, Clock, Users, FileText, Trophy, ArrowRight, Plus, Filter, PlusIcon } from 'lucide-react';
+import { UserContext } from '../../context/UserContext';
+import { toast } from 'sonner';
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 
-const Dashboard = () => {
+const ContestDashboard = () => {
+  const [contests, setContests] = React.useState([]);
+  const { getAllContests } = useContext(UserContext);
   const navigate = useNavigate();
-  // State for contests list
-  const contests = [
-    {
-      id: 1,
-      title: 'Weekly Algorithm Challenge',
-      description: 'Test your skills with algorithmic problems',
-      startTime: '2025-04-05T10:00',
-      endTime: '2025-04-05T12:00',
-      isVisible: true,
-      problems: [
-        { id: 1, title: 'Balanced Parentheses', difficultyLevel: 'Medium' },
-        { id: 2, title: 'Merge K Sorted Lists', difficultyLevel: 'Hard' }
-      ]
-    },
-    {
-      id: 2,
-      title: 'Data Structures Marathon',
-      description: 'Solve problems focusing on different data structures',
-      startTime: '2025-04-10T14:00',
-      endTime: '2025-04-10T17:00',
-      isVisible: false,
-      problems: [
-        { id: 3, title: 'Binary Tree Traversal', difficultyLevel: 'Easy' }
-      ]
+
+  const formatTime = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  async function handleGetAllContest() {
+    const res = await getAllContests();
+    console.log(res.data);
+    if (res.status === 200) {
+      setContests(res.data.data);
+    } else {
+      toast.error(res.data.message);
     }
-  ];
+  }
+
+  useEffect(() => {
+    handleGetAllContest();
+  }, [])
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getContestStatus = (startTime, endTime) => {
+    const now = new Date();
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+
+    if (now < start) {
+      return { status: "Upcoming", variant: "outline" };
+    } else if (now >= start && now <= end) {
+      return { status: "Live", variant: "success" };
+    } else {
+      return { status: "Ended", variant: "secondary" };
+    }
+  };
 
   return (
-    <div className="mt-18 h-screen bg-gray-50">
+    <div className=" mt-20 bg-gray-50">
+      <div className="flex flex-col justify-between items-center mb-8">
+        <div className="flex items-center">
+          <Trophy className="h-6 w-6 mr-2 text-blue-500" />
+          <h1 className="text-2xl font-bold text-gray-800">Contest Dashboard</h1>
+        </div>
 
-      {/* Main Content */}
-      <main className="container mx-auto py-6 px-4">
-        <Tabs defaultValue="contests" className="w-full">
+        <div className="flex justify-between w-[90%] items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Contests</h2>
+          <Button onClick={() => navigate('/contests/create')}
+            className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+            <PlusIcon className="w-4 h-4 mr-2" />Create Contest
+          </Button>
+        </div>
 
-          {/* Contests Tab */}
-          <TabsContent value="contests">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">Contests</h2>
-                  <Button onClick={() => navigate('/contests/create')}
-                    className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                    <PlusIcon className="w-4 h-4 mr-2" />Create Contest
-                  </Button>
-              </div>
+        <div className="grid w-[90%] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {contests.map((contest) => {
+            const contestStatus = getContestStatus(contest.startTime, contest.endTime);
+            return (
+              <Card key={contest.id} className="overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                <CardHeader className="p-4 pb-2 flex flex-row items-start justify-between space-y-0">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800 truncate">{contest.title}</h2>
+                    <p className="text-gray-500 text-xs">{formatDate(contest.createdAt)}</p>
+                  </div>
+                  <Badge variant={contestStatus.variant}>{contestStatus.status}</Badge>
+                </CardHeader>
 
+                <CardContent className="p-4 pt-2">
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">{contest.description}</p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {contests.map((contest) => (
-                <Link key={contest.id} to={`/contests/${contest.id}`}>
-                  <Card key={contest.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-lg">{contest.title}</CardTitle>
-                        <div className="flex">
-                          <Edit className="h-4 w-4 mr-2 cursor-pointer text-gray-500 hover:text-blue-600" />
-                          <Trash2 className="h-4 w-4 cursor-pointer text-gray-500 hover:text-red-600" />
-                        </div>
-                      </div>
-                      <CardDescription className="line-clamp-2">{contest.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>
-                            {new Date(contest.startTime).toLocaleString()} - {new Date(contest.endTime).toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center">
-                          <Tag className="h-4 w-4 mr-2 text-gray-500" />
-                          <span>{contest.problems.length} Problems</span>
-                        </div>
-                        <div className="flex items-center">
-                          {contest.isVisible ? (
-                            <Badge className="bg-green-100 text-green-800 hover:bg-green-200">Visible</Badge>
-                          ) : (
-                            <Badge className="bg-gray-100 text-gray-800 hover:bg-gray-200">Hidden</Badge>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="border-t pt-4">
-                      <Button
-                        variant="outline"
-                        className="w-full"
-                        // onClick={() => setSelectedContest(contest)}
-                      >
-                        Manage Problems
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </main>
+                  <div className="flex items-center text-xs text-gray-500 mb-3">
+                    <Calendar className="w-3 h-3 mr-1 text-blue-500" />
+                    <span>{formatDate(contest.startTime)}</span>
+                    <Clock className="w-3 h-3 ml-2 mr-1 text-blue-500" />
+                    <span>{formatTime(contest.startTime)} - {formatTime(contest.endTime)}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center bg-purple-50 px-2 py-1 rounded">
+                      <FileText className="w-3 h-3 mr-1 text-purple-500" />
+                      <span className="text-xs font-medium text-purple-700">{contest._count.problems} Problems</span>
+                    </div>
+
+                    <div className="flex items-center bg-blue-50 px-2 py-1 rounded">
+                      <Users className="w-3 h-3 mr-1 text-blue-500" />
+                      <span className="text-xs font-medium text-blue-700">{contest._count.participations} Participants</span>
+                    </div>
+                  </div>
+                </CardContent>
+
+                <CardFooter className="p-4 pt-0 flex justify-end">
+                  <Link to={`/contests/${contest.id}`}>
+                    <Button
+                      className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-34 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                      Add Problem
+                      <ArrowRight className="ml-1 h-3 w-3" />
+                    </Button>
+                  </Link>
+                </CardFooter>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 };
 
-export default Dashboard;
+export default ContestDashboard;

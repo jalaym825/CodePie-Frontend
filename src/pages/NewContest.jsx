@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
@@ -19,11 +19,13 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Clock, Save } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { UserContext } from '../context/UserContext'
+import { toast } from 'sonner'
 
 const NewContestPage = () => {
     const navigate = useNavigate()
-
-    // Local state management
+    const { createContest } = useContext(UserContext)
+    const [loading, setLoading] = useState(false);
     const [newContest, setNewContest] = useState({
         title: '',
         description: '',
@@ -32,47 +34,6 @@ const NewContestPage = () => {
         isVisible: true
     })
 
-    const [timeData, setTimeData] = useState({
-        startHour: "",
-        startMinute: "",
-        startAMPM: "AM",
-        endHour: "",
-        endMinute: "",
-        endAMPM: "AM"
-    })
-
-    // Update contest times when time data changes
-    useEffect(() => {
-        if (timeData.startHour && timeData.startMinute && timeData.startAMPM &&
-            timeData.endHour && timeData.endMinute && timeData.endAMPM) {
-
-            // Calculate actual hours in 24-hour format
-            const startHour = timeData.startAMPM === "PM" && timeData.startHour !== "12"
-                ? parseInt(timeData.startHour) + 12
-                : (timeData.startAMPM === "AM" && timeData.startHour === "12" ? 0 : parseInt(timeData.startHour))
-
-            const endHour = timeData.endAMPM === "PM" && timeData.endHour !== "12"
-                ? parseInt(timeData.endHour) + 12
-                : (timeData.endAMPM === "AM" && timeData.endHour === "12" ? 0 : parseInt(timeData.endHour))
-
-            // Create date objects for today with the selected times
-            const today = new Date()
-            const startTime = new Date(today)
-            startTime.setHours(startHour, parseInt(timeData.startMinute), 0)
-
-            const endTime = new Date(today)
-            endTime.setHours(endHour, parseInt(timeData.endMinute), 0)
-
-            // Update contest with ISO string format
-            setNewContest(prev => ({
-                ...prev,
-                startTime: startTime.toISOString(),
-                endTime: endTime.toISOString()
-            }))
-        }
-    }, [timeData])
-
-    // Form validation
     const [errors, setErrors] = useState({})
 
     const validateForm = () => {
@@ -103,36 +64,24 @@ const NewContestPage = () => {
         return Object.keys(newErrors).length === 0
     }
 
-    // Handle contest creation
     const handleCreateContest = async () => {
         if (!validateForm()) {
             return
         }
-
-        try {
-            // This would typically be an API call to save the contest
-            console.log("Creating contest:", newContest)
-
-            // Example API call (commented out)
-            // const response = await fetch('/api/contests', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //     },
-            //     body: JSON.stringify(newContest),
-            // })
-            // const data = await response.json()
-
-            // For now, we'll simulate success
-            alert("Contest created successfully!")
-            navigate('/dashboard') // Navigate back to the dashboard
-        } catch (error) {
-            console.error("Error creating contest:", error)
-            setErrors({ submit: "Failed to create contest. Please try again." })
+        setLoading(true);
+        const res = await createContest(newContest);
+        console.log(res)
+        if (res?.status === 201) {
+            toast.success(res.message);
+            setLoading(false);
+            navigate('/contests')
+        } else {
+            toast.error(res.data.message);
+            setLoading(false);
         }
+
     }
 
-    // Handle cancellation
     const handleCancel = () => {
         navigate('/contests')
     }
@@ -193,44 +142,13 @@ const NewContestPage = () => {
                                     <Label htmlFor="start-time">Start Time</Label>
                                     <div className="flex mt-1 items-center">
                                         <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                                        <div className="flex gap-2">
-                                            <Select onValueChange={(value) => setTimeData({ ...timeData, startHour: value })}>
-                                                <SelectTrigger className={`w-24 p-2 ${errors.startTime ? 'border-red-500' : ''}`}>
-                                                    <SelectValue placeholder="00 : HH" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Array.from({ length: 13 }, (_, i) => (
-                                                        <SelectItem className={`${timeData.startHour === i.toString().padStart(2, '0') ? "bg-gray-200" : ""}`} key={i} value={i.toString().padStart(2, '0')}>
-                                                            {i.toString().padStart(2, '0')} : HH
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <Select onValueChange={(value) => setTimeData({ ...timeData, startMinute: value })}>
-                                                <SelectTrigger className={`w-24 p-2 ${errors.startTime ? 'border-red-500' : ''}`}>
-                                                    <SelectValue placeholder="00 : MM" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Array.from({ length: 61 }, (_, i) => (
-                                                        <SelectItem className={`${timeData.startMinute === i.toString().padStart(2, '0') ? "bg-gray-200" : ""}`} key={i} value={i.toString().padStart(2, '0')}>
-                                                            {i.toString().padStart(2, '0')} : MM
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <Select onValueChange={(value) => setTimeData({ ...timeData, startAMPM: value })}>
-                                                <SelectTrigger className={`w-24 p-2 ${errors.startTime ? 'border-red-500' : ''}`}>
-                                                    <SelectValue placeholder="AM" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {["AM", "PM"].map((i) => (
-                                                        <SelectItem className={`${timeData.startAMPM === i ? "bg-gray-200" : ""}`} key={i} value={i}>
-                                                            {i}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                        <input
+                                            id="start-time"
+                                            type="datetime-local"
+                                            value={newContest.startTime}
+                                            onChange={(e) => setNewContest({ ...newContest, startTime: e.target.value })}
+                                            className={`mt-1 ${errors.startTime ? 'border-red-500' : ''}`}
+                                        />
                                     </div>
                                     {errors.startTime && <p className="text-red-500 text-sm mt-1">{errors.startTime}</p>}
                                 </div>
@@ -239,44 +157,13 @@ const NewContestPage = () => {
                                     <Label htmlFor="end-time">End Time</Label>
                                     <div className="flex mt-1 items-center">
                                         <Clock className="h-4 w-4 mr-2 text-gray-500" />
-                                        <div className="flex gap-2">
-                                            <Select onValueChange={(value) => setTimeData({ ...timeData, endHour: value })}>
-                                                <SelectTrigger className={`w-24 p-2 ${errors.endTime ? 'border-red-500' : ''}`}>
-                                                    <SelectValue placeholder="00 : HH" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Array.from({ length: 13 }, (_, i) => (
-                                                        <SelectItem className={`${timeData.endHour === i.toString().padStart(2, '0') ? "bg-gray-200" : ""}`} key={i} value={i.toString().padStart(2, '0')}>
-                                                            {i.toString().padStart(2, '0')} : HH
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <Select onValueChange={(value) => setTimeData({ ...timeData, endMinute: value })}>
-                                                <SelectTrigger className={`w-24 p-2 ${errors.endTime ? 'border-red-500' : ''}`}>
-                                                    <SelectValue placeholder="00 : MM" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {Array.from({ length: 61 }, (_, i) => (
-                                                        <SelectItem className={`${timeData.endMinute === i.toString().padStart(2, '0') ? "bg-gray-200" : ""}`} key={i} value={i.toString().padStart(2, '0')}>
-                                                            {i.toString().padStart(2, '0')} : MM
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                            <Select onValueChange={(value) => setTimeData({ ...timeData, endAMPM: value })}>
-                                                <SelectTrigger className={`w-24 p-2 ${errors.endTime ? 'border-red-500' : ''}`}>
-                                                    <SelectValue placeholder="AM" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {["AM", "PM"].map((i) => (
-                                                        <SelectItem className={`${timeData.endAMPM === i ? "bg-gray-200" : ""}`} key={i} value={i}>
-                                                            {i}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
+                                        <input
+                                            id="end-time"
+                                            type="datetime-local"
+                                            value={newContest.endTime}
+                                            onChange={(e) => setNewContest({ ...newContest, endTime: e.target.value })}
+                                            className={`mt-1 ${errors.endTime ? 'border-red-500' : ''}`}
+                                        />
                                     </div>
                                     {errors.endTime && <p className="text-red-500 text-sm mt-1">{errors.endTime}</p>}
                                 </div>
