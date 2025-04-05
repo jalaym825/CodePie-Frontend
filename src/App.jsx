@@ -12,7 +12,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/account/login" element={<LoginSignUp />} />
-        <Route path="/code" element={<CodeEditor />} />
+        <Route path="/problems/:id" element={<CodeEditor />} />
         <Route path="/" element={<MainHeader />}>
           <Route index element={<Homepage />} />
           <Route path="dashboard" element={<Dashboard />} />

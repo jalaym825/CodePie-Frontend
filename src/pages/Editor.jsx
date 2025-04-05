@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 // Editor.jsx
 import { Toaster } from '@/components/ui/sonner';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import EditorPanel from '../components/EditorPanel/EditorPanel';
 import Header from '../components/Header/Header';
 import IOPanel from '../components/IOPanel/IOPanel';
@@ -20,10 +21,45 @@ import { Button } from "@/components/ui/button";
 // import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../context/EditorSettingsContext';
 import { Maximize2 } from 'lucide-react';
+import { useLocation } from 'react-router';
+import { CodeExecutionContext } from '../context/CodeExecutionContext';
 
 const CodeEditor = () => {
-    const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } =
-        useContext(EditorSettingsContext);
+    const [loading, setLoading] = useState(true);
+
+    const { fetchProblem } = useContext(CodeExecutionContext);
+    const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
+
+    const params = useLocation();
+    const { pathname } = params;
+    const isProblemPage = pathname.includes('/problems/');
+
+
+    async function handleFetchProblem() {
+        if (!isProblemPage) return;
+        const problemId = pathname.split('/').pop();
+
+        const res = await fetchProblem(problemId);
+        if (res.status === 200) {
+            setLoading(false);
+            const data = await res.json();
+            console.log("Problem fetched successfully:", data);
+        }
+    }
+
+    useEffect(() => {
+        handleFetchProblem();
+    }, [])
+
+    if (loading) {
+        return (
+            <>
+                <main className='h-screen flex items-center justify-center'>
+                    <h1>Loading...</h1>
+                </main>
+            </>
+        )
+    }
 
     return (
         <>
