@@ -155,11 +155,7 @@ const EditorPanel = () => {
                     language={monacoLanguage}
                     value={code}
                     theme={theme === 'dark' ? 'vs-dark' : 'vs'}
-                    onChange={e => {
-                        console.log('Code changed:', e);
-                        console.log('Code:', code); 
-                        setCode(e);
-                    }}
+                    onChange={e => setCode(e)}
                     onMount={handleEditorMount}
                     className="h-full"
                     options={{

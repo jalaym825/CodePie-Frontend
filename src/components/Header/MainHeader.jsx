@@ -41,7 +41,7 @@ const MainHeader = () => {
             <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between py-4 px-5">
-                        <div className="flex items-center gap-2">
+                        <div className="flex-1 flex justify-start items-center gap-2">
                             <Code className="text-blue-600" size={28} />
                             <span className="font-bold text-xl text-slate-900">CodePi</span>
                         </div>
@@ -49,12 +49,12 @@ const MainHeader = () => {
                         <nav className="hidden md:flex font-semibold items-center gap-6">
                             <Link to="/" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Home</Link>
                             <Link to="/problems" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Problems</Link>
-                            <Link to="/contest" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Contest</Link>
+                            <Link to="/contests" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Contest</Link>
                             <Link to="/discussion" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Discussion</Link>
                         </nav>
                         {
                             userInfo ? (
-                                <div className=''>
+                                <div className='flex-1 flex justify-end items-center gap-4'>
                                     <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
                                         <DropdownMenuTrigger asChild>
                                             <Button size="icon" className="rounded-full hover:shadow-md transition-shadow">

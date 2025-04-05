@@ -13,15 +13,15 @@ createRoot(document.getElementById('root')).render(
   <ThemeContextProvider>
     <Toaster richColors />
     <AuthContextProvider>
-      <EditorSettingsContextProvider>
-        <CodeExecutionContextProvider>
-          <UserContextProvider>
+      <UserContextProvider>
+        <EditorSettingsContextProvider>
+          <CodeExecutionContextProvider>
             <AuthInitializer>
               <App />
             </AuthInitializer>
-          </UserContextProvider>
-        </CodeExecutionContextProvider>
-      </EditorSettingsContextProvider>
+          </CodeExecutionContextProvider>
+        </EditorSettingsContextProvider>
+      </UserContextProvider>
     </AuthContextProvider>
   </ThemeContextProvider>
   ,

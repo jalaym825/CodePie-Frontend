@@ -1,10 +1,11 @@
 // CodeExecutionContextProvider.jsx
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useContext } from 'react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { socket } from '../lib/socket';
 import { CodeExecutionContext } from './CodeExecutionContext';
 import { problems } from "../helpers/editorData";
+import { UserContext } from './UserContext';
 
 export default function CodeExecutionContextProvider({ children }) {
     const [code, setCode] = useState('');
@@ -23,10 +24,11 @@ export default function CodeExecutionContextProvider({ children }) {
     const [isTestingAll, setIsTestingAll] = useState(false);
     const [stdin, setStdin] = useState('');
 
+    const { userInfo } = useContext(UserContext);
 
     // Socket effects
     useEffect(() => {
-        socket.emit('register', "94513176-7173-42d7-83ff-e4bbec641744");
+        socket.emit('register', userInfo.id);
         const handleSubmissionResult = (data) => {
             console.log('Submission result:', data);
             
@@ -87,7 +89,7 @@ export default function CodeExecutionContextProvider({ children }) {
             socket.off("submissionResult", handleSubmissionResult);
             socket.off('connect');
         };
-    }, []);
+    }, [userInfo.id]);
 
     const handleFetchProblem = useCallback(async (problemId) => {
         try {

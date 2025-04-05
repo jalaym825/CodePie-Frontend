@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Calendar, Plus, Edit, Trash2, Tag, Award, Check, X, PlusIcon } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import NewContest from '../../components/CreateContest/NewContest';
-import AddProblem from '../../components/CreateContest/AddProblem';
-import { Dialog, DialogContent, DialogTrigger } from '../../components/ui/dialog';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   // State for contests list
-  const [contests, setContests] = useState([
+  const contests = [
     {
       id: 1,
       title: 'Weekly Algorithm Challenge',
@@ -35,51 +33,10 @@ const Dashboard = () => {
         { id: 3, title: 'Binary Tree Traversal', difficultyLevel: 'Easy' }
       ]
     }
-  ]);
-
-  const [selectedContest, setSelectedContest] = useState(null);
-  const [selectedProblem, setSelectedProblem] = useState(null);
-  const [isAddingContest, setIsAddingContest] = useState(false);
-
-  const [timeData, setTimeData] = useState({
-    startHour: "",
-    startMinute: "",
-    startAMPM: "",
-    endHour: "",
-    endMinute: "",
-    endAMPM: ""
-  });
-
-
-
-  const [newContest, setNewContest] = useState({
-    title: '',
-    description: '',
-    startTime: '',
-    endTime: '',
-    isVisible: true
-  });
-  console.log(newContest);
-
-
-
-  const handleCreateContest = () => {
-    const id = contests.length + 1;
-    setContests([...contests, { ...newContest, id, problems: [] }]);
-    setNewContest({
-      title: '',
-      description: '',
-      startTime: '',
-      endTime: '',
-      isVisible: true
-    });
-    setIsAddingContest(false);
-  };
-
-
+  ];
 
   return (
-    <div className="mt-18  bg-gray-50">
+    <div className="mt-18 h-screen bg-gray-50">
 
       {/* Main Content */}
       <main className="container mx-auto py-6 px-4">
@@ -87,27 +44,13 @@ const Dashboard = () => {
 
           {/* Contests Tab */}
           <TabsContent value="contests">
-            <Dialog>
-              <DialogTrigger asChild>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">Contests</h2>
-                  <Button onClick={() => setIsAddingContest(true)}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">Contests</h2>
+                  <Button onClick={() => navigate('/contests/create')}
                     className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
                     <PlusIcon className="w-4 h-4 mr-2" />Create Contest
                   </Button>
-                </div>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[625px]  rounded-xl p-0">
-                <NewContest
-                  newContest={newContest}
-                  setNewContest={setNewContest}
-                  handleCreateContest={handleCreateContest}
-                  setIsAddingContest={setIsAddingContest}
-                  timeData={timeData}
-                  setTimeData={setTimeData}
-                />
-              </DialogContent>
-            </Dialog>
+              </div>
 
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -149,7 +92,7 @@ const Dashboard = () => {
                       <Button
                         variant="outline"
                         className="w-full"
-                        onClick={() => setSelectedContest(contest)}
+                        // onClick={() => setSelectedContest(contest)}
                       >
                         Manage Problems
                       </Button>
