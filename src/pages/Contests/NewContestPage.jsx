@@ -19,7 +19,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Clock, Save } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { UserContext } from '../context/UserContext'
+import { UserContext } from '../../context/UserContext'
 import { toast } from 'sonner'
 
 const NewContestPage = () => {

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,8 +9,10 @@ import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
 
 const ContestDashboard = () => {
-  const [contests, setContests] = React.useState([]);
-  const { getAllContests } = useContext(UserContext);
+  const [contests, setContests] = useState([]);
+  const { getAllContests, userInfo } = useContext(UserContext);
+  console.log(userInfo);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const formatTime = (dateString) => {
@@ -23,18 +25,29 @@ const ContestDashboard = () => {
   };
 
   async function handleGetAllContest() {
+    setLoading(true);
     const res = await getAllContests();
     console.log(res.data);
     if (res.status === 200) {
       setContests(res.data.data);
+      setLoading(false);
     } else {
       toast.error(res.data.message);
+      setLoading(false);
     }
   }
 
   useEffect(() => {
     handleGetAllContest();
   }, [])
+
+  if (loading) {
+    return (
+      <div className='w-full h-[100vh] flex justify-center items-center'>
+        Loading...
+      </div>
+    )
+  }
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -68,18 +81,22 @@ const ContestDashboard = () => {
 
         <div className="flex justify-between w-[90%] items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-800">Contests</h2>
-          <Button onClick={() => navigate('/contests/create')}
-            className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-            <PlusIcon className="w-4 h-4 mr-2" />Create Contest
-          </Button>
+          {
+            userInfo.role === "ADMIN" && (
+              <Button onClick={() => navigate('/contests/create')}
+                className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                <PlusIcon className="w-4 h-4 mr-2" />Create Contest
+              </Button>
+            )
+          }
         </div>
 
         <div className="grid w-[90%] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {contests.map((contest) => {
             const contestStatus = getContestStatus(contest.startTime, contest.endTime);
             return (
-              <Card key={contest.id} className="overflow-hidden hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-                <CardHeader className="p-4 pb-2 flex flex-row items-start justify-between space-y-0">
+              <Card key={contest.id} className="overflow-hidden p-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                <CardHeader className=" pb-2 flex flex-row items-start justify-between space-y-0">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-800 truncate">{contest.title}</h2>
                     <p className="text-gray-500 text-xs">{formatDate(contest.createdAt)}</p>
@@ -87,7 +104,7 @@ const ContestDashboard = () => {
                   <Badge variant={contestStatus.variant}>{contestStatus.status}</Badge>
                 </CardHeader>
 
-                <CardContent className="p-4 pt-2">
+                <CardContent className="p- pt-2">
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{contest.description}</p>
 
                   <div className="flex items-center text-xs text-gray-500 mb-3">
@@ -110,14 +127,36 @@ const ContestDashboard = () => {
                   </div>
                 </CardContent>
 
-                <CardFooter className="p-4 pt-0 flex justify-end">
-                  <Link to={`/contests/${contest.id}`}>
-                    <Button
-                      className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-34 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                      Add Problem
-                      <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
-                  </Link>
+                <CardFooter className="p-0 ">
+                  {userInfo.role === "ADMIN" ? (
+                    <div className='flex justify-between px-2 w-full gap-x-2'>
+                      <Link to={`/contests/${contest.id}/problems`}>
+                        <Button
+                          className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                          Show Problem
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </Link>
+                      <Link to={`/contests/${contest.id}`}>
+                        <Button
+                          className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                          Add Problem
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className='flex justify-end'>
+                      <Link to={`/contests/${contest.id}`}>
+                        <Button
+                          className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                          join Contest
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </Link>
+                    </div>
+                  )
+                  }
                 </CardFooter>
               </Card>
             );
