@@ -9,7 +9,6 @@ const AuthInitializer = ({ children }) => {
     useEffect(() => {
         (async () => {
             try {
-                console.log("okok")
                 const user = await getUserProfile();
                 console.log(user)
                 setLoading(false);

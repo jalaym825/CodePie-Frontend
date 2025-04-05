@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { UserContext } from "./UserContext";
 import getApi from "../helpers/API/getApi";
+import postApi from "../helpers/API/postApi";
 
 export default function UserContextProvider({ children }) {
     const [userInfo, setUserInfo] = useState({});
@@ -20,7 +21,7 @@ export default function UserContextProvider({ children }) {
     }
 
     async function handleLogout() {
-        const res = await getApi("/auth/logout");
+        const res = await postApi("/auth/logout");
         if (res.status === 200) {
             setUserInfo({});
             return true;
