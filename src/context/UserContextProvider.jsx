@@ -56,6 +56,36 @@ export default function UserContextProvider({ children }) {
         }
     }
 
+    async function handlegetProblem(id) {
+        console.log(id)
+        const res = await getApi(`/problems/${id}`);
+        console.log(res);
+        if (res.status === 200) {
+            return ({
+                status: res.status,
+                message: res.data.message,
+                data: res.data
+            })
+        } else {
+            return res.response;
+        }
+    }
+
+    async function handlegetContest(id) {
+        console.log(id)
+        const res = await getApi(`/contests/${id}`);
+        console.log(res);
+        if (res.status === 200) {
+            return ({
+                status: res.status,
+                message: res.data.message,
+                data: res.data
+            })
+        } else {
+            return res.response;
+        }
+    }
+
     async function handleCreateProblem(newContest) {
         const res = await postApi("/problems/", newContest);
         console.log(res);
@@ -78,7 +108,9 @@ export default function UserContextProvider({ children }) {
         logoutUser: handleLogout,
         createContest: handleCreateContest,
         getAllContests: handlegetAllContests,
-        createProblem: handleCreateProblem
+        createProblem: handleCreateProblem,
+        getProblem: handlegetProblem,
+        getContest: handlegetContest
     }
 
     return (
