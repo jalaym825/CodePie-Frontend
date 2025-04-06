@@ -21,7 +21,6 @@ const LeaderboardTable = () => {
         }
         setLoading(false);
     }
-    console.log(leaderBoardData);
     useEffect(() => {
         fetchLeaderboard();
     }, [contestId]);
@@ -94,7 +93,7 @@ const LeaderboardTable = () => {
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <span className="font-medium text-gray-800 mr-3 w-5 text-center">
-                                                {entry.rank ?? '–'}
+                                                {entry.rank || '-'}
                                             </span>
                                             {getRankIcon(entry.rank)}
                                         </div>
