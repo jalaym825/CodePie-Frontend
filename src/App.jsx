@@ -15,6 +15,7 @@ import JoinContest from "./Pages/Contests/JoinContest";
 import ContestLeaderBoard from "./Pages/Contest/ContestLeaderBoard";
 import { useContext } from "react";
 import { UserContext } from "./context/UserContext";
+import LoadingScreen from "./components/ui/LoadingScreen";
 
 function App() {
   const { userInfo } = useContext(UserContext);
