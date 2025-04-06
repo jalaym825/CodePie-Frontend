@@ -3,22 +3,22 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, Trophy, BarChart2, List, MessageSquare, CheckCircle } from 'lucide-react';
+import { ChevronRight, Trophy, BarChart2, List, MessageSquare, CheckCircle, PlusIcon } from 'lucide-react';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { Link, useNavigate, useParams } from 'react-router';
+import { UserContext } from '../../context/UserContext';
 
 const ContestInfo = () => {
     const { contestId } = useParams();
-
+    const { userInfo } = useContext(UserContext);
     const [loading, setLoading] = useState(true);
-
     const { contest, fetchContest } = useContext(CodeExecutionContext);
 
     const navigate = useNavigate();
 
     async function handleFetchContest() {
         if (!contestId) return;
-        const res = await fetchContest(contestId);
+        const res = await fetchContest(contestId, userInfo.id);
         if (res.status === 200) {
             setLoading(false);
         }
@@ -28,7 +28,13 @@ const ContestInfo = () => {
         handleFetchContest();
     }, []);
 
-    if(loading) {
+    const hasContestStarted = (startTime) => {
+        const currentTime = new Date();
+        const contestStartTime = new Date(startTime);
+        return currentTime >= contestStartTime;
+    };
+
+    if (loading) {
         return <div className="flex justify-center items-center h-screen">Loading...</div>;
     }
 
@@ -46,11 +52,24 @@ const ContestInfo = () => {
                 {/* Main content area */}
                 <div className="w-full md:w-3/4">
                     {/* Contest title section */}
-                    <div className="border-b pb-4 mb-6">
-                        <h1 className="text-2xl font-bold text-gray-800">{contest.title}</h1>
-                        <div className="mt-2 text-sm">
-                            {contest.description}
+                    <div className="border-b flex items-center justify-between pb-4 mb-6">
+                        <div className='flex flex-col'>
+                            <h1 className="text-2xl font-bold text-gray-800">{contest.title}</h1>
+                            <div className="mt-2 text-sm">
+                                {contest.description}
+                            </div>
                         </div>
+                        {
+                            hasContestStarted(contest.startTime) === false && userInfo.role === 'ADMIN' && (
+                                <div>
+                                    <Button onClick={() => navigate(`/contests/${contestId}/add-problems`)}
+                                        className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                                        <PlusIcon className="w-4 h-4 mr-2" />
+                                        Add Problem
+                                    </Button>
+                                </div>
+                            )
+                        }
                     </div>
 
                     {/* Challenges section */}
@@ -82,8 +101,8 @@ const ContestInfo = () => {
                                             <button className="p-2 text-gray-400 hover:text-gray-600">
                                                 <List className="h-5 w-5" />
                                             </button>
-                                            <Button 
-                                                variant="outline" 
+                                            <Button
+                                                variant="outline"
                                                 className="bg-blue-100 hover:bg-blue-200 text-blue-600 hover:text-blue-600 border-2 border-blue-200"
                                                 onClick={() => navigate(`/contests/${contestId}/problems/${problem.id}`)}
                                             >

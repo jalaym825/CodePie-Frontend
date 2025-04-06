@@ -71,9 +71,9 @@ export default function UserContextProvider({ children }) {
         }
     }
 
-    async function handlegetContest(id) {
-        console.log(id)
-        const res = await getApi(`/contests/${id}`);
+    async function handlegetContest(id, userId) {
+        // console.log(id, userId)
+        const res = await postApi(`/contests/${id}`, { userId: userId });
         console.log(res);
         if (res.status === 200) {
             return ({

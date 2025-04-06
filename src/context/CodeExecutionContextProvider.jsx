@@ -139,9 +139,9 @@ export default function CodeExecutionContextProvider({ children }) {
         }
     }, []);
 
-    const handleFetchContest = useCallback(async (contestId) => {
+    const handleFetchContest = useCallback(async (contestId, userId) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, { userId: userId }, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" }
             });

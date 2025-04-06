@@ -23,7 +23,8 @@ function App() {
           <Route path="/contests">
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
-            <Route path="/contests/:contestId/problems" element={<AddProblem />} />            //Competition details page
+            <Route path="/contests/:contestId/add-problems" element={<AddProblem />} />
+            <Route path="/contests/:contestId/problems" element={<EachContestProblems />} />          //Competition details page
             <Route path="/contests/:contestId" element={<ContestInfo />} />            //Competition details page
             <Route path="/contests/:contestId/join" element={<JoinContest />} />      //Competition details page
           </Route>
@@ -31,7 +32,7 @@ function App() {
         <Route path="/contests">
           <Route path="/contests/:contestId/problems/:problemId" element={<CodeEditor />} />  //Problem details page inside competition
         </Route>
-        <Route path="/problems" >
+        <Route path="/problems">
           <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
           <Route path="/problems/create" element={<AddProblem />} />
           <Route path="/problems/:id" element={<CodeEditor />} />             //Problem details page

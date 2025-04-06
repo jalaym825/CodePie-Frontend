@@ -71,7 +71,7 @@ const MainHeader = () => {
                                             <div>
                                                 <DropdownMenuItem asChild>
                                                     <Link
-                                                        to="/dashboard"
+                                                        to="/contests"
                                                         className="flex h-10 w-full items-center px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
                                                         onClick={() => setIsDropdownOpen(false)}
                                                     >
