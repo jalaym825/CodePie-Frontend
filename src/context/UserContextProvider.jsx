@@ -22,6 +22,7 @@ export default function UserContextProvider({ children }) {
 
     async function handleLogout() {
         const res = await postApi("/auth/logout");
+        console.log(res);
         if (res.status === 200) {
             setUserInfo({});
             return true;
@@ -29,7 +30,6 @@ export default function UserContextProvider({ children }) {
         return false;
     }
 
-<<<<<<< Updated upstream
     async function handleCreateContest(newContest) {
         const res = await postApi("/contests/", newContest);
         console.log(res);
@@ -110,18 +110,22 @@ export default function UserContextProvider({ children }) {
             })
         } else {
             return res.response;
-=======
-    async function handleCreateContest() {
-        const res = await postApi("/contests/",);
-        console.log(res);
-        if (res.status === 200) {
-            return res.data;
-        } else {
-            return false;
->>>>>>> Stashed changes
         }
     }
 
+    async function handleContestLeaderBoard(id) {
+        const res = await getApi(`/contests/${id}/leaderboard`);
+        console.log(res);
+        if (res.status === 200) {
+            return ({
+                status: res.status,
+                message: res.data,
+                data: res.data.data[0]
+            })
+        } else {
+            return res.response;
+        }
+    }
 
 
     const ctxValue = {
@@ -129,16 +133,13 @@ export default function UserContextProvider({ children }) {
         setUserInfo: setUserData,
         getUserProfile: handleGetUserProfile,
         logoutUser: handleLogout,
-<<<<<<< Updated upstream
         createContest: handleCreateContest,
         getAllContests: handlegetAllContests,
         createProblem: handleCreateProblem,
         getProblem: handlegetProblem,
         getContest: handlegetContest,
-        joinContest: handleContestJoin
-=======
-        createContest: handleCreateContest
->>>>>>> Stashed changes
+        joinContest: handleContestJoin,
+        contestleaderBoard: handleContestLeaderBoard
     }
 
     return (

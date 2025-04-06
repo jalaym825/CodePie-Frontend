@@ -57,6 +57,7 @@ import ContestInfo from "./pages/Contest/ContestInfo";
 import AddProblem from "./Pages/Problems/AddProblemsPage"
 import EachContestProblems from "./Pages/Problems/EachContestProblems";
 import JoinContest from "./Pages/Contests/JoinContest";
+import ContestLeaderBoard from "./Pages/Contest/ContestLeaderBoard";
 
 function App() {
   return (
@@ -69,7 +70,8 @@ function App() {
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
             <Route path="/contests/:contestId/add-problems" element={<AddProblem />} />
-            <Route path="/contests/:contestId/problems" element={<EachContestProblems />} />          //Competition details page
+            <Route path="/contests/:contestId/problems" element={<EachContestProblems />} />
+            <Route path="/contests/:contestId/leaderboard" element={<ContestLeaderBoard />} />        //Competition details page
             <Route path="/contests/:contestId" element={<ContestInfo />} />            //Competition details page
             <Route path="/contests/:contestId/join" element={<JoinContest />} />      //Competition details page
           </Route>

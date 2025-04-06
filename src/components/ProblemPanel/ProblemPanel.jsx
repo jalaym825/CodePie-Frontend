@@ -49,10 +49,6 @@ const ProblemPanel = ({ className }) => {
                                     <AlignLeft className="mr-1 h-4 w-4" />
                                     Description
                                 </TabsTrigger>
-                                <TabsTrigger value="examples" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800">
-                                    <Code2 className="mr-1 h-4 w-4" />
-                                    Examples
-                                </TabsTrigger>
                                 <TabsTrigger value="tests" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800">
                                     <TestTube className="mr-1 h-4 w-4" />
                                     Test Cases
@@ -64,11 +60,6 @@ const ProblemPanel = ({ className }) => {
                             <TabsContent value="description" className="mt-0 h-full overflow-auto flex-1 min-h-0">
                                 <ProblemDescription />
                             </TabsContent>
-
-                            <TabsContent value="examples" className="mt-0 h-full overflow-auto flex-1 min-h-0">
-                                <ProblemExamples />
-                            </TabsContent>
-
                             <TabsContent value="tests" className="mt-0 h-full overflow-auto flex-1 min-h-0">
                                 <ProblemTestCases />
                             </TabsContent>
