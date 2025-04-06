@@ -131,8 +131,9 @@ export default function UserContextProvider({ children }) {
         if (res.status === 200) {
             return ({
                 status: res.status,
-                message: res.data,
-                data: res.data.data[0]
+                message: res.data.message,
+                data: res.data.data
+
             })
         } else {
             return res.response;
