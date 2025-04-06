@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 import React, { useContext, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,19 +8,6 @@ import { UserContext } from '../../context/UserContext';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router';
-=======
-import React, { useContext, useEffect, useState } from 'react';
-import { Calendar, Plus, Edit, Trash2, Tag, Award, Check, X, PlusIcon } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import NewContest from '../../components/CreateContest/NewContest';
-import AddProblem from '../../components/CreateContest/AddProblem';
-import { Dialog, DialogContent, DialogTrigger } from '../../components/ui/dialog';
-import { Link } from 'react-router';
-import { UserContext } from '../../context/UserContext';
->>>>>>> Stashed changes
 
 const ContestDashboard = () => {
   const [contests, setContests] = useState([]);
@@ -30,55 +16,12 @@ const ContestDashboard = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-<<<<<<< Updated upstream
   const formatTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
-=======
-  const [selectedContest, setSelectedContest] = useState(null);
-  const [isAddingContest, setIsAddingContest] = useState(false);
-
-  const { createContest } = useContext(UserContext)
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-
-
-
-  const [newContest, setNewContest] = useState({
-    title: '',
-    description: '',
-    startTime: '',
-    endTime: '',
-    isVisible: true
-  });
-  console.log(newContest);
-
-  async function handleCreateContests() {
-    const res = await createContest();
-    if (res) {
-      setContests([...contests, res]);
-    }
-  }
-
-  useEffect(() => {
-    handleCreateContests();
-  }, [newContest, startTime, endTime])
-
-
-
-  const handleCreateContest = () => {
-    const id = contests.length + 1;
-    setContests([...contests, { ...newContest, id, problems: [] }]);
-    setNewContest({
-      title: '',
-      description: '',
-      startTime: '',
-      endTime: '',
-      isVisible: true
->>>>>>> Stashed changes
     });
   };
 
@@ -149,7 +92,6 @@ const ContestDashboard = () => {
           }
         </div>
 
-<<<<<<< Updated upstream
         <div className="grid w-[90%] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {contests.map((contest) => {
             const contestStatus = getContestStatus(contest.startTime, contest.endTime);
@@ -176,29 +118,6 @@ const ContestDashboard = () => {
                     </TooltipProvider>
                   </div>
                 </CardHeader>
-=======
-          {/* Contests Tab */}
-          <TabsContent value="contests">
-            <Dialog>
-              <DialogTrigger asChild>
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-2xl font-bold text-gray-800">Contests</h2>
-                  <Button onClick={() => setIsAddingContest(true)}
-                    className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                    <PlusIcon className="w-4 h-4 mr-2" />Create Contest
-                  </Button>
-                </div>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[625px]  rounded-xl p-0">
-                <NewContest
-                  newContest={newContest}
-                  setNewContest={setNewContest}
-                  handleCreateContest={handleCreateContest}
-                  setIsAddingContest={setIsAddingContest}
-                />
-              </DialogContent>
-            </Dialog>
->>>>>>> Stashed changes
 
                 <CardContent className="p- pt-2">
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{contest.description}</p>
