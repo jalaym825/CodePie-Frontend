@@ -6,11 +6,8 @@ export const UserContext = createContext({
     getUserProfile: () => { },
     logoutUser: () => { },
     createContest: () => { },
-<<<<<<< Updated upstream
     createProblem: () => { },
     getProblem: () => { },
     getContest: () => { },
     joinContest: () => { },
-=======
->>>>>>> Stashed changes
 })
