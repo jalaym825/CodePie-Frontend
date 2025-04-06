@@ -141,9 +141,9 @@ export default function CodeExecutionContextProvider({ children }) {
         }
     }, []);
 
-    const handleFetchContest = useCallback(async (contestId, userId) => {
+    const handleFetchContest = useCallback(async (contestId) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, { userId: userId }, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, { userId: userInfo.id }, {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             });
@@ -157,6 +157,7 @@ export default function CodeExecutionContextProvider({ children }) {
 
             return {
                 status: response.status,
+                isJoined: response.data.data.isJoined,
             };
         } catch (error) {
             console.error('Error fetching contest:', error);

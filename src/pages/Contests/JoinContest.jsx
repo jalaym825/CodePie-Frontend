@@ -3,7 +3,7 @@ import { Calendar, Clock, Users, FileText, Trophy, ArrowRight } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { UserContext } from '../../context/UserContext';
 import { toast } from 'sonner';
 
@@ -135,7 +135,7 @@ const JoinContest = () => {
 
             <div className="z-10 w-full max-w-5xl px-4 space-y-8">
                 {/* Header Card with Gradient */}
-                <Card className="overflow-hidden border-none shadow-xl">
+                <Card className="overflow-hidden border-none shadow-xl p-0">
                     <div className={`bg-gradient-to-r ${getGradientClass()} p-6 text-white`}>
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>

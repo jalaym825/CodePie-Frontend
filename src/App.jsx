@@ -80,7 +80,7 @@ function App() {
           </Route>
         </Route>
         <Route path="/contests">
-          <Route path="/contests/:contestId/problems/:problemId" element={userInfo.id.length === 0 ? <LoadingScreen /> : <CodeEditor />} />  //Problem details page inside competition
+          <Route path="/contests/:contestId/problems/:problemId" element={userInfo?.id?.length === 0 ? <LoadingScreen /> : <CodeEditor />} />  //Problem details page inside competition
         </Route>
         <Route path="/problems">
           <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page

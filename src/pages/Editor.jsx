@@ -70,7 +70,12 @@ const CodeEditor = () => {
 
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
-            setLoading(false);
+            if(!res.isJoined){
+                toast.error("You have not joined this contest yet. Please join the contest to access the problem.");
+                navigate(`/contests/${contestId}/join`);
+            } else {
+                setLoading(false);
+            }
         }
     }
 

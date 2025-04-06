@@ -18,7 +18,7 @@ const ContestInfo = () => {
 
     async function handleFetchContest() {
         if (!contestId) return;
-        const res = await fetchContest(contestId, userInfo.id);
+        const res = await fetchContest(contestId);
         if (res.status === 200) {
             setLoading(false);
         }
