@@ -9,4 +9,5 @@ export const UserContext = createContext({
     createProblem: () => { },
     getProblem: () => { },
     getContest: () => { },
+    joinContest: () => { },
 })

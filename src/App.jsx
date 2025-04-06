@@ -23,7 +23,7 @@ function App() {
           <Route path="/contests">
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
-            <Route path="/contests/addProblem" element={<AddProblem />} />            //Competition details page
+            <Route path="/contests/:contestId/problems" element={<AddProblem />} />            //Competition details page
             <Route path="/contests/:contestId" element={<ContestInfo />} />            //Competition details page
             <Route path="/contests/:contestId/join" element={<JoinContest />} />      //Competition details page
           </Route>

@@ -5,13 +5,15 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { useParams } from 'react-router';
 import { UserContext } from '../../context/UserContext';
+import { toast } from 'sonner';
 
 const JoinContest = () => {
     const { contestId } = useParams();
-    const { getContest } = useContext(UserContext);
+    const { getContest, joinContest } = useContext(UserContext);
     const [timeStatus, setTimeStatus] = useState('not-started');
     const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [contestData, setContestData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     async function handleGetContest() {
         const res = await getContest(contestId);
@@ -29,20 +31,19 @@ const JoinContest = () => {
         handleGetContest();
     }, [contestId]);
 
-    const contest = {
-        createdAt: "2025-04-05T10:59:18.688Z",
-        description: "wjwb;ef",
-        endTime: "2025-04-05T16:04:00.000Z",
-        id: "a2d266fc-9f90-4bfb-aba6-3bf1de6e1919",
-        isVisible: true,
-        startTime: "2025-04-05T11:03:00.000Z",
-        title: "Mit",
-        updatedAt: "2025-04-05T10:59:18.688Z",
-        _count: {
-            problems: 1,
-            participations: 0
+    async function handleJoinContest() {
+        console.log("okok")
+        const res = await joinContest(contestId);
+        console.log(res.data.message);
+        if (res.status === 201) {
+            toast.success(res.message);
+            Navigate(`/contests/${contestId}/`)
+            setLoading(false);
+        } else {
+            toast.error(res.data.message);
+            setLoading(false);
         }
-    };
+    }
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -56,8 +57,8 @@ const JoinContest = () => {
     };
 
     const getContestDuration = () => {
-        const start = new Date(contest.startTime);
-        const end = new Date(contest.endTime);
+        const start = new Date(contestData?.startTime);
+        const end = new Date(contestData?.endTime);
         const durationMs = end - start;
 
         const days = Math.floor(durationMs / (1000 * 60 * 60 * 24));
@@ -70,8 +71,8 @@ const JoinContest = () => {
     useEffect(() => {
         const updateTime = () => {
             const now = new Date();
-            const startTime = new Date(contest.startTime);
-            const endTime = new Date(contest.endTime);
+            const startTime = new Date(contestData?.startTime);
+            const endTime = new Date(contestData?.endTime);
 
             let targetTime;
             if (now < startTime) {
@@ -100,7 +101,7 @@ const JoinContest = () => {
         const interval = setInterval(updateTime, 1000);
 
         return () => clearInterval(interval);
-    }, [contest.startTime, contest.endTime]);
+    }, [contestData?.startTime, contestData?.endTime]);
 
     const contestDuration = getContestDuration();
 
@@ -136,8 +137,8 @@ const JoinContest = () => {
                     <div className={`bg-gradient-to-r ${getGradientClass()} p-6 text-white`}>
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                             <div>
-                                <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">{contest.title}</h1>
-                                <p className="opacity-90">{contest.description}</p>
+                                <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight">{contestData?.title}</h1>
+                                <p className="opacity-90">{contestData?.description}</p>
                             </div>
                             <Badge className="bg-white text-gray-800 text-sm px-3 py-1 rounded-full uppercase font-semibold">
                                 {timeStatus === 'not-started' && 'Not Started'}
@@ -157,22 +158,21 @@ const JoinContest = () => {
                                     <span className="font-semibold text-gray-700">Contest Duration:</span>
                                 </div>
                                 <div className="flex gap-3 text-center">
-                                    <div className="bg-white px-3 py-2 rounded-md shadow-sm">
+                                    <div className="bg-white px-3 py-2 h-18 w-18 flex flex-col justify-center rounded-md shadow-sm">
                                         <div className="text-xl font-bold text-blue-600">{contestDuration.days}</div>
                                         <div className="text-xs text-gray-500">DAYS</div>
                                     </div>
-                                    <div className="bg-white px-3 py-2 rounded-md shadow-sm">
+                                    <div className="bg-white px-3 py-2 h-18 w-18 flex flex-col justify-center rounded-md shadow-sm">
                                         <div className="text-xl font-bold text-blue-600">{contestDuration.hours}</div>
                                         <div className="text-xs text-gray-500">HOURS</div>
                                     </div>
-                                    <div className="bg-white px-3 py-2 rounded-md shadow-sm">
+                                    <div className="bg-white px-3 py-2 h-18 w-18 flex flex-col justify-center rounded-md shadow-sm">
                                         <div className="text-xl font-bold text-blue-600">{contestDuration.minutes}</div>
                                         <div className="text-xs text-gray-500">MIN</div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Countdown Timer */}
                             {timeStatus !== 'completed' && (
                                 <div>
                                     <h3 className="text-center font-medium text-gray-500 mb-3">{getStatusText()}</h3>
@@ -200,13 +200,11 @@ const JoinContest = () => {
                     </div>
                 </Card>
 
-                {/* Contest Details Card */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {/* Left Side: Contest Info */}
                     <Card className="md:col-span-2 shadow-lg">
                         <CardHeader>
                             <CardTitle className="text-xl">Contest Information</CardTitle>
-                            <CardDescription>ID: {contest.id.substring(0, 8)}...</CardDescription>
+                            <CardDescription>ID: {contestData?.id.substring(0, 8)}...</CardDescription>
                         </CardHeader>
 
                         <CardContent className="space-y-6">
@@ -215,27 +213,13 @@ const JoinContest = () => {
                                     <div className="flex items-center gap-2">
                                         <Calendar className="text-blue-500" size={18} />
                                         <span className="font-medium">Start Time:</span>
-                                        <span>{formatDate(contest.startTime)}</span>
+                                        <span>{formatDate(contestData?.startTime)}</span>
                                     </div>
 
                                     <div className="flex items-center gap-2">
                                         <Calendar className="text-blue-500" size={18} />
                                         <span className="font-medium">End Time:</span>
-                                        <span>{formatDate(contest.endTime)}</span>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center gap-2">
-                                        <FileText className="text-blue-500" size={18} />
-                                        <span className="font-medium">Problems:</span>
-                                        <span>{contest._count.problems}</span>
-                                    </div>
-
-                                    <div className="flex items-center gap-2">
-                                        <Users className="text-blue-500" size={18} />
-                                        <span className="font-medium">Participants:</span>
-                                        <span>{contest._count.participations}</span>
+                                        <span>{formatDate(contestData?.endTime)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -260,13 +244,13 @@ const JoinContest = () => {
 
                         <CardFooter className="flex flex-col gap-3">
                             {timeStatus === 'not-started' && (
-                                <Button className="w-full bg-blue-600 hover:bg-blue-700">
-                                    Set Reminder
+                                <Button className="w-full bg-blue-500 opacity-70 hover:bg-blue-700">
+                                    Contest Not Started
                                 </Button>
                             )}
 
                             {timeStatus === 'in-progress' && (
-                                <Button className="w-full bg-green-600 hover:bg-green-700">
+                                <Button   onClick={handleJoinContest} className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}>
                                     Join Contest Now
                                     <ArrowRight className="ml-2 h-4 w-4" />
                                 </Button>
@@ -277,10 +261,6 @@ const JoinContest = () => {
                                     View Results
                                 </Button>
                             )}
-
-                            <Button variant="outline" className="w-full">
-                                View Problems ({contest._count.problems})
-                            </Button>
                         </CardFooter>
                     </Card>
                 </div>

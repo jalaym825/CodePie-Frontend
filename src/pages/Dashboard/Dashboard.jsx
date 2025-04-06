@@ -129,15 +129,15 @@ const ContestDashboard = () => {
 
                 <CardFooter className="p-0 ">
                   {userInfo.role === "ADMIN" ? (
-                    <div className='flex justify-between px-2 w-full gap-x-2'>
-                      <Link to={`/contests/${contest.id}/problems`}>
+                    <div className='flex justify-end px-2 w-full gap-x-2'>
+                      {/* <Link to={`/contests/${contest.id}/problems`}>
                         <Button
                           className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
                           Show Problem
                           <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
-                      </Link>
-                      <Link to={`/contests/${contest.id}`}>
+                      </Link> */}
+                      <Link to={`/contests/${contest.id}/problems`}>
                         <Button
                           className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
                           Add Problem
@@ -147,7 +147,7 @@ const ContestDashboard = () => {
                     </div>
                   ) : (
                     <div className='flex justify-end'>
-                      <Link to={`/contests/${contest.id}`}>
+                      <Link to={`/contests/${contest.id}/join`}>
                         <Button
                           className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
                           join Contest

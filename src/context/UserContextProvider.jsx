@@ -99,6 +99,19 @@ export default function UserContextProvider({ children }) {
         }
     }
 
+    async function handleContestJoin(id) {
+        const res = await postApi(`/contests/${id}/join`);
+        console.log(res);
+        if (res.status === 201) {
+            return ({
+                status: res.status,
+                message: res.data
+            })
+        } else {
+            return res.response;
+        }
+    }
+
 
 
     const ctxValue = {
@@ -110,7 +123,8 @@ export default function UserContextProvider({ children }) {
         getAllContests: handlegetAllContests,
         createProblem: handleCreateProblem,
         getProblem: handlegetProblem,
-        getContest: handlegetContest
+        getContest: handlegetContest,
+        joinContest: handleContestJoin
     }
 
     return (
