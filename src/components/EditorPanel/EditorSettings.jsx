@@ -29,7 +29,7 @@ const EditorSettings = () => {
 
     return (
         <Drawer open={true} onOpenChange={(open) => !open && setShowSettings(false)}>
-            <DrawerContent className="bg-white">
+            <DrawerContent className="bg-white dark:bg-gray-900 border dark:border-gray-700">
                 <div className="mx-auto w-full max-w-4xl">
                     <DrawerHeader>
                         <div className="flex items-center">

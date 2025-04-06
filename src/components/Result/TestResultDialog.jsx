@@ -10,21 +10,21 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
     const getStatusForCase = (id) => testResults.find((res) => res.testCaseId === id);
     
     // Calculate overall submission result
-    const totalTests = testCases.length;
+    const totalTests = testCases.filter(testCase => testCase.isHidden).length;
     const completedTests = testResults.length;
-    const passedTests = testResults.filter(res => res.status?.description === "Accepted").length;
+    const passedTests = testResults.filter(res => res?.status === "ACCEPTED").length;
     
     const isSubmissionComplete = completedTests === totalTests && totalTests > 0;
     const isSubmissionSuccessful = passedTests === totalTests && totalTests > 0;
     
     const getStatusColor = (status) => {
         if (!status) return "bg-gray-100";
-        switch (status.description) {
-            case "Accepted": return "bg-green-100 border-green-300";
-            case "Wrong Answer": return "bg-red-100 border-red-300";
-            case "Time Limit Exceeded": return "bg-yellow-100 border-yellow-300";
-            case "Compilation Error": return "bg-orange-100 border-orange-300";
-            case "Runtime Error": return "bg-pink-100 border-pink-300";
+        switch (status) {
+            case ("Accepted").toUpperCase() : return "bg-green-100 border-green-300";
+            case ("Wrong Answer").toUpperCase(): return "bg-red-100 border-red-300";
+            case ("Time Limit Exceeded").toUpperCase(): return "bg-yellow-100 border-yellow-300";
+            case ("Compilation Error").toUpperCase(): return "bg-orange-100 border-orange-300";
+            case ("Runtime Error").toUpperCase(): return "bg-pink-100 border-pink-300";
             default: return "bg-gray-100 border-gray-300";
         }
     };
@@ -32,16 +32,16 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
     const getStatusIcon = (status) => {
         if (!status) return <Loader2 className="animate-spin text-gray-400" size={18} />;
         
-        switch (status.description) {
-            case "Accepted":
+        switch (status) {
+            case "ACCEPTED":
                 return <CheckCircle className="text-green-600" size={18} />;
-            case "Wrong Answer":
+            case "WRONG_ANSWER":
                 return <XCircle className="text-red-600" size={18} />;
-            case "Time Limit Exceeded":
+            case "TIME_LIMIT_EXCEEDED":
                 return <Clock className="text-yellow-600" size={18} />;
-            case "Compilation Error":
+            case "COMPILATION_ERROR":
                 return <Code className="text-orange-600" size={18} />;
-            case "Runtime Error":
+            case "RUNTIME_ERROR":
                 return <AlertCircle className="text-pink-600" size={18} />;
             default:
                 return <AlertCircle className="text-gray-600" size={18} />;
@@ -50,12 +50,12 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="w-full md:max-w-[50vw] p-6">
+            <DialogContent className="w-full md:max-w-[55vw] p-6">
                 <DialogHeader>
                     <DialogTitle className="text-xl">
                         Test Results
                         {isSubmissionComplete && (
-                            <span className={`ml-3 text-sm py-1 px-3 rounded-full ${isSubmissionSuccessful ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                            <span className={`ml-3 mb-1 text-sm py-1 px-3 rounded-full ${isSubmissionSuccessful ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                 {isSubmissionSuccessful ? "All Tests Passed" : "Some Tests Failed"}
                             </span>
                         )}
@@ -74,7 +74,7 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500">Passed</span>
-                            <span className="font-medium text-blue-700">{passedTests}/{totalTests} tests</span>
+                            <span className="font-medium text-blue-700">{passedTests}/{totalTests} Hidden tests</span>
                         </div>
                         <div className="flex flex-col">
                             <span className="text-sm text-gray-500">Progress</span>
@@ -90,20 +90,23 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                 
                 {/* Test Cases Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-2 p-[4px]">
-                    {testCases.map((testCase, index) => {
+                    {testCases.filter(testCase => testCase.isHidden).map((testCase, index) => {
                         const result = getStatusForCase(testCase.id);
                         return (
                             <div
                                 key={testCase.id}
                                 className={`border rounded-xl p-3 shadow-sm cursor-pointer transition-all hover:shadow-md 
                                 ${getStatusColor(result?.status)} ${selectedCase === testCase.id ? "ring-2 ring-blue-400" : ""}`}
-                                onClick={() => setSelectedCase(testCase.id === selectedCase ? null : testCase.id)}
+                                onClick={() => {
+                                    if(testCase.isHidden) return;
+                                    setSelectedCase(testCase.id === selectedCase ? null : testCase.id)
+                                }}
                             >
                                 <div className="flex justify-between">
                                     <div className="font-medium">Test Case {index + 1}</div>
                                     <div className="flex items-center">
                                         {testCase.isHidden && 
-                                            <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full mr-1">
+                                            <span className="text-xs bg-white text-blue-700 font-[600] px-2 py-1 rounded-lg mr-1">
                                                 Hidden
                                             </span>
                                         }
@@ -113,7 +116,7 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                                 <div className="flex items-center gap-2 mt-2">
                                     {getStatusIcon(result?.status)}
                                     <span className="text-sm text-gray-700 truncate">
-                                        {result ? result.status.description : "Pending"}
+                                        {result ? result.status : "Pending"}
                                     </span>
                                 </div>
                                 
@@ -175,18 +178,19 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                     </div>
                 )}
                 
-                <DialogFooter className="">
+                <DialogFooter className="flex">
                     <Button 
                         variant="outline" 
+                        className="flex-1"
                         onClick={() => onOpenChange(false)}
                     >
                         Close
                     </Button>
                     {isSubmissionComplete && isSubmissionSuccessful && (
                         <Button 
-                            className="bg-green-600 hover:bg-green-700"
+                            className="flex-1 bg-green-600 hover:bg-green-700"
                         >
-                            Next Problem
+                            View Leaderboard
                         </Button>
                     )}
                 </DialogFooter>

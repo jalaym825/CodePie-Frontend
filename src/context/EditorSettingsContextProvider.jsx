@@ -85,7 +85,7 @@ export default function EditorSettingsContextProvider({ children }) {
     const formatCode = useCallback(() => {
         if (editorRef.current) {
             editorRef.current.getAction('editor.action.formatDocument').run();
-            toast.success('Code formatted');
+            // toast.success('Code formatted');
         }
     }, []);
 

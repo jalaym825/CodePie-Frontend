@@ -3,7 +3,7 @@ import { Calendar, Clock, Users, FileText, Trophy, ArrowRight } from 'lucide-rea
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { UserContext } from '../../context/UserContext';
 import { toast } from 'sonner';
 
@@ -14,6 +14,8 @@ const JoinContest = () => {
     const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [contestData, setContestData] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const navigate = useNavigate();
 
     async function handleGetContest() {
         const res = await getContest(contestId);
@@ -34,10 +36,10 @@ const JoinContest = () => {
     async function handleJoinContest() {
         console.log("okok")
         const res = await joinContest(contestId);
-        console.log(res.data.message);
+        console.log(res.data);
         if (res.status === 201) {
             toast.success(res.message);
-            Navigate(`/contests/${contestId}/`)
+            navigate(`/contests/${contestId}/`)
             setLoading(false);
         } else {
             toast.error(res.data.message);

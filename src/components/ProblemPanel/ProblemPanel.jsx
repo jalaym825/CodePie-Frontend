@@ -22,14 +22,14 @@ const ProblemPanel = ({ className }) => {
     return (
         <div className={`${className} rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden flex flex-col h-full`}>
             <Card className="flex flex-col bg-white dark:bg-gray-800 border-0 text-gray-800 dark:text-gray-100 h-full rounded-none p-0 gap-0">
-                <CardHeader className="py-2 px-3 bg-gray-50 dark:bg-gray-900">
+                <CardHeader className="py-2 px-3 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
                     <div className="flex items-center justify-between">
                         <CardTitle className="flex items-center text-sm font-medium">
                             <Book className="h-4 w-4 text-blue-600 dark:text-blue-400 mr-2" />
                             <div>
                                 <div className="flex items-center gap-1 text-md font-bold">
                                     {selectedProblem.title}
-                                    <Badge className="ml-1 bg-blue-600 dark:bg-blue-700 text-xs">
+                                    <Badge className="ml-1 bg-blue-600 dark:bg-blue-700 dark:text-white text-xs">
                                         {selectedProblem.difficultyLevel}
                                     </Badge>
                                 </div>
@@ -41,9 +41,9 @@ const ProblemPanel = ({ className }) => {
                     </div>
                 </CardHeader>
 
-                <CardContent className="flex-grow p-0 overflow-auto">
+                <CardContent className="flex-grow overflow-hidden p-0 min-h-0 h-full">
                     <Tabs defaultValue="description" className="h-full flex flex-col">
-                        <div className='p-2 bg-gray-50 dark:bg-gray-900 border-b border-t border-gray-200 dark:border-gray-700'>
+                        <div className='p-2 bg-gray-50 dark:bg-gray-900 border-b border-t border-gray-200 dark:border-gray-700 flex-shrink-0'>
                             <TabsList className="bg-gray-50 dark:bg-gray-900 w-full justify-start rounded-none">
                                 <TabsTrigger value="description" className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800">
                                     <AlignLeft className="mr-1 h-4 w-4" />
@@ -60,23 +60,23 @@ const ProblemPanel = ({ className }) => {
                             </TabsList>
                         </div>
 
-                        <div className="overflow-auto flex-1 dark:bg-gray-800">
-                            <TabsContent value="description" className="mt-0 h-full overflow-auto">
+                        <div className="overflow-auto flex-1 flex flex-col h-full min-h-0 dark:bg-gray-800">
+                            <TabsContent value="description" className="mt-0 h-full overflow-auto flex-1 min-h-0">
                                 <ProblemDescription />
                             </TabsContent>
 
-                            <TabsContent value="examples" className="mt-0 h-full">
+                            <TabsContent value="examples" className="mt-0 h-full overflow-auto flex-1 min-h-0">
                                 <ProblemExamples />
                             </TabsContent>
 
-                            <TabsContent value="tests" className="mt-0 h-full">
+                            <TabsContent value="tests" className="mt-0 h-full overflow-auto flex-1 min-h-0">
                                 <ProblemTestCases />
                             </TabsContent>
                         </div>
                     </Tabs>
                 </CardContent>
 
-                <CardFooter className="justify-end py-2 px-3 bg-gray-50 dark:bg-gray-900 border-t-1 border-gray-200 dark:border-gray-700">
+                <CardFooter className="justify-end py-2 px-3 bg-gray-50 dark:bg-gray-900 border-t-1 border-gray-200 dark:border-gray-700 flex-shrink-0">
                     <Button
                         onClick={submitSolution}
                         disabled={isTestingAll}

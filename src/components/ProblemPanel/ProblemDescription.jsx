@@ -1,3 +1,4 @@
+// ProblemDescription.jsx
 import React, { useContext } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -8,7 +9,7 @@ const ProblemDescription = () => {
     const { selectedProblem } = useContext(CodeExecutionContext);
 
     return (
-        <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 p-2">
+        <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200 p-2 h-full overflow-auto">
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{

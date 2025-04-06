@@ -50,24 +50,26 @@ export default function CodeExecutionContextProvider({ children }) {
             let statusColor = 'bg-gray-500';
             let statusMessage = data.status.description;
 
-            if (data.status.id === 3) {
+            if(data.testCaseId === "") return; // Ignore empty test case ID
+
+            if (data.status === "ACCEPTED") {
                 statusColor = 'bg-green-500';
                 statusMessage = 'Success';
                 toast.success('Code executed successfully');
-            } else if (data.status.id === 4) {
+            } else if (data.status === "WRONG_ANSWER") {
                 statusColor = 'bg-yellow-500';
                 statusMessage = 'Wrong Answer';
                 toast.warning('Wrong answer');
-            } else if (data.status.id === 5) {
+            } else if (data.status === "TIME_LIMIT_EXCEEDED") {
                 statusColor = 'bg-red-500';
                 statusMessage = 'Time Limit';
                 toast.error('Time limit exceeded');
-            } else if (data.status.id === 6) {
+            } else if (data.status === "COMPILATION_ERROR") {
                 statusColor = 'bg-red-500';
                 statusMessage = 'Compilation Error';
                 toast.error('Compilation error');
             } else {
-                toast.info(data.status.description);
+                toast.info(data.message || 'Unknown error');
             }
 
             setStatusBadge({ label: statusMessage, color: statusColor });
@@ -87,7 +89,7 @@ export default function CodeExecutionContextProvider({ children }) {
             setRecentSubmissions((prev) => [
                 {
                     id: Date.now(),
-                    language: data.language || 'unknown',
+                    language: data.languageId || 'unknown',
                     timestamp: new Date().toLocaleTimeString(),
                     status: statusMessage,
                     time: data.time,
@@ -176,7 +178,7 @@ export default function CodeExecutionContextProvider({ children }) {
             console.log('Executing code with input:', input, 'Expected Output:', expectedOutput);
 
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/run`, {
-                problemId: "3bc05c41-14e5-42de-a983-0bb21828ab8b",
+                problemId: selectedProblem.id,
                 sourceCode: code,
                 languageId: language.id,
                 input,
@@ -189,16 +191,15 @@ export default function CodeExecutionContextProvider({ children }) {
         } catch (error) {
             throw new Error(`Error submitting code: ${error.message}`);
         }
-    }, [code, language]);
+    }, [code, language, selectedProblem]);
 
 
     const runCustomTest = useCallback(async () => {
         setIsRunning(true);
-        setStatusBadge({ label: 'Processing', color: 'bg-blue-500' });
         setOutput('Running code...');
         setExecutionTime(null);
         setMemoryUsage(null);
-
+        
         try {
             await executeCode(stdin);
         } catch (error) {
@@ -210,6 +211,7 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [executeCode, stdin]);
 
     const runTestCase = useCallback(async (testCase, index) => {
+        setStatusBadge({ label: 'Processing', color: 'bg-blue-500' });
         try {
             await executeCode(testCase.input, testCase.output, testCase.id);
         } catch (error) {
@@ -248,28 +250,36 @@ export default function CodeExecutionContextProvider({ children }) {
     const submitSolution = useCallback(async () => {
         setIsTestingAll(true);
         setTestResults([]);
-        setShowResultDialog(true);
-
+        
         try {
-            const visibleTestCases = selectedProblem.testCases.filter(tc => !tc.isHidden);
-            for (let i = 0; i < visibleTestCases.length; i++) {
-                await runTestCase(visibleTestCases[i], i);
+            console.log('Submitting solution:', {
+                problemId: selectedProblem.id,
+                sourceCode: code,
+                languageId: language.id,
+            });
+            // setIsRunning(true);
+            setStatusBadge({ label: 'Processing', color: 'bg-blue-500' });
+            
+            const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/`, {
+                problemId: selectedProblem.id,
+                sourceCode: code,
+                languageId: language.id,
+            }, {
+                withCredentials: true,
+                headers: { "Content-Type": "application/json" }
+            })
+            if (res.status === 201) {
+                setShowResultDialog(true);
+                toast.success('Solution submitted successfully!');
             }
-
-            const hiddenTestCases = selectedProblem.testCases.filter(tc => tc.isHidden);
-            for (let i = 0; i < hiddenTestCases.length; i++) {
-                await runTestCase(
-                    hiddenTestCases[i],
-                    visibleTestCases.length + i
-                );
-            }
+            console.log('Submission response:', res.data);
         } catch (error) {
             console.log('Error submitting solution:', error);
             toast.error('Error submitting solution');
         } finally {
             setIsTestingAll(false);
         }
-    }, [runTestCase, selectedProblem]);
+    }, [selectedProblem, code, language]);
 
     const ctxValue = useMemo(() => ({
         contest,
