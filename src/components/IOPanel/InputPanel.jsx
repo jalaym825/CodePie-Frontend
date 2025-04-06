@@ -30,7 +30,7 @@ const InputPanel = ({
                                 options={{
                                     minimap: { enabled: false },
                                     fontSize: editorFontSize,
-                                    lineNumbers: 'off',
+                                    // lineNumbers: 'off',
                                     scrollBeyondLastLine: false,
                                     wordWrap: 'on',
                                     automaticLayout: true,

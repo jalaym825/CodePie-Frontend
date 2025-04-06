@@ -18,10 +18,10 @@ const IOPanel = () => {
     const { editorFontSize } = useContext(EditorSettingsContext);
 
     return (
-        <div className="flex-grow h-full overflow-auto rounded-xl border dark:border-gray-700">
-            <Tabs defaultValue="output" className="h-full gap-0">
-                <CardHeader className="p-2 m-0 bg-gray-50 dark:bg-gray-800 border-b-1">
-                    <TabsList className="bg-gray-100 dark:bg-gray-700 gap-x-2">
+        <div className="flex-grow h-full overflow-hidden rounded-xl border dark:border-gray-700">
+            <Tabs defaultValue="output" className="h-full flex gap-0">
+                <CardHeader className="p-[5px] gap-0 mb-0 bg-gray-50 dark:bg-gray-800 border-b-1">
+                    <TabsList className="bg-gray-200 dark:bg-gray-700 gap-x-2">
                         <TabsTrigger 
                             value="output" 
                             className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-500"
@@ -46,7 +46,7 @@ const IOPanel = () => {
                     </TabsList>
                 </CardHeader>
 
-                <CardContent className="p-0 h-full">
+                <CardContent className="p-0 flex-1 overflow-auto">
                     <TabsContent value="output" className="h-full m-0">
                         <OutputPanel />
                     </TabsContent>

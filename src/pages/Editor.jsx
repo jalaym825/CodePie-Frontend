@@ -26,39 +26,46 @@ import { Button } from "@/components/ui/button";
 // import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../context/EditorSettingsContext';
 import { Maximize2 } from 'lucide-react';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import TestResultDialog from '../components/Result/TestResultDialog';
+import { toast } from 'sonner';
 
 const CodeEditor = () => {
     const [loading, setLoading] = useState(true);
 
-    const { fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults } = useContext(CodeExecutionContext);
+    const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults } = useContext(CodeExecutionContext);
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
 
-    const { id, competitionId, problemId } = useParams();
-    // console.log("Params:", id, competitionId, problemId);
+    const { id, contestId, problemId } = useParams();
+    const navigate = useNavigate();
 
     // Determine if this is a competition problem
-    const isCompetition = Boolean(competitionId);
+    const isContest = Boolean(contestId);
 
     // Get the actual problem ID (either from standalone or competition route)
     const currentProblemId = id || problemId;
 
-    // async function handleFetchCompetition() {
-    //     if (!isCompetition && !currentProblemId) return;
-    //     const res = await fetchProblem(currentProblemId, competitionId);
-    //     if (res.status === 200) {
-    //         setLoading(false);
-    //     }
-    // }
+    async function handleFetchCompetition() {
+        if (!isContest && !currentProblemId) return;
+        const res = await fetchContest(contestId);
+        if (res.status === 200) {
+            return true;
+        }
+        return false;
+    }
 
     async function handleFetchProblem() {
-        if (!isCompetition && !currentProblemId) return;
+        if (!isContest && !currentProblemId) return;
 
-        // if (isCompetition) {
-        //     await handleFetchCompetition();
-        // }
+        if (isContest) {
+            const res = await handleFetchCompetition();
+            if(!res){
+                toast.error("Failed to fetch contest data. Please try again.");
+                navigate('/contests');
+                return;
+            }
+        }
 
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
@@ -100,7 +107,7 @@ const CodeEditor = () => {
                         )}
 
                         <ResizablePanel defaultSize={showProblem ? 67 : 100} minSize={40}>
-                            <ResizablePanelGroup direction="vertical" minSize={30}>
+                            <ResizablePanelGroup direction="vertical">
                                 <ResizablePanel defaultSize={60} minSize={30} className="p-1">
                                     {/* <div className={`h-full ${isFullscreen ? "min-h-0" : ""}`}> */}
                                         <EditorPanel />
