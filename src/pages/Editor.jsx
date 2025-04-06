@@ -91,7 +91,7 @@ const CodeEditor = () => {
     return (
         <>
             <Toaster position="bottom-right" richColors />
-            <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-auto md:h-[100vh] flex flex-col'}`}>
+            <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-screen md:h-[100vh] flex flex-col'}`}>
                 <Header />
 
                 <div className={`overflow-hidden p-2 flex-1 ${isFullscreen ? 'h-[calc(100vh-96px)]' : 'h-full'}`}>

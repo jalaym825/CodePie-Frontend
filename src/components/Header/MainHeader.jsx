@@ -30,7 +30,7 @@ const MainHeader = () => {
     }, []);
 
     const handleLogout = async () => {
-        const res = await logoutUser("/auth/logout");
+        const res = await logoutUser();
         if (res) {
             naviagte('/');
         }
@@ -41,7 +41,7 @@ const MainHeader = () => {
             <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between py-4 px-5">
-                        <div className="flex-1 flex justify-start items-center gap-2">
+                        <div className="flex justify-start items-center gap-2">
                             <Code className="text-blue-600" size={28} />
                             <span className="font-bold text-xl text-slate-900">CodePi</span>
                         </div>
@@ -52,76 +52,79 @@ const MainHeader = () => {
                             <Link to="/contests" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Contest</Link>
                             <Link to="/discussion" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Discussion</Link>
                         </nav>
-                        {
-                            userInfo ? (
-                                <div className='flex-1 flex justify-end items-center gap-4'>
-                                    <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button size="icon" className="rounded-full hover:shadow-md transition-shadow">
-                                                <Avatar className="h-10 w-10 ring-2 ring-blue-100">
-                                                    <AvatarImage src="https://freesvg.org/img/abstract-user-flat-4.png" />
-                                                    <AvatarFallback
-                                                        className="bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100">
-                                                        {userInfo.name}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end" className="w-48 font-manrope border shadow-lg p-1">
-                                            <div>
-                                                <DropdownMenuItem asChild>
-                                                    <Link
-                                                        to="/contests"
-                                                        className="flex h-10 w-full items-center px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
-                                                        onClick={() => setIsDropdownOpen(false)}
-                                                    >
-                                                        Dashboard
-                                                    </Link>
-                                                </DropdownMenuItem>
 
-                                                <DropdownMenuItem asChild>
-                                                    <Link
-                                                        to="/profile"
-                                                        className="flex h-10 w-full items-center justify-between px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
-                                                        onClick={() => setIsDropdownOpen(false)}
-                                                    >
-                                                        <span>My Profile</span>
-                                                        <AiOutlineUser className="text-blue-600" size={18} />
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                            </div>
+                        <div>
+                            {
+                                userInfo.id ? (
+                                    <div className='flex-1 flex justify-end items-center gap-4'>
+                                        <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button size="icon" className="rounded-full hover:shadow-md transition-shadow">
+                                                    <Avatar className="h-10 w-10 ring-2 ring-blue-100">
+                                                        <AvatarImage src="https://freesvg.org/img/abstract-user-flat-4.png" />
+                                                        <AvatarFallback
+                                                            className="bg-gradient-to-br from-blue-100 via-purple-50 to-pink-100">
+                                                            {userInfo.name}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end" className="w-48 font-manrope border shadow-lg p-1">
+                                                <div>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            to="/contests"
+                                                            className="flex h-10 w-full items-center px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
+                                                            onClick={() => setIsDropdownOpen(false)}
+                                                        >
+                                                            Dashboard
+                                                        </Link>
+                                                    </DropdownMenuItem>
 
-                                            <DropdownMenuSeparator className="my-1" />
+                                                    <DropdownMenuItem asChild>
+                                                        <Link
+                                                            to="/profile"
+                                                            className="flex h-10 w-full items-center justify-between px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
+                                                            onClick={() => setIsDropdownOpen(false)}
+                                                        >
+                                                            <span>My Profile</span>
+                                                            <AiOutlineUser className="text-blue-600" size={18} />
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                </div>
 
-                                            <div>
-                                                <DropdownMenuItem asChild>
-                                                    <button
-                                                        onClick={() => {
-                                                            setIsDropdownOpen(false);
-                                                            handleLogout();
-                                                        }}
-                                                        className="flex w-full h-10 items-center justify-between px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
-                                                    >
-                                                        <span>Log Out</span>
-                                                        <FiLogOut className="text-blue-600" size={18} />
-                                                    </button>
-                                                </DropdownMenuItem>
-                                            </div>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </div>
-                            ) : (
+                                                <DropdownMenuSeparator className="my-1" />
 
-                                <div className="hidden md:flex items-center gap-4">
-                                    <Link to="/account/login">
-                                        <Button variant="ghost" className="text-slate-700 hover:text-slate-900 hover:bg-slate-100">Log in</Button>
-                                    </Link>
-                                    <Link to="/account/login">
-                                        <Button className="bg-blue-600 hover:bg-blue-700 text-white">Sign up free</Button>
-                                    </Link>
-                                </div>
-                            )
-                        }
+                                                <div>
+                                                    <DropdownMenuItem asChild>
+                                                        <button
+                                                            onClick={() => {
+                                                                setIsDropdownOpen(false);
+                                                                handleLogout();
+                                                            }}
+                                                            className="flex w-full h-10 items-center justify-between px-2 py-2 text-sm hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-md cursor-pointer"
+                                                        >
+                                                            <span>Log Out</span>
+                                                            <FiLogOut className="text-blue-600" size={18} />
+                                                        </button>
+                                                    </DropdownMenuItem>
+                                                </div>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </div>
+                                ) : (
+
+                                    <div className="hidden md:flex items-center gap-4">
+                                        <Link to="/account/login">
+                                            <Button variant="ghost" className="text-slate-700 hover:text-slate-900 hover:bg-slate-100">Log in</Button>
+                                        </Link>
+                                        <Link to="/account/login">
+                                            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Sign up free</Button>
+                                        </Link>
+                                    </div>
+                                )
+                            }
+                        </div>
 
                         <Button
                             variant="ghost"

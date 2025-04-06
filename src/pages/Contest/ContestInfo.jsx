@@ -138,10 +138,12 @@ const ContestInfo = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Button variant="ghost" className="w-full justify-start text-blue-600 hover:bg-blue-50 hover:text-blue-700">
-                                        <Trophy className="h-4 w-4 mr-2" />
-                                        Current Leaderboard
-                                    </Button>
+                                    <Link to={`/contests/${contestId}/leaderboard`}>
+                                        <Button variant="ghost" className="w-full mb-2 justify-start text-blue-600 hover:bg-blue-50 hover:text-blue-700">
+                                            <Trophy className="h-4 w-4 mr-2" />
+                                            Current Leaderboard
+                                        </Button>
+                                    </Link>
                                     <Button variant="ghost" className="w-full justify-start text-blue-600 hover:bg-blue-50 hover:text-blue-700">
                                         <BarChart2 className="h-4 w-4 mr-2" />
                                         Compare Progress

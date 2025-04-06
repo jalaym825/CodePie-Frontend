@@ -43,9 +43,9 @@ const LoginContent = () => {
     console.log(res);
     if (res?.status === 200) {
       toast.success(res.message);
-      navigate('/')
       setCredentials({})
       setIsPending(false);
+      navigate('/');
       return true;
     } else {
       console.log(res)
