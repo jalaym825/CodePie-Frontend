@@ -117,6 +117,7 @@ export default function UserContextProvider({ children }) {
         console.log(res);
         if (res.status === 201) {
             return ({
+                data: res.data.data,
                 status: res.status,
                 message: res.data
             })

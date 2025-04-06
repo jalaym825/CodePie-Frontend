@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock, Server, Code } from "lucide-react";
 import { useState } from "react";
+import toInitialCap from "../../helpers/initialCap";
 
 export default function TestResultDialog({ open, onOpenChange, testCases, testResults }) {
     const [selectedCase, setSelectedCase] = useState(null);
@@ -104,19 +105,19 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                             >
                                 <div className="flex justify-between">
                                     <div className="font-medium">Test Case {index + 1}</div>
-                                    <div className="flex items-center">
+                                    {/* <div className="flex items-center">
                                         {testCase.isHidden && 
                                             <span className="text-xs bg-white text-blue-700 font-[600] px-2 py-1 rounded-lg mr-1">
                                                 Hidden
                                             </span>
                                         }
-                                    </div>
+                                    </div> */}
                                 </div>
                                 
                                 <div className="flex items-center gap-2 mt-2">
                                     {getStatusIcon(result?.status)}
                                     <span className="text-sm text-gray-700 truncate">
-                                        {result ? result.status : "Pending"}
+                                        {result ? toInitialCap(result.status) : "Pending"}
                                     </span>
                                 </div>
                                 

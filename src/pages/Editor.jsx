@@ -51,7 +51,11 @@ const CodeEditor = () => {
         if (!isContest && !currentProblemId) return;
         const res = await fetchContest(contestId);
         if (res.status === 200) {
-            return true;
+            if(!res.isJoined){
+                toast.error("You have not joined this contest yet. Please join the contest to access the problem.");
+                navigate(`/contests/${contestId}/join`);
+            }
+            return res;
         }
         return false;
     }
@@ -61,7 +65,7 @@ const CodeEditor = () => {
 
         if (isContest) {
             const res = await handleFetchCompetition();
-            if(!res){
+            if (!res) {
                 toast.error("Failed to fetch contest data. Please try again.");
                 navigate('/contests');
                 return;
@@ -70,12 +74,7 @@ const CodeEditor = () => {
 
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
-            if(!res.isJoined){
-                toast.error("You have not joined this contest yet. Please join the contest to access the problem.");
-                navigate(`/contests/${contestId}/join`);
-            } else {
-                setLoading(false);
-            }
+            setLoading(false);
         }
     }
 
@@ -95,11 +94,11 @@ const CodeEditor = () => {
             <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-screen md:h-[100vh] flex flex-col'}`}>
                 <Header />
 
-                <div className={`overflow-hidden h-full p-2 ${isFullscreen ? 'h-[calc(100vh-96px)]' : ''}`}>
+                <div className={`overflow-hidden p-2 flex-1 ${isFullscreen ? 'h-[calc(100vh-96px)]' : 'h-full'}`}>
                     <ResizablePanelGroup direction="horizontal" className="h-full">
                         {showProblem && (
                             <>
-                                <ResizablePanel defaultSize={33} minSize={25} className="p-1">
+                                <ResizablePanel defaultSize={33} minSize={25} className="p-1 h-full">
                                     <div className={`h-full ${isFullscreen ? "overflow-auto" : ""}`}>
                                         <ProblemPanel />
                                     </div>
@@ -108,17 +107,17 @@ const CodeEditor = () => {
                             </>
                         )}
 
-                        <ResizablePanel defaultSize={showProblem ? 67 : 100} minSize={40}>
+                        <ResizablePanel className="h-full" defaultSize={showProblem ? 67 : 100} minSize={40}>
                             <ResizablePanelGroup direction="vertical">
                                 <ResizablePanel defaultSize={60} minSize={30} className="p-1">
                                     {/* <div className={`h-full ${isFullscreen ? "min-h-0" : ""}`}> */}
-                                        <EditorPanel />
+                                    <EditorPanel />
                                     {/* </div> */}
                                 </ResizablePanel>
                                 <ResizableHandle withHandle />
                                 <ResizablePanel defaultSize={40} className="p-1">
                                     {/* <div className={`h-full ${isFullscreen ? "min-h-0" : ""}`}> */}
-                                        <IOPanel />
+                                    <IOPanel />
                                     {/* </div> */}
                                 </ResizablePanel>
                             </ResizablePanelGroup>
