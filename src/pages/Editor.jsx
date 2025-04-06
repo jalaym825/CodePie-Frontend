@@ -30,6 +30,7 @@ import { useNavigate, useParams } from 'react-router';
 import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import TestResultDialog from '../components/Result/TestResultDialog';
 import { toast } from 'sonner';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 
 const CodeEditor = () => {
     const [loading, setLoading] = useState(true);
@@ -69,7 +70,12 @@ const CodeEditor = () => {
 
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
-            setLoading(false);
+            if(!res.isJoined){
+                toast.error("You have not joined this contest yet. Please join the contest to access the problem.");
+                navigate(`/contests/${contestId}/join`);
+            } else {
+                setLoading(false);
+            }
         }
     }
 
@@ -79,11 +85,7 @@ const CodeEditor = () => {
 
     if (loading) {
         return (
-            <>
-                <main className='h-screen flex items-center justify-center'>
-                    <h1>Loading...</h1>
-                </main>
-            </>
+            <LoadingScreen />
         )
     }
 

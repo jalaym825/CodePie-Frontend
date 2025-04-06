@@ -4,7 +4,14 @@ import getApi from "../helpers/API/getApi";
 import postApi from "../helpers/API/postApi";
 
 export default function UserContextProvider({ children }) {
-    const [userInfo, setUserInfo] = useState({});
+    const [userInfo, setUserInfo] = useState({
+        name: "",
+        email: "",
+        profilePic: "",
+        id: "",
+        isAdmin: false,
+        isLoggedIn: false,
+    });
 
     function setUserData(data) {
         setUserInfo(data);
@@ -14,7 +21,12 @@ export default function UserContextProvider({ children }) {
         const res = await getApi("/users/profile");
         console.log(res);
         if (res.status === 200) {
-            setUserInfo(res.data.data);
+            setUserInfo(prevData => {
+                return {
+                    ...prevData,
+                    ...res.data.data,
+                }
+            });
             return res.data.data;
         }
         return false;

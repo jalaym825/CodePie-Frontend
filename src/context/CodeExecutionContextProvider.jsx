@@ -50,7 +50,7 @@ export default function CodeExecutionContextProvider({ children }) {
             let statusColor = 'bg-gray-500';
             let statusMessage = data.status.description;
 
-            if(data.testCaseId === "") return; // Ignore empty test case ID
+            if (data.testCaseId === "") return; // Ignore empty test case ID
 
             if (data.status === "ACCEPTED") {
                 statusColor = 'bg-green-500';
@@ -141,11 +141,11 @@ export default function CodeExecutionContextProvider({ children }) {
         }
     }, []);
 
-    const handleFetchContest = useCallback(async (contestId, userId) => {
+    const handleFetchContest = useCallback(async (contestId) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, { userId: userId }, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, { userId: userInfo.id }, {
                 withCredentials: true,
-                headers: { "Content-Type": "application/json" }
+                headers: { "Content-Type": "application/json" },
             });
             // console.log('Problem fetched:', response);
 
@@ -157,12 +157,13 @@ export default function CodeExecutionContextProvider({ children }) {
 
             return {
                 status: response.status,
+                isJoined: response.data.data.isJoined,
             };
         } catch (error) {
             console.error('Error fetching contest:', error);
             toast.error('Error fetching contest data');
         }
-    }, []);
+    }, [userInfo]);
 
     // const handleProblemChange = useCallback((problemId) => {
     //     const problem = problems.find((p) => p.id === problemId);
@@ -199,7 +200,7 @@ export default function CodeExecutionContextProvider({ children }) {
         setOutput('Running code...');
         setExecutionTime(null);
         setMemoryUsage(null);
-        
+
         try {
             await executeCode(stdin);
         } catch (error) {
@@ -250,7 +251,7 @@ export default function CodeExecutionContextProvider({ children }) {
     const submitSolution = useCallback(async () => {
         setIsTestingAll(true);
         setTestResults([]);
-        
+
         try {
             console.log('Submitting solution:', {
                 problemId: selectedProblem.id,
@@ -259,7 +260,7 @@ export default function CodeExecutionContextProvider({ children }) {
             });
             // setIsRunning(true);
             setStatusBadge({ label: 'Processing', color: 'bg-blue-500' });
-            
+
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/`, {
                 problemId: selectedProblem.id,
                 sourceCode: code,
