@@ -1,14 +1,14 @@
 import { useParams } from 'react-router';
-import { UserContext } from '../../context/UserContext'
 import React, { use, useContext, useEffect, useState } from 'react'
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
 const EachContestProblems = () => {
-    const { getProblem } = useContext(UserContext)
+    const { fetchProblem } = useContext(CodeExecutionContext)
     const { contestId } = useParams();
     const [problems, setProblems] = useState([]);
 
-    async function handleGetAllProblems() {
-        const res = await getProblem(contestId);
+    async function handleGetProblems() {
+        const res = await fetchProblem(contestId);
         console.log(res.data);
         if (res.status === 200) {
             setProblems(res.data.data);
@@ -20,7 +20,7 @@ const EachContestProblems = () => {
     }
 
     useEffect(() => {
-        handleGetAllProblems();
+        handleGetProblems();
     }, [contestId]);
 
     return (

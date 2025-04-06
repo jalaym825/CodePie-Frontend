@@ -2,7 +2,8 @@ import React, { useContext, useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, Clock, Users, FileText, Trophy, ArrowRight, Plus, Filter, PlusIcon } from 'lucide-react';
+import { Calendar, Clock, Users, FileText, Trophy, ArrowRight, PlusIcon, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/tooltip';
 import { UserContext } from '../../context/UserContext';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
@@ -101,7 +102,21 @@ const ContestDashboard = () => {
                     <h2 className="text-lg font-semibold text-gray-800 truncate">{contest.title}</h2>
                     <p className="text-gray-500 text-xs">{formatDate(contest.createdAt)}</p>
                   </div>
-                  <Badge variant={contestStatus.variant}>{contestStatus.status}</Badge>
+                  <div className='flex items-center gap-x-1'>
+                    <Badge variant={contestStatus.variant}>{contestStatus.status}</Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link to={`/contests/${contest.id}/problems`}>
+                            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-sm">Show details</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </CardHeader>
 
                 <CardContent className="p- pt-2">
@@ -131,13 +146,12 @@ const ContestDashboard = () => {
                   {userInfo.role === "ADMIN" ? (
                     <div className='flex justify-end px-2 w-full gap-x-2'>
                       {/* <Link to={`/contests/${contest.id}/problems`}>
-                        <Button
-                          className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                          Show Problem
-                          <ArrowRight className="ml-1 h-3 w-3" />
-                        </Button>
+                        <div className='flex items-center p-2 rounded-md hover:bg-[#e5f1ff]'>
+                          <h1 className='text-[#4a516d] font-semibold text-sm'>Show Details</h1>
+                          <EyeIcon className="ml-1 h-3 w-3" />
+                        </div>
                       </Link> */}
-                      <Link to={`/contests/${contest.id}/problems`}>
+                      <Link to={`/contests/${contest.id}/add-problems`}>
                         <Button
                           className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
                           Add Problem
@@ -150,13 +164,12 @@ const ContestDashboard = () => {
                       <Link to={`/contests/${contest.id}/join`}>
                         <Button
                           className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                          join Contest
+                          Show Details
                           <ArrowRight className="ml-1 h-3 w-3" />
                         </Button>
                       </Link>
                     </div>
-                  )
-                  }
+                  )}
                 </CardFooter>
               </Card>
             );

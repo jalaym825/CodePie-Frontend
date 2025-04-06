@@ -9,16 +9,16 @@ import { toast } from 'sonner';
 
 const JoinContest = () => {
     const { contestId } = useParams();
-    const { getContest, joinContest } = useContext(UserContext);
+    const { getContest, joinContest, userInfo } = useContext(UserContext);
     const [timeStatus, setTimeStatus] = useState('not-started');
     const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [contestData, setContestData] = useState(null);
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate();
-
     async function handleGetContest() {
-        const res = await getContest(contestId);
+        const userId = userInfo.id;
+        const res = await getContest(contestId, userId);
         console.log(res.data);
         if (res.status === 200) {
             setContestData(res.data.data);
@@ -245,17 +245,27 @@ const JoinContest = () => {
                         </CardContent>
 
                         <CardFooter className="flex flex-col gap-3">
-                            {timeStatus === 'not-started' && (
-                                <Button className="w-full bg-blue-500 opacity-70 hover:bg-blue-700">
-                                    Contest Not Started
-                                </Button>
-                            )}
-
+                            {
+                                timeStatus === 'not-started' && (
+                                    <Button disabled className="w-full bg-gray-600 hover:bg-gray-700">
+                                        contest not started
+                                    </Button>
+                                )
+                            }
                             {timeStatus === 'in-progress' && (
-                                <Button   onClick={handleJoinContest} className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}>
-                                    Join Contest Now
-                                    <ArrowRight className="ml-2 h-4 w-4" />
-                                </Button>
+                                contestData?.isJoined ? (
+                                    <Link to={`/contests/${contestData?.id}`}>
+                                        <Button className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}>
+                                            Enter Contest
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </Link>
+                                ) : (
+                                    <Button onClick={handleJoinContest} className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}>
+                                        Join Contest Now
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                )
                             )}
 
                             {timeStatus === 'completed' && (
