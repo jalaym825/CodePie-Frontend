@@ -31,7 +31,7 @@ const JoinContest = () => {
 
     useEffect(() => {
         handleGetContest();
-    }, [contestId]);
+    }, []);
 
     async function handleJoinContest() {
         console.log("okok")
