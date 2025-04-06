@@ -30,6 +30,7 @@ import { useNavigate, useParams } from 'react-router';
 import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import TestResultDialog from '../components/Result/TestResultDialog';
 import { toast } from 'sonner';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 
 const CodeEditor = () => {
     const [loading, setLoading] = useState(true);
@@ -79,11 +80,7 @@ const CodeEditor = () => {
 
     if (loading) {
         return (
-            <>
-                <main className='h-screen flex items-center justify-center'>
-                    <h1>Loading...</h1>
-                </main>
-            </>
+            <LoadingScreen />
         )
     }
 

@@ -57,8 +57,13 @@ import ContestInfo from "./pages/Contest/ContestInfo";
 import AddProblem from "./Pages/Problems/AddProblemsPage"
 import EachContestProblems from "./Pages/Problems/EachContestProblems";
 import JoinContest from "./Pages/Contests/JoinContest";
+import { useContext } from "react";
+import { UserContext } from "./context/UserContext";
+import LoadingScreen from "./components/ui/LoadingScreen";
 
 function App() {
+  const { userInfo } = useContext(UserContext);
+  
   return (
     <Router>
       <Routes>
@@ -75,7 +80,7 @@ function App() {
           </Route>
         </Route>
         <Route path="/contests">
-          <Route path="/contests/:contestId/problems/:problemId" element={<CodeEditor />} />  //Problem details page inside competition
+          <Route path="/contests/:contestId/problems/:problemId" element={userInfo.id.length === 0 ? <LoadingScreen /> : <CodeEditor />} />  //Problem details page inside competition
         </Route>
         <Route path="/problems">
           <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
