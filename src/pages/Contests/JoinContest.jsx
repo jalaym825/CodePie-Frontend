@@ -36,7 +36,7 @@ const JoinContest = () => {
     async function handleJoinContest() {
         console.log("okok")
         const res = await joinContest(contestId);
-        console.log(res.data);
+        // console.log(res.data);
         if (res.status === 201) {
             toast.success(res.message);
             navigate(`/contests/${contestId}/`)

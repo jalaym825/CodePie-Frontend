@@ -2,11 +2,16 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock, Server, Code } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toInitialCap from "../../helpers/initialCap";
+import { useNavigate } from "react-router";
+import { CodeExecutionContext } from "../../context/CodeExecutionContext";
 
 export default function TestResultDialog({ open, onOpenChange, testCases, testResults }) {
     const [selectedCase, setSelectedCase] = useState(null);
+
+    const { contest } = useContext(CodeExecutionContext);
+    const navigate = useNavigate();
     
     const getStatusForCase = (id) => testResults.find((res) => res.testCaseId === id);
     
@@ -190,6 +195,9 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                     {isSubmissionComplete && isSubmissionSuccessful && (
                         <Button 
                             className="flex-1 bg-green-600 hover:bg-green-700"
+                            onClick={() => {
+                                navigate(`/contests/${contest.id}/leaderboard/`);
+                            }}
                         >
                             View Leaderboard
                         </Button>

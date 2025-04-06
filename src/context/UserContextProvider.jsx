@@ -116,11 +116,11 @@ export default function UserContextProvider({ children }) {
         const res = await postApi(`/contests/${id}/join`);
         console.log(res);
         if (res.status === 201) {
-            return ({
+            return {
                 data: res.data.data,
                 status: res.status,
-                message: res.data
-            })
+                message: res.data.message
+            };
         } else {
             return res.response;
         }
