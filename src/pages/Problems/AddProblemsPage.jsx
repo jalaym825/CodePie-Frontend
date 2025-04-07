@@ -142,14 +142,18 @@ const AddProblemsPage = () => {
 
                         <div>
                             <Label htmlFor="problem-description">Description</Label>
+                            <div data-color-mode="light">
+
                             <MDEditor
                                 value={newProblem.description}
                                 onChange={(value) => setNewProblem({ ...newProblem, description: value || '' })}
                                 height={300}
                                 theme='light'
                                 className='mt-2'
-                                preview="edit"
+                                // preview="edit"
                             />
+                        </div>
+
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                         </div>
 
