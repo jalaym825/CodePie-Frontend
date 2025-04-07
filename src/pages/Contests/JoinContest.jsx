@@ -269,9 +269,11 @@ const JoinContest = () => {
                             )}
 
                             {timeStatus === 'completed' && (
-                                <Button className="w-full bg-gray-600 hover:bg-gray-700">
-                                    View Results
-                                </Button>
+                                <Link to={`/contests/${contestData?.id}/leaderboard`}>
+                                    <Button className="w-full bg-gray-600 hover:bg-gray-700">
+                                        View Results
+                                    </Button>
+                                </Link>
                             )}
                         </CardFooter>
                     </Card>

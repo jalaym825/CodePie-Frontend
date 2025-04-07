@@ -4,12 +4,12 @@ import { UserContext } from '../../context/UserContext';
 const AuthInitializer = ({ children }) => {
 
     const [loading, setLoading] = useState(true);
-    const { getUserProfile } = useContext(UserContext);
+    const { getMe } = useContext(UserContext);
 
     useEffect(() => {
         (async () => {
             try {
-                const user = await getUserProfile();
+                const user = await getMe();
                 console.log(user)
                 setLoading(false);
             } catch (error) {

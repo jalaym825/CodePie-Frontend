@@ -16,17 +16,13 @@ export default function UserContextProvider({ children }) {
     function setUserData(data) {
         setUserInfo(data);
     }
+    console.log(userInfo);
 
     async function handleGetUserProfile() {
-        const res = await getApi("/users/profile");
+        const res = await getApi("/auth/me");
         console.log(res);
         if (res.status === 200) {
-            setUserInfo(prevData => {
-                return {
-                    ...prevData,
-                    ...res.data.data,
-                }
-            });
+            setUserInfo(res.data.data);
             return res.data.data;
         }
         return false;
@@ -145,7 +141,7 @@ export default function UserContextProvider({ children }) {
     const ctxValue = {
         userInfo: userInfo,
         setUserInfo: setUserData,
-        getUserProfile: handleGetUserProfile,
+        getMe: handleGetUserProfile,
         logoutUser: handleLogout,
         createContest: handleCreateContest,
         getAllContests: handlegetAllContests,

@@ -16,6 +16,7 @@ import ContestLeaderBoard from "./Pages/Contest/ContestLeaderBoard";
 import { useContext } from "react";
 import { UserContext } from "./context/UserContext";
 import LoadingScreen from "./components/ui/LoadingScreen";
+import AuthInitializer from "./Pages/Layouts/AuthInitializer";
 
 function App() {
   const { userInfo } = useContext(UserContext);
@@ -24,7 +25,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/account/login" element={<LoginSignUp />} />
-        <Route path="/" element={<MainHeader />}>
+        <Route path="/" element={<><MainHeader /> <AuthInitializer /></>}>
           <Route index element={<Homepage />} />
           <Route path="/contests">
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
