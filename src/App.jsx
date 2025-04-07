@@ -1,6 +1,6 @@
 import CodeEditor from "./pages/Editor";
 import { BrowserRouter as Router, Routes, Route } from "react-router"
-import 'prismjs/themes/prism-tomorrow.css';
+// import 'prismjs/themes/prism-tomorrow.css';
 import LoginSignUp from "./Pages/LoginSignUp";
 import Homepage from "./Pages/Homepage";
 import MainHeader from "./components/Header/MainHeader";

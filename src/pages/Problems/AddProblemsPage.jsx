@@ -30,6 +30,7 @@ const AddProblemsPage = () => {
         testCases: [
             { input: '', output: '', explanation: '', isHidden: false },
         ],
+        isPractice: false
     });
     const [errors, setErrors] = useState({});
 
@@ -85,6 +86,7 @@ const AddProblemsPage = () => {
             testCases: formattedTestCases,
         };
         console.log(payload);
+        payload.isPractice = false;
         const res = await createProblem(payload);
 
         if (res?.status === 201) {

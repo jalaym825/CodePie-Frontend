@@ -80,7 +80,7 @@ export default function UserContextProvider({ children }) {
         }
     }
 
-    async function handlegetContest(id, userId) {
+    async function handleGetContest(id, userId) {
         // console.log(id, userId)
         const res = await postApi(`/contests/${id}`, { userId: userId });
         console.log(res);
@@ -147,7 +147,7 @@ export default function UserContextProvider({ children }) {
         getAllContests: handlegetAllContests,
         createProblem: handleCreateProblem,
         getProblem: handlegetProblem,
-        getContest: handlegetContest,
+        getContest: handleGetContest,
         joinContest: handleContestJoin,
         contestleaderBoard: handleContestLeaderBoard
     }
