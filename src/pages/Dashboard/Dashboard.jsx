@@ -73,7 +73,7 @@ const ContestDashboard = () => {
   };
 
   return (
-    <div className=" mt-20 bg-gray-50">
+    <div className="pt-25 h-screen bg-gray-50">
       <div className="flex flex-col justify-between items-center mb-8">
         <div className="flex items-center">
           <Trophy className="h-6 w-6 mr-2 text-blue-500" />
@@ -96,30 +96,32 @@ const ContestDashboard = () => {
           {contests.map((contest) => {
             const contestStatus = getContestStatus(contest.startTime, contest.endTime);
             return (
-              <Card key={contest.id} className="overflow-hidden p-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-                <CardHeader className=" pb-2 flex flex-row items-start justify-between space-y-0">
-                  <div>
-                    <h2 className="text-lg font-semibold text-gray-800 truncate">{contest.title}</h2>
-                    <p className="text-gray-500 text-xs">{formatDate(contest.createdAt)}</p>
+              <Card key={contest.id} className="overflow-hidden p-4 gap-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                <CardHeader className="pb-2 flex flex-col items-center  justify-between space-y-0 ">
+                  <div className='flex items-center justify-between gap-x-8 w-full'>
+                    <div>
+                      <h2 className="text-lg font-semibold text-gray-800 truncate">{contest.title}</h2>
+                    </div>
+                    <div className='flex items-center gap-x-1'>
+                      <Badge variant={contestStatus.variant}>{contestStatus.status}</Badge>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            {/* <Link to={`/contests/${contest.id}/problems`}>
+                              <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                            </Link> */}
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-sm">Show details</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </div>
-                  <div className='flex items-center gap-x-1'>
-                    <Badge variant={contestStatus.variant}>{contestStatus.status}</Badge>
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Link to={`/contests/${contest.id}/problems`}>
-                            <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                          </Link>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-sm">Show details</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
+                  <p className="text-gray-500 flex justify-start w-full text-xs">{formatDate(contest.createdAt)}</p>
                 </CardHeader>
 
-                <CardContent className="p- pt-2">
+                <CardContent className="pt-2">
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{contest.description}</p>
 
                   <div className="flex items-center text-xs text-gray-500 mb-3">
@@ -160,8 +162,8 @@ const ContestDashboard = () => {
                       </Link>
                     </div>
                   ) : (
-                    <div className='flex justify-end'>
-                      <Link to={`/contests/${contest.id}/join`}>
+                    <div className='flex w-full justify-end'>
+                      <Link to={`/contests/${contest.id}`}>
                         <Button
                           className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
                           Show Details
