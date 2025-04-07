@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import getApi from "../helpers/API/getApi";
 import postApi from "../helpers/API/postApi";
+import axios from "axios";
 
 export default function UserContextProvider({ children }) {
     const [userInfo, setUserInfo] = useState({
@@ -13,10 +14,30 @@ export default function UserContextProvider({ children }) {
         isLoggedIn: false,
     });
 
-    function setUserData(data) {
-        setUserInfo(data);
+    const [syncedTime, setSyncedTime] = useState(null);
+    const [syncedAt, setSyncedAt] = useState(null);
+
+    useEffect(() => {
+        async function syncTime() {
+            try {
+                const res = await getApi("/users/api/time");
+                // const data = await res.json();
+                console.log(new Date(res.data.data.serverTime));
+                
+                setSyncedTime(new Date(res.data.data.serverTime).getTime());
+                setSyncedAt(performance.now());
+            } catch (err) {
+                console.error("Failed to sync time:", err);
+            }
+        }
+        syncTime();
+    }, []);
+
+    function getAccurateTime() {
+        if (!syncedTime || !syncedAt) return new Date(); // fallback
+        const elapsed = performance.now() - syncedAt;
+        return new Date(syncedTime + elapsed);
     }
-    console.log(userInfo);
 
     async function handleGetUserProfile() {
         const res = await getApi("/auth/me");
@@ -159,7 +180,8 @@ export default function UserContextProvider({ children }) {
 
     const ctxValue = {
         userInfo: userInfo,
-        setUserInfo: setUserData,
+        setUserInfo: setUserInfo,
+        getAccurateTime: getAccurateTime,
         getMe: handleGetUserProfile,
         logoutUser: handleLogout,
         createContest: handleCreateContest,

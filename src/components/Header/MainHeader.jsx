@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import { Code, Menu } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from '../ui/dropdown-menu'
-import { Link, Outlet, useNavigate } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { AiOutlineUser } from 'react-icons/ai';
 import { FiLogOut } from 'react-icons/fi';
@@ -41,7 +41,7 @@ const MainHeader = () => {
             <header className={`fixed top-0 w-full z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md shadow-md' : 'bg-transparent'}`}>
                 <div className="container mx-auto px-4">
                     <div className="flex items-center justify-between py-4 px-5">
-                        <div className="flex justify-start items-center gap-2">
+                        <div className="flex justify-start items-center gap-2 flex-1">
                             <Code className="text-blue-600" size={28} />
                             <span className="font-bold text-xl text-slate-900">CodePi</span>
                         </div>
@@ -53,7 +53,7 @@ const MainHeader = () => {
                             <Link to="/discussion" className="py-2 text-slate-700 hover:text-blue-600 transition-colors">Discussion</Link>
                         </nav>
 
-                        <div>
+                        <div className='flex-1 flex justify-end items-center gap-4'>
                             {
                                 userInfo.id ? (
                                     <div className='flex-1 flex justify-end items-center gap-4'>
@@ -152,9 +152,6 @@ const MainHeader = () => {
                     </div>
                 )}
             </header>
-            <div>
-                <Outlet />
-            </div>
         </div>
     )
 }

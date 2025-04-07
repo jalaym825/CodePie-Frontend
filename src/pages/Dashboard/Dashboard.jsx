@@ -11,7 +11,7 @@ import { Link, useNavigate } from 'react-router';
 
 const ContestDashboard = () => {
   const [contests, setContests] = useState([]);
-  const { getAllContests, userInfo } = useContext(UserContext);
+  const { getAllContests, userInfo, getAccurateTime } = useContext(UserContext);
   console.log(userInfo);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -94,10 +94,18 @@ const ContestDashboard = () => {
 
         <div className="grid w-[90%] grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {contests.map((contest) => {
+            const now = getAccurateTime();
+            const startTime = new Date(contest.startTime);
+            {/* const endTime = new Date(contest.endTime); */ }
+
+            {/* const isOngoing = now >= startTime && now <= endTime; */ }
+            const isUpcoming = now < startTime;
+            {/* const isEnded = now > endTime; */ }
+
             const contestStatus = getContestStatus(contest.startTime, contest.endTime);
             return (
-              <Card key={contest.id} className="overflow-hidden p-4 gap-4 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
-                <CardHeader className="pb-2 flex flex-col items-center  justify-between space-y-0 ">
+              <Card key={contest.id} className="overflow-hidden p-6 gap-2 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+                <CardHeader className="pb-2 px-0 flex flex-col items-center  justify-between space-y-0 ">
                   <div className='flex items-center justify-between gap-x-8 w-full'>
                     <div>
                       <h2 className="text-lg font-semibold text-gray-800 truncate">{contest.title}</h2>
@@ -121,7 +129,7 @@ const ContestDashboard = () => {
                   <p className="text-gray-500 flex justify-start w-full text-xs">{formatDate(contest.createdAt)}</p>
                 </CardHeader>
 
-                <CardContent className="pt-2">
+                <CardContent className="px-0">
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{contest.description}</p>
 
                   <div className="flex items-center text-xs text-gray-500 mb-3">
@@ -144,23 +152,31 @@ const ContestDashboard = () => {
                   </div>
                 </CardContent>
 
-                <CardFooter className="p-0 ">
+                <CardFooter className="px-0 mt-2">
                   {userInfo.role === "ADMIN" ? (
-                    <div className='flex justify-end px-2 w-full gap-x-2'>
-                      {/* <Link to={`/contests/${contest.id}/problems`}>
-                        <div className='flex items-center p-2 rounded-md hover:bg-[#e5f1ff]'>
-                          <h1 className='text-[#4a516d] font-semibold text-sm'>Show Details</h1>
-                          <EyeIcon className="ml-1 h-3 w-3" />
+                    isUpcoming ? (
+                      <div className='flex justify-end w-full gap-x-2'>
+                        <Link to={`/contests/${contest.id}/add-problems`}>
+                          <Button
+                            className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                            Add Problem
+                            <ArrowRight className="ml-1 h-3 w-3" />
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <>
+                        <div className='flex w-full justify-end'>
+                          <Link to={`/contests/${contest.id}/leaderboard`}>
+                            <Button
+                              className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                              Show Details
+                              <ArrowRight className="ml-1 h-3 w-3" />
+                            </Button>
+                          </Link>
                         </div>
-                      </Link> */}
-                      <Link to={`/contests/${contest.id}/add-problems`}>
-                        <Button
-                          className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                          Add Problem
-                          <ArrowRight className="ml-1 h-3 w-3" />
-                        </Button>
-                      </Link>
-                    </div>
+                      </>
+                    )
                   ) : (
                     <div className='flex w-full justify-end'>
                       <Link to={`/contests/${contest.id}`}>

@@ -14,6 +14,7 @@ import { UserContext } from "./context/UserContext";
 import LoadingScreen from "./components/ui/LoadingScreen";
 import AuthInitializer from "./pages/Layouts/AuthInitializer";
 import AddProblemsPage from "./pages/Problems/AddProblemsPage";
+import HomeLayout from "./pages/Layouts/HomeLayout";
 
 function App() {
   const { userInfo } = useContext(UserContext);
@@ -22,8 +23,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/account/login" element={<LoginSignUp />} />
-        <Route path="/" element={<><MainHeader /> <AuthInitializer /></>}>
-          <Route index element={<Homepage />} />
+        <Route path="/" element={<HomeLayout />}>
+          <Route index element={<Homepage />}/>
           <Route path="/contests">
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page

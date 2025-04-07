@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 
 const JoinContest = () => {
     const { contestId } = useParams();
-    const { getContest, joinContest, userInfo } = useContext(UserContext);
+    const { getContest, joinContest, userInfo, getAccurateTime } = useContext(UserContext);
     const [timeStatus, setTimeStatus] = useState('not-started');
     const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [contestData, setContestData] = useState(null);
@@ -35,6 +35,18 @@ const JoinContest = () => {
     }, []);
 
     async function handleJoinContest() {
+        const now = getAccurateTime();
+        // const startTime = new Date(contestData.startTime);
+        const endTime = new Date(contestData.endTime);
+
+        // const isOngoing = now >= startTime && now <= endTime;
+        const isEnded = now > endTime;
+
+        if(isEnded) {
+            toast.error("Contest has ended. You cannot join now.");
+            return;
+        }
+        // const isUpcoming = now < startTime;
         setJoining(true);
         const res = await joinContest(contestId);
         // console.log(res.data);
@@ -59,21 +71,21 @@ const JoinContest = () => {
         });
     };
 
-    const getContestDuration = () => {
-        const start = new Date(contestData?.startTime);
-        const end = new Date(contestData?.endTime);
-        const durationMs = end - start;
+    // const getContestDuration = () => {
+    //     const start = new Date(contestData?.startTime);
+    //     const end = new Date(contestData?.endTime);
+    //     const durationMs = end - start;
 
-        const days = Math.floor(durationMs / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((durationMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
+    //     const days = Math.floor(durationMs / (1000 * 60 * 60 * 24));
+    //     const hours = Math.floor((durationMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    //     const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60));
 
-        return { days, hours, minutes };
-    };
+    //     return { days, hours, minutes };
+    // };
 
     useEffect(() => {
         const updateTime = () => {
-            const now = new Date();
+            const now = getAccurateTime();
             const startTime = new Date(contestData?.startTime);
             const endTime = new Date(contestData?.endTime);
 
@@ -106,7 +118,7 @@ const JoinContest = () => {
         return () => clearInterval(interval);
     }, [contestData?.startTime, contestData?.endTime]);
 
-    const contestDuration = getContestDuration();
+    // const contestDuration = getContestDuration();
 
     const getGradientClass = () => {
         if (timeStatus === 'not-started') return 'from-blue-500 to-indigo-600';

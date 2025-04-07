@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react'
 import { UserContext } from '../../context/UserContext';
+import { Outlet } from 'react-router';
 
-const AuthInitializer = ({ children }) => {
+const AuthInitializer = () => {
 
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const { getMe } = useContext(UserContext);
 
     useEffect(() => {
@@ -11,25 +12,19 @@ const AuthInitializer = ({ children }) => {
             try {
                 const user = await getMe();
                 console.log(user)
-                setLoading(false);
+                // setLoading(false);
             } catch (error) {
                 console.error(error);
             } finally {
-                setLoading(false);
+                // setLoading(false);
             }
         })();
     }, [])
 
-    if (loading) {
-        return (
-            <div className='w-full h-[100vh] flex justify-center items-center'>
-                Loading...
-            </div>
-        )
-    }
-
     return (
-        <div>{children}</div>
+        <>
+            <Outlet />
+        </>
     )
 }
 export default AuthInitializer
