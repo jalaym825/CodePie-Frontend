@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Calendar, Clock, Users, FileText, Trophy, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Users, FileText, Trophy, ArrowRight, Loader } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ const JoinContest = () => {
     const [contestData, setContestData] = useState(null);
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
+    const [joining, setJoining] = useState(false);
 
     async function handleGetContest() {
         const userId = userInfo.id;
@@ -34,12 +35,12 @@ const JoinContest = () => {
     }, []);
 
     async function handleJoinContest() {
-        console.log("okok")
+        setJoining(true);
         const res = await joinContest(contestId);
         // console.log(res.data);
         if (res.status === 201) {
             toast.success(res.message);
-            navigate(`/contests/${contestId}/`)
+            navigate(`/contests/${contestId}/problems`)
             setLoading(false);
         } else {
             toast.error(res.data.message);
@@ -154,7 +155,7 @@ const JoinContest = () => {
                     <div className="bg-white p-6">
                         <div className="flex flex-col space-y-6">
                             {/* Contest Duration */}
-                            <div className="flex flex-col sm:flex-row justify-between items-center bg-blue-50 p-4 rounded-lg">
+                            {/* <div className="flex flex-col sm:flex-row justify-between items-center bg-blue-50 p-4 rounded-lg">
                                 <div className="flex items-center gap-2 mb-3 sm:mb-0">
                                     <Clock className="text-blue-600" size={20} />
                                     <span className="font-semibold text-gray-700">Contest Duration:</span>
@@ -173,7 +174,7 @@ const JoinContest = () => {
                                         <div className="text-xs text-gray-500">MIN</div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
 
                             {timeStatus !== 'completed' && (
                                 <div>
@@ -248,7 +249,7 @@ const JoinContest = () => {
                             {
                                 timeStatus === 'not-started' && (
                                     <Button disabled className="w-full bg-gray-600 hover:bg-gray-700">
-                                        contest not started
+                                        Contest not started
                                     </Button>
                                 )
                             }
@@ -261,17 +262,22 @@ const JoinContest = () => {
                                         </Button>
                                     </Link>
                                 ) : (
-                                    <Button onClick={handleJoinContest} className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}>
-                                        Join Contest Now
+                                    <Button disabled={joining} onClick={handleJoinContest} className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${joining ? 'cursor-not-allowed opacity-50' : ''}`}>
+                                        {joining ? <>
+                                            <Loader className="animate-spin mr-2 h-4 w-4" />
+                                            Joining...
+                                        </> : "Join Contest"}
                                         <ArrowRight className="ml-2 h-4 w-4" />
                                     </Button>
                                 )
                             )}
 
                             {timeStatus === 'completed' && (
-                                <Button className="w-full bg-gray-600 hover:bg-gray-700">
-                                    View Results
-                                </Button>
+                                <Link to={`/contests/${contestData?.id}/leaderboard`}>
+                                    <Button className="w-full bg-gray-600 hover:bg-gray-700">
+                                        View Results
+                                    </Button>
+                                </Link>
                             )}
                         </CardFooter>
                     </Card>

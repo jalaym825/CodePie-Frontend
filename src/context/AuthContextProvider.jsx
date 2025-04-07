@@ -38,8 +38,7 @@ export default function AuthContextProvider({ children }) {
     }
 
     async function handleSignUp() {
-        const [firstName, lastName] = signUpCredentials.username.split(" ");
-        const res = await postApi("/auth/register", { firstName: firstName, lastName: lastName, email: signUpCredentials.email, password: signUpCredentials.password });
+        const res = await postApi("/auth/register", { name: signUpCredentials.username, email: signUpCredentials.email, password: signUpCredentials.password });
         console.log(res.response);
         if (res?.status === 201) {
             console.log(res.status);
