@@ -15,7 +15,7 @@ import MDEditor from '@uiw/react-md-editor';
 const AddProblemsPage = () => {
     const navigate = useNavigate();
     const { contestId } = useParams();
-    const { createProblem } = useContext(UserContext);
+    const { createContestProblem } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
 
     const [newProblem, setNewProblem] = useState({
@@ -85,7 +85,7 @@ const AddProblemsPage = () => {
             testCases: formattedTestCases,
         };
         console.log(payload);
-        const res = await createProblem(payload);
+        const res = await createContestProblem(payload);
 
         if (res?.status === 201) {
             toast.success(res.message);

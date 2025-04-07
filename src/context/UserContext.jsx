@@ -6,6 +6,7 @@ export const UserContext = createContext({
     getUserProfile: () => { },
     logoutUser: () => { },
     createContest: () => { },
+    createContestProblem: () => { },
     createProblem: () => { },
     getProblem: () => { },
     getContest: () => { },
