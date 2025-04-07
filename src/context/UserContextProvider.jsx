@@ -99,8 +99,27 @@ export default function UserContextProvider({ children }) {
         }
     }
 
+    async function handleCreateContestProblem(newContest) {
+        const res = await postApi("/problems/", {
+            ...newContest,
+            isPractice: false,
+        });
+        console.log(res);
+        if (res.status === 201) {
+            return ({
+                status: res.status,
+                message: res.data.message
+            })
+        } else {
+            return res.response;
+        }
+    }
+
     async function handleCreateProblem(newContest) {
-        const res = await postApi("/problems/", newContest);
+        const res = await postApi("/problems/", {
+            ...newContest,
+            isPractice: true,
+        });
         console.log(res);
         if (res.status === 201) {
             return ({
@@ -149,6 +168,7 @@ export default function UserContextProvider({ children }) {
         logoutUser: handleLogout,
         createContest: handleCreateContest,
         getAllContests: handlegetAllContests,
+        createContestProblem: handleCreateContestProblem,
         createProblem: handleCreateProblem,
         getProblem: handlegetProblem,
         getContest: handlegetContest,

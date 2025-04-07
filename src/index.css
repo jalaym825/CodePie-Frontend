@@ -320,3 +320,13 @@
     --size: 48px;
   }
 }
+
+.md-editor-container {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  width: 80%;
+  margin: 0 auto;
+
+  * {
+      font-family: inherit !important;
+  }
+}

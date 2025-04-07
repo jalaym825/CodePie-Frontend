@@ -3,9 +3,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Settings, Maximize, Minimize, Code2 } from 'lucide-react';
-import { languages, problems } from '../../helpers/editorData';
+import { languages } from '../../helpers/editorData';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../../context/EditorSettingsContext';
+import { useNavigate, useParams } from 'react-router';
 
 const Header = () => {
     const { selectedProblem, setSelectedProblem, contest } = useContext(CodeExecutionContext);
@@ -17,6 +18,17 @@ const Header = () => {
         language,
         setLanguage,
     } = useContext(EditorSettingsContext);
+
+    const navigate = useNavigate();
+    const { contestId } = useParams();
+    
+    const handleProblemChange = (problemId) => {
+        const problem = contest.problems.find((p) => p.id === problemId);
+        if (problem) {
+            setSelectedProblem(problem);
+            navigate(`/contests/${contestId}/problems/${problem.id}`);
+        }
+    };
 
     return (
         <div className="flex justify-between items-center p-2 px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
@@ -46,7 +58,7 @@ const Header = () => {
                     <SelectTrigger className="w-40 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 h-8 text-xs">
                         <SelectValue placeholder="Problem" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
+                    <SelectContent onValueChange={handleProblemChange} className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
                         {contest.problems.map((problem) => (
                             <SelectItem key={problem.id} value={problem.id} className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700">
                                 {problem.title} ({problem.difficultyLevel})

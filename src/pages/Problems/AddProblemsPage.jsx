@@ -11,11 +11,12 @@ import { Textarea } from '../../components/ui/textarea';
 import { Button } from '../../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/ui/select';
 import MDEditor from '@uiw/react-md-editor';
+import "@uiw/react-md-editor/markdown-editor.css";
 
 const AddProblemsPage = () => {
     const navigate = useNavigate();
     const { contestId } = useParams();
-    const { createProblem } = useContext(UserContext);
+    const { createContestProblem } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
 
     const [newProblem, setNewProblem] = useState({
@@ -85,7 +86,7 @@ const AddProblemsPage = () => {
             testCases: formattedTestCases,
         };
         console.log(payload);
-        const res = await createProblem(payload);
+        const res = await createContestProblem(payload);
 
         if (res?.status === 201) {
             toast.success(res.message);
@@ -140,14 +141,16 @@ const AddProblemsPage = () => {
 
                         <div>
                             <Label htmlFor="problem-description">Description</Label>
-                            <MDEditor
-                                value={newProblem.description}
-                                onChange={(value) => setNewProblem({ ...newProblem, description: value || '' })}
-                                height={300}
-                                theme='light'
-                                className='mt-2'
-                                preview="edit"
-                            />
+                            <div data-color-mode="light">
+                                {/* <div className="wmde-markdown-var"> </div> */}
+                                <MDEditor
+                                    value={newProblem.description}
+                                    onChange={(value) => setNewProblem((prevProblem) => {
+                                        return { ...prevProblem, description: value };
+                                    })}
+                                    // className='md-editor-container'
+                                />
+                            </div>
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                         </div>
 
