@@ -154,29 +154,15 @@ const ContestDashboard = () => {
 
                 <CardFooter className="px-0 mt-2">
                   {userInfo.role === "ADMIN" ? (
-                    isUpcoming ? (
-                      <div className='flex justify-end w-full gap-x-2'>
-                        <Link to={`/contests/${contest.id}/add-problems`}>
-                          <Button
-                            className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                            Add Problem
-                            <ArrowRight className="ml-1 h-3 w-3" />
-                          </Button>
-                        </Link>
-                      </div>
-                    ) : (
-                      <>
-                        <div className='flex w-full justify-end'>
-                          <Link to={`/contests/${contest.id}/leaderboard`}>
-                            <Button
-                              className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
-                              Show Details
-                              <ArrowRight className="ml-1 h-3 w-3" />
-                            </Button>
-                          </Link>
-                        </div>
-                      </>
-                    )
+                    <div className='flex justify-end w-full gap-x-2'>
+                      <Link to={`/contests/${contest.id}/add-problems`}>
+                        <Button
+                          className="border-[0.5px] cursor-pointer font-semibold font-manrope p-4 w-38  rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]">
+                          Add Problem
+                          <ArrowRight className="ml-1 h-3 w-3" />
+                        </Button>
+                      </Link>
+                    </div>
                   ) : (
                     <div className='flex w-full justify-end'>
                       <Link to={`/contests/${contest.id}`}>
