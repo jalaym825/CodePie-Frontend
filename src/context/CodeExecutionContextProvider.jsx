@@ -28,6 +28,8 @@ export default function CodeExecutionContextProvider({ children }) {
 
     const [showResultDialog, setShowResultDialog] = useState(false);
 
+    const [loading, setLoading] = useState(false);
+
     const { userInfo } = useContext(UserContext);
     const { language } = useContext(EditorSettingsContext);
 
@@ -153,6 +155,7 @@ export default function CodeExecutionContextProvider({ children }) {
                 const contest = response.data.data;
                 console.log('Fetched contest:', contest);
                 setContest(contest);
+                setProblems(contest.problems);
             }
 
             return {
@@ -165,13 +168,18 @@ export default function CodeExecutionContextProvider({ children }) {
         }
     }, [userInfo]);
 
-    // const handleProblemChange = useCallback((problemId) => {
-    //     const problem = problems.find((p) => p.id === problemId);
-    //     if (problem) {
-    //         setSelectedProblem(problem);
-    //         setTestResults([]);
-    //     }
-    // }, []);
+    const handleProblemChange = useCallback(async (problemId) => {
+        const problem = problems.find((p) => p.id === problemId);
+        if (problem) {
+            setLoading(true);
+            console.log('Problem changed:', problemId);
+            const res = await handleFetchProblem(problemId);
+            if (res.status === 200) {
+                setLoading(false);
+                setTestResults([]);
+            }
+        }
+    }, [handleFetchProblem, problems]);
 
     const executeCode = useCallback(async (input, expectedOutput = '', testCaseId = '') => {
         // you can use expectedOutput later if needed
@@ -291,7 +299,7 @@ export default function CodeExecutionContextProvider({ children }) {
         code,
         setCode,
         selectedProblem,
-        // setSelectedProblem: handleProblemChange,
+        setSelectedProblem: handleProblemChange,
         output,
         isRunning,
         statusBadge,
@@ -310,6 +318,8 @@ export default function CodeExecutionContextProvider({ children }) {
         fetchProblem: handleFetchProblem,
         showResultDialog,
         setShowResultDialog,
+        loading,
+        setLoading,
     }), [
         contest,
         setContest,
@@ -318,7 +328,7 @@ export default function CodeExecutionContextProvider({ children }) {
         setProblems,
         code,
         selectedProblem,
-        // handleProblemChange,
+        handleProblemChange,
         output,
         isRunning,
         statusBadge,
@@ -335,6 +345,8 @@ export default function CodeExecutionContextProvider({ children }) {
         handleFetchProblem,
         showResultDialog,
         setShowResultDialog,
+        loading,
+        setLoading,
     ]);
 
     return (

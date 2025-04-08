@@ -33,12 +33,14 @@ import { toast } from 'sonner';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 
 const CodeEditor = () => {
-    const [loading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults } = useContext(CodeExecutionContext);
+    const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults, loading } = useContext(CodeExecutionContext);
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
 
     const { id, contestId, problemId } = useParams();
+    console.log("contestId", contestId, "problemId", problemId, "id", id);
+    
     const navigate = useNavigate();
 
     // Determine if this is a competition problem
@@ -61,7 +63,7 @@ const CodeEditor = () => {
     }
 
     async function handleFetchProblem() {
-        if (!isContest && !currentProblemId) return;
+        // if (!isContest && !currentProblemId) return;
 
         if (isContest) {
             const res = await handleFetchCompetition();
@@ -74,7 +76,7 @@ const CodeEditor = () => {
 
         const res = await fetchProblem(currentProblemId);
         if (res.status === 200) {
-            setLoading(false);
+            setIsLoading(false);
         }
     }
 
@@ -82,7 +84,7 @@ const CodeEditor = () => {
         handleFetchProblem();
     }, [])
 
-    if (loading) {
+    if (isLoading || loading) {
         return (
             <LoadingScreen />
         )

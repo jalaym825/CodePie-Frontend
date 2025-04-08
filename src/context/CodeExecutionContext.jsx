@@ -31,4 +31,6 @@ export const CodeExecutionContext = createContext({
     fetchProblem: () => {},
     showResultDialog: Boolean,
     setShowResultDialog: () => {},
+    loading: Boolean,
+    setLoading: () => {},
 });

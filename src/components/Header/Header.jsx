@@ -19,14 +19,14 @@ const Header = () => {
         setLanguage,
     } = useContext(EditorSettingsContext);
 
-    const navigate = useNavigate();
-    const { contestId } = useParams();
+    // const navigate = useNavigate();
+    // const { contestId } = useParams();
     
     const handleProblemChange = (problemId) => {
         const problem = contest.problems.find((p) => p.id === problemId);
         if (problem) {
-            setSelectedProblem(problem);
-            navigate(`/contests/${contestId}/problems/${problem.id}`);
+            setSelectedProblem(problem.id);
+            // navigate(`/contests/${contestId}/problems/${problem.id}`);
         }
     };
 
@@ -53,12 +53,12 @@ const Header = () => {
 
                 <Select
                     value={selectedProblem.id}
-                    onValueChange={(id) => setSelectedProblem(id)}
+                    onValueChange={handleProblemChange}
                 >
                     <SelectTrigger className="w-40 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 h-8 text-xs">
                         <SelectValue placeholder="Problem" />
                     </SelectTrigger>
-                    <SelectContent onValueChange={handleProblemChange} className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
+                    <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200">
                         {contest.problems.map((problem) => (
                             <SelectItem key={problem.id} value={problem.id} className="text-xs hover:bg-gray-100 dark:hover:bg-gray-700">
                                 {problem.title} ({problem.difficultyLevel})

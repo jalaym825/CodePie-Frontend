@@ -231,7 +231,7 @@ const AddProblemsPage = () => {
                                             <Textarea
                                                 value={testCase.input}
                                                 onChange={(e) => updateTestCase(index, 'input', e.target.value)}
-                                                className="mt-1 font-mono text-sm"
+                                                className="mt-1 font-geist-mono text-sm"
                                                 rows={3}
                                             />
                                         </div>
@@ -240,7 +240,7 @@ const AddProblemsPage = () => {
                                             <Textarea
                                                 value={testCase.output}
                                                 onChange={(e) => updateTestCase(index, 'output', e.target.value)}
-                                                className="mt-1 font-mono text-sm"
+                                                className="mt-1 font-geist-mono text-sm"
                                                 rows={3}
                                             />
                                         </div>
@@ -250,7 +250,7 @@ const AddProblemsPage = () => {
                                         <Textarea
                                             value={testCase.explanation}
                                             onChange={(e) => updateTestCase(index, 'explanation', e.target.value)}
-                                            className="mt-1 font-mono text-sm"
+                                            className="mt-1 font-geist-mono text-sm"
                                             rows={2}
                                         />
                                     </div>

@@ -1,4 +1,3 @@
-import MainHeader from "@/components/Header/MainHeader";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import { UserContext } from "@/context/UserContext";
 import { useContext, useEffect, useState } from "react";
@@ -31,7 +30,6 @@ export default function HomeLayout() {
 
     return (
         <>
-            <MainHeader />
             <main>
                 <Outlet />
             </main>

@@ -15,6 +15,7 @@ import LoadingScreen from "./components/ui/LoadingScreen";
 import AuthInitializer from "./pages/Layouts/AuthInitializer";
 import AddProblemsPage from "./pages/Problems/AddProblemsPage";
 import HomeLayout from "./pages/Layouts/HomeLayout";
+import HeaderWrapper from "./pages/Layouts/HeaderWrapper";
 
 function App() {
   const { userInfo } = useContext(UserContext);
@@ -24,24 +25,26 @@ function App() {
       <Routes>
         <Route path="/account/login" element={<LoginSignUp />} />
         <Route path="/" element={<HomeLayout />}>
-          <Route index element={<Homepage />}/>
-          <Route path="/contests">
+          <Route index element={<Homepage />} />
+
+          <Route path="/contests" element={<HeaderWrapper />}>
             <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
             <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
             <Route path="/contests/:contestId/add-problems" element={<AddProblemsPage />} />
-            {/* <Route path="/contests/:contestId/problems" element={<EachContestProblems />} /> */}
             <Route path="/contests/:contestId/leaderboard" element={<ContestLeaderBoard />} />        //Competition details page
             <Route path="/contests/:contestId/problems" element={<ContestInfo />} />            //Competition details page
             <Route path="/contests/:contestId" element={<JoinContest />} />      //Competition details page
           </Route>
-        </Route>
-        <Route path="/contests">
-          <Route path="/contests/:contestId/problems/:problemId" element={userInfo?.id?.length === 0 ? <LoadingScreen /> : <CodeEditor />} />  //Problem details page inside competition
-        </Route>
-        <Route path="/problems">
-          <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
-          <Route path="/problems/create" element={<AddProblemsPage />} />
-          <Route path="/problems/:id" element={<CodeEditor />} />             //Problem details page
+
+          <Route path="/contests">
+            <Route path="/contests/:contestId/problems/:problemId" element={userInfo?.id?.length === 0 ? <LoadingScreen /> : <CodeEditor />} />  //Problem details page inside competition
+          </Route>
+
+          <Route path="/problems" element={<HeaderWrapper />}>
+            <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
+            <Route path="/problems/create" element={<AddProblemsPage />} />
+            <Route path="/problems/:id" element={<CodeEditor />} />             //Problem details page
+          </Route>
         </Route>
       </Routes>
     </Router>
