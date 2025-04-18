@@ -194,6 +194,11 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [handleFetchProblem, problems]);
 
     const executeCode = useCallback(async (input, expectedOutput = '', testCaseId = '') => {
+        if(code.trim() === '') {
+            toast.error('Code cannot be empty');
+            return;
+        }
+
         // you can use expectedOutput later if needed
         try {
             console.log('Executing code with input:', input, 'Expected Output:', expectedOutput);
@@ -233,6 +238,11 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [executeCode, stdin]);
 
     const runTestCase = useCallback(async (testCase, index) => {
+        if(code.trim() === '') {
+            toast.error('Code cannot be empty');
+            return;
+        }
+
         // Add this test case to running state
         setRunningTestCases(prev => new Set(prev).add(testCase.id));
         
@@ -264,6 +274,11 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [executeCode]);
 
     const runAllTests = useCallback(async () => {
+        if(code.trim() === '') {
+            toast.error('Code cannot be empty');
+            return;
+        }
+
         setIsTestingAll(true);
         setTestResults([]);
         
@@ -292,7 +307,10 @@ export default function CodeExecutionContextProvider({ children }) {
         try {
             // Reset test results before submitting
             setTestResults([]);
-            
+            if(code.trim() === '') {
+                toast.error('Code cannot be empty');
+                return;
+            }
             console.log('Submitting solution:', {
                 problemId: selectedProblem.id,
                 sourceCode: code,
