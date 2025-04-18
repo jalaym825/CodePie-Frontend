@@ -19,14 +19,14 @@ const Header = () => {
         setLanguage,
     } = useContext(EditorSettingsContext);
 
-    // const navigate = useNavigate();
-    // const { contestId } = useParams();
+    const navigate = useNavigate();
+    const { contestId } = useParams();
     
     const handleProblemChange = (problemId) => {
         const problem = contest.problems.find((p) => p.id === problemId);
         if (problem) {
             setSelectedProblem(problem.id);
-            // navigate(`/contests/${contestId}/problems/${problem.id}`);
+            navigate(`/contests/${contestId}/problems/${problem.id}`);
         }
     };
 
