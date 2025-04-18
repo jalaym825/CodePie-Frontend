@@ -2,13 +2,19 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Loader2, CheckCircle, XCircle, AlertCircle, Clock, Server, Code } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toInitialCap from "../../helpers/initialCap";
 import { useNavigate } from "react-router";
 import { CodeExecutionContext } from "../../context/CodeExecutionContext";
 
 export default function TestResultDialog({ open, onOpenChange, testCases, testResults }) {
     const [selectedCase, setSelectedCase] = useState(null);
+
+    useEffect(() => {
+        if (open) {
+            setSelectedCase(null);
+        }
+    }, [open]);
 
     const { contest } = useContext(CodeExecutionContext);
     const navigate = useNavigate();

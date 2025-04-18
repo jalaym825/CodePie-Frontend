@@ -11,6 +11,28 @@ import { ThemeContext } from '../../context/ThemeContext';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 
+// Constants for localStorage
+const SOLUTION_STORAGE_KEY_PREFIX = 'codeduel_solution_';
+const SOLUTION_EXPIRY_HOURS = 24; // Solutions expire after 24 hours
+
+// Helper to clear expired solutions
+const clearExpiredSolutions = () => {
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith(SOLUTION_STORAGE_KEY_PREFIX)) {
+            try {
+                const data = JSON.parse(localStorage.getItem(key));
+                if (data.expiry && new Date().getTime() > data.expiry) {
+                    localStorage.removeItem(key);
+                }
+            } catch (err) {
+                // If data is corrupted, remove it
+                localStorage.removeItem(key);
+            }
+        }
+    }
+};
+
 const EditorPanel = () => {
     const {
         code,
@@ -19,7 +41,8 @@ const EditorPanel = () => {
         executionTime,
         memoryUsage,
         isRunning,
-        runCustomTest
+        runCustomTest,
+        selectedProblem
     } = useContext(CodeExecutionContext);
 
     const {
@@ -39,12 +62,127 @@ const EditorPanel = () => {
 
     const editorRef = useRef(null);
     const containerRef = useRef(null);
+    const currentCodeRef = useRef(code);
+
+    // Generate storage key specific to problem and language
+    const getStorageKey = (problemId, languageId) => {
+        if (!problemId) return null;
+        return `${SOLUTION_STORAGE_KEY_PREFIX}${problemId}_${languageId}`;
+    };
+
+    // Save solution to localStorage with expiration
+    const saveSolutionToStorage = (codeToSave) => {
+        if (!selectedProblem?.id) return;
+        
+        const storageKey = getStorageKey(selectedProblem.id, language.id);
+        if (!storageKey) return;
+
+        const expiryTime = new Date();
+        expiryTime.setHours(expiryTime.getHours() + SOLUTION_EXPIRY_HOURS);
+
+        const solutionData = {
+            code: codeToSave,
+            expiry: expiryTime.getTime(),
+            languageId: language.id,
+            languageName: language.name, // Store language name for reference
+            savedAt: new Date().toISOString()
+        };
+
+        localStorage.setItem(storageKey, JSON.stringify(solutionData));
+    };
+
+    // Load solution from localStorage
+    const loadSolutionFromStorage = (problemId, languageId) => {
+        const storageKey = getStorageKey(problemId, languageId);
+        if (!storageKey) return null;
+
+        const storedData = localStorage.getItem(storageKey);
+        if (!storedData) return null;
+
+        try {
+            const solutionData = JSON.parse(storedData);
+            
+            // Check if solution has expired
+            if (solutionData.expiry && new Date().getTime() > solutionData.expiry) {
+                localStorage.removeItem(storageKey); // Remove expired solution
+                return null;
+            }
+
+            // Double-check that the language ID matches (defensive programming)
+            if (solutionData.languageId !== languageId) {
+                console.warn('Language mismatch in stored solution');
+                return null;
+            }
+
+            return solutionData.code;
+        } catch (error) {
+            console.error('Error parsing stored solution:', error);
+            localStorage.removeItem(storageKey); // Remove corrupted data
+            return null;
+        }
+    };
+
+    // Handle code changes
+    const handleCodeChange = (newCode) => {
+        setCode(newCode);
+        currentCodeRef.current = newCode; // Update ref with latest code
+        saveSolutionToStorage(newCode);
+    };
 
     const handleEditorMount = (editor, monaco) => {
         editorRef.current = editor;
         handleEditorDidMount(editor, monaco);
     };
 
+    // Clear expired solutions on component mount
+    useEffect(() => {
+        clearExpiredSolutions();
+    }, []);
+
+    // Load saved solution when problem or language changes
+    useEffect(() => {
+        if (selectedProblem?.id) {
+            const savedCode = loadSolutionFromStorage(selectedProblem.id, language.id);
+            if (savedCode !== null) {
+                setCode(savedCode);
+                currentCodeRef.current = savedCode; // Update ref
+            } else {
+                setCode(''); // Clear editor if no saved solution exists for selected language
+                currentCodeRef.current = '';
+            }
+        }
+    }, [selectedProblem?.id, language.id]);
+    
+    // Save code on unmount and periodically
+    useEffect(() => {
+        // Periodic saving (every 3 seconds)
+        const intervalId = setInterval(() => {
+            if (currentCodeRef.current?.trim() && selectedProblem?.id) {
+                saveSolutionToStorage(currentCodeRef.current);
+            }
+        }, 3000);
+        
+        // Save on unmount
+        return () => {
+            clearInterval(intervalId);
+            if (currentCodeRef.current?.trim() && selectedProblem?.id) {
+                saveSolutionToStorage(currentCodeRef.current);
+            }
+        };
+    }, [selectedProblem?.id, language.id]);
+    
+    // Save code when losing focus (additional safety)
+    useEffect(() => {
+        const handleBlur = () => {
+            if (currentCodeRef.current?.trim() && selectedProblem?.id) {
+                saveSolutionToStorage(currentCodeRef.current);
+            }
+        };
+        
+        window.addEventListener('blur', handleBlur);
+        return () => window.removeEventListener('blur', handleBlur);
+    }, [selectedProblem?.id, language.id]);
+    
     useEffect(() => {
         const handleResize = () => {
             if (editorRef.current) {
@@ -69,7 +207,6 @@ const EditorPanel = () => {
         <div
             ref={containerRef}
             className="flex flex-col h-full flex-grow p-0 gap-0 overflow-hidden rounded-xl border dark:border-gray-700"
-            // style={{ height: '70%', minHeight: '300px' }}
         >
             {showSettings && <EditorSettings />}
 
@@ -155,7 +292,7 @@ const EditorPanel = () => {
                     language={language.monacoLanguage}
                     value={code}
                     theme={theme === 'dark' ? 'vs-dark' : 'vs'}
-                    onChange={e => setCode(e)}
+                    onChange={handleCodeChange}
                     onMount={handleEditorMount}
                     className="h-full"
                     options={{
@@ -199,6 +336,10 @@ const EditorPanel = () => {
                 <Button
                     onClick={() => {
                         if (autoFormat) formatCode();
+                        // Force save current code before running the test
+                        if (currentCodeRef.current?.trim() && selectedProblem?.id) {
+                            saveSolutionToStorage(currentCodeRef.current);
+                        }
                         runCustomTest();
                     }}
                     disabled={isRunning}

@@ -267,7 +267,7 @@ const JoinContest = () => {
                             }
                             {timeStatus === 'in-progress' && (
                                 contestData?.isJoined ? (
-                                    <Link to={`/contests/${contestData?.id}`}>
+                                    <Link to={`/contests/${contestData?.id}/problems`}>
                                         <Button className={`w-full bg-green-600 cursor-pointer hover:bg-green-700 ${loading ? 'cursor-not-allowed opacity-50' : ''}`}>
                                             Enter Contest
                                             <ArrowRight className="ml-2 h-4 w-4" />

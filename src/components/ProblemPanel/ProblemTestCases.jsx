@@ -17,7 +17,14 @@ import { TestTube, Loader2, Play } from 'lucide-react';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 
 const ProblemTestCases = () => {
-    const { selectedProblem, testResults, isTestingAll, runTestCase, runAllTests } = useContext(CodeExecutionContext);
+    const { 
+        selectedProblem, 
+        testResults, 
+        isTestingAll, 
+        runTestCase, 
+        runAllTests,
+        runningTestCases 
+    } = useContext(CodeExecutionContext);
     
     return (
         <div className="h-full flex flex-col">
@@ -47,10 +54,11 @@ const ProblemTestCases = () => {
             </div>
 
             <div className="space-y-4 p-2 overflow-auto flex-grow">
-                {selectedProblem.testCases
+                {selectedProblem?.testCases
                     .filter((tc) => !tc.isHidden)
                     .map((testCase, index) => {
                         const result = testResults.find(testResult => testResult.testCaseId === testCase.id);
+                        const isRunning = runningTestCases.has(testCase.id);
                         
                         return (
                         <Card
@@ -61,7 +69,11 @@ const ProblemTestCases = () => {
                                 <div className="font-medium dark:text-gray-100">
                                     Test Case {index + 1}
                                 </div>
-                                {result && (
+                                {isRunning ? (
+                                    <Badge className="bg-blue-600 dark:bg-blue-700">
+                                        Running...
+                                    </Badge>
+                                ) : result ? (
                                     <Badge
                                         className={
                                             result.status === "ACCEPTED"
@@ -73,7 +85,7 @@ const ProblemTestCases = () => {
                                             ? 'Passed'
                                             : 'Failed'}
                                     </Badge>
-                                )}
+                                ) : null}
                             </CardHeader>
                             <CardContent className="py-2 px-4">
                                 <Accordion
@@ -130,8 +142,16 @@ const ProblemTestCases = () => {
                                         variant="outline"
                                         className="text-xs bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 border-gray-200 dark:border-gray-600 dark:text-gray-200"
                                         onClick={() => runTestCase(testCase, index)}
+                                        disabled={isRunning}
                                     >
-                                        Run Test
+                                        {isRunning ? (
+                                            <>
+                                                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                                                Running...
+                                            </>
+                                        ) : (
+                                            'Run Test'
+                                        )}
                                     </Button>
                                 </div>
                             </CardContent>

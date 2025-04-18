@@ -25,6 +25,7 @@ export default function CodeExecutionContextProvider({ children }) {
     const [testResults, setTestResults] = useState([]);
     const [isTestingAll, setIsTestingAll] = useState(false);
     const [stdin, setStdin] = useState('');
+    const [runningTestCases, setRunningTestCases] = useState(new Set());
 
     const [showResultDialog, setShowResultDialog] = useState(false);
 
@@ -39,65 +40,75 @@ export default function CodeExecutionContextProvider({ children }) {
         const handleSubmissionResult = (data) => {
             console.log('Submission result:', data);
 
-            setIsRunning(false);
+            // For custom run operation
+            if (!data.testCaseId) {
+                setIsRunning(false);
 
-            let resultOutput = '';
-            if (data.stdout) resultOutput += data.stdout;
-            if (data.stderr) resultOutput += data.stderr;
-            if (data.compile_output) resultOutput += data.compile_output;
-            if (data.message) resultOutput += data.message;
+                let resultOutput = '';
+                if (data.stdout) resultOutput += data.stdout;
+                if (data.stderr) resultOutput += data.stderr;
+                if (data.compile_output) resultOutput += data.compile_output;
+                if (data.message) resultOutput += data.message;
 
-            setOutput(resultOutput || 'No output');
+                setOutput(resultOutput || 'No output');
 
-            let statusColor = 'bg-gray-500';
-            let statusMessage = data.status.description;
+                let statusColor = 'bg-gray-500';
+                let statusMessage = data.status.description || 'Ready';
 
-            if (data.testCaseId === "") return; // Ignore empty test case ID
+                if (data.status === "ACCEPTED") {
+                    statusColor = 'bg-green-500';
+                    statusMessage = 'Success';
+                    toast.success('Code executed successfully');
+                } else if (data.status === "WRONG_ANSWER") {
+                    statusColor = 'bg-yellow-500';
+                    statusMessage = 'Wrong Answer';
+                    toast.warning('Wrong answer');
+                } else if (data.status === "TIME_LIMIT_EXCEEDED") {
+                    statusColor = 'bg-red-500';
+                    statusMessage = 'Time Limit';
+                    toast.error('Time limit exceeded');
+                } else if (data.status === "COMPILATION_ERROR") {
+                    statusColor = 'bg-red-500';
+                    statusMessage = 'Compilation Error';
+                    toast.error('Compilation error');
+                } else {
+                    toast.info(data.message || 'Unknown error');
+                }
 
-            if (data.status === "ACCEPTED") {
-                statusColor = 'bg-green-500';
-                statusMessage = 'Success';
-                toast.success('Code executed successfully');
-            } else if (data.status === "WRONG_ANSWER") {
-                statusColor = 'bg-yellow-500';
-                statusMessage = 'Wrong Answer';
-                toast.warning('Wrong answer');
-            } else if (data.status === "TIME_LIMIT_EXCEEDED") {
-                statusColor = 'bg-red-500';
-                statusMessage = 'Time Limit';
-                toast.error('Time limit exceeded');
-            } else if (data.status === "COMPILATION_ERROR") {
-                statusColor = 'bg-red-500';
-                statusMessage = 'Compilation Error';
-                toast.error('Compilation error');
-            } else {
-                toast.info(data.message || 'Unknown error');
+                setStatusBadge({ label: statusMessage, color: statusColor });
+
+                if (data.time) setExecutionTime(data.time);
+                if (data.memory) setMemoryUsage((data.memory / 1024).toFixed(2));
+                
+                setRecentSubmissions((prev) => [
+                    {
+                        id: Date.now(),
+                        language: data.languageId || 'unknown',
+                        timestamp: new Date().toLocaleTimeString(),
+                        status: statusMessage,
+                        time: data.time,
+                    },
+                    ...prev
+                ].slice(0, 5));
+                
+                return;
             }
 
-            setStatusBadge({ label: statusMessage, color: statusColor });
+            // Handle test case results
+            if (data.testCaseId) {
+                setRunningTestCases(prev => {
+                    const updated = new Set(prev);
+                    updated.delete(data.testCaseId);
+                    return updated;
+                });
 
-            if (data.time) setExecutionTime(data.time);
-            if (data.memory) setMemoryUsage((data.memory / 1024).toFixed(2));
-
-            //Add the function here which adds the test case result to the list.
-            setTestResults(prev => [...prev, {
-                ...data,
-                testCaseId: data.testCaseId,
-                status: data.status,
-                time: data.time
-            }]);
-            //
-
-            setRecentSubmissions((prev) => [
-                {
-                    id: Date.now(),
-                    language: data.languageId || 'unknown',
-                    timestamp: new Date().toLocaleTimeString(),
-                    status: statusMessage,
-                    time: data.time,
-                },
-                ...prev
-            ].slice(0, 5));
+                setTestResults(prev => [...prev, {
+                    ...data,
+                    testCaseId: data.testCaseId,
+                    status: data.status,
+                    time: data.time
+                }]);
+            }
         };
 
         socket.on("submissionResult", handleSubmissionResult);
@@ -132,6 +143,7 @@ export default function CodeExecutionContextProvider({ children }) {
                 setStatusBadge({ label: 'Ready', color: 'bg-green-500' });
                 setRecentSubmissions([]);
                 setIsTestingAll(false);
+                setRunningTestCases(new Set());
             }
 
             return {
@@ -174,7 +186,7 @@ export default function CodeExecutionContextProvider({ children }) {
             setLoading(true);
             console.log('Problem changed:', problemId);
             const res = await handleFetchProblem(problemId);
-            if (res.status === 200) {
+            if (res && res.status === 200) {
                 setLoading(false);
                 setTestResults([]);
             }
@@ -208,6 +220,7 @@ export default function CodeExecutionContextProvider({ children }) {
         setOutput('Running code...');
         setExecutionTime(null);
         setMemoryUsage(null);
+        setStatusBadge({ label: 'Running...', color: 'bg-blue-500' });
 
         try {
             await executeCode(stdin);
@@ -220,7 +233,9 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [executeCode, stdin]);
 
     const runTestCase = useCallback(async (testCase, index) => {
-        setStatusBadge({ label: 'Processing', color: 'bg-blue-500' });
+        // Add this test case to running state
+        setRunningTestCases(prev => new Set(prev).add(testCase.id));
+        
         try {
             await executeCode(testCase.input, testCase.output, testCase.id);
         } catch (error) {
@@ -232,9 +247,18 @@ export default function CodeExecutionContextProvider({ children }) {
                     expected: testCase.output,
                     actual: 'Error: ' + error.message,
                     error: true,
+                    testCaseId: testCase.id
                 };
                 return newResults;
             });
+            
+            // Remove this test case from running state in case of error
+            setRunningTestCases(prev => {
+                const updated = new Set(prev);
+                updated.delete(testCase.id);
+                return updated;
+            });
+            
             return { passed: false, error: true };
         }
     }, [executeCode]);
@@ -242,12 +266,20 @@ export default function CodeExecutionContextProvider({ children }) {
     const runAllTests = useCallback(async () => {
         setIsTestingAll(true);
         setTestResults([]);
-
+        
         try {
             const visibleTestCases = selectedProblem.testCases.filter(tc => !tc.isHidden);
-            for (let i = 0; i < visibleTestCases.length; i++) {
-                await runTestCase(visibleTestCases[i], i);
-            }
+            
+            // Add all test cases to running state
+            const testCaseIds = new Set(visibleTestCases.map(tc => tc.id));
+            setRunningTestCases(testCaseIds);
+            
+            // Run all test cases in parallel
+            const testPromises = visibleTestCases.map((testCase, index) => 
+                runTestCase(testCase, index)
+            );
+            
+            await Promise.all(testPromises);
         } catch (error) {
             console.log('Error running all test cases:', error);
             toast.error('Error running all test cases');
@@ -257,18 +289,16 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [runTestCase, selectedProblem]);
 
     const submitSolution = useCallback(async () => {
-        setIsTestingAll(true);
-        setTestResults([]);
-
         try {
+            // Reset test results before submitting
+            setTestResults([]);
+            
             console.log('Submitting solution:', {
                 problemId: selectedProblem.id,
                 sourceCode: code,
                 languageId: language.id,
             });
-            // setIsRunning(true);
-            setStatusBadge({ label: 'Processing', color: 'bg-blue-500' });
-
+    
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/`, {
                 problemId: selectedProblem.id,
                 sourceCode: code,
@@ -277,19 +307,18 @@ export default function CodeExecutionContextProvider({ children }) {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" }
             })
+            
             if (res.status === 201) {
                 setShowResultDialog(true);
                 toast.success('Solution submitted successfully!');
             }
+            
             console.log('Submission response:', res.data);
         } catch (error) {
             console.log('Error submitting solution:', error);
             toast.error('Error submitting solution');
-        } finally {
-            setIsTestingAll(false);
         }
     }, [selectedProblem, code, language]);
-
     const ctxValue = useMemo(() => ({
         contest,
         setContest,
@@ -320,12 +349,11 @@ export default function CodeExecutionContextProvider({ children }) {
         setShowResultDialog,
         loading,
         setLoading,
+        runningTestCases
     }), [
         contest,
-        setContest,
         handleFetchContest,
         problems,
-        setProblems,
         code,
         selectedProblem,
         handleProblemChange,
@@ -344,9 +372,8 @@ export default function CodeExecutionContextProvider({ children }) {
         submitSolution,
         handleFetchProblem,
         showResultDialog,
-        setShowResultDialog,
         loading,
-        setLoading,
+        runningTestCases
     ]);
 
     return (

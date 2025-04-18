@@ -29,7 +29,7 @@ const AddProblemsPage = () => {
         points: '',
         isVisible: true,
         testCases: [
-            { input: '', output: '', explanation: '', isHidden: false },
+            { input: '', output: '', explanation: '', isHidden: false, difficulty: '' },
         ],
         isPractice: false
     });
@@ -46,7 +46,7 @@ const AddProblemsPage = () => {
             ...newProblem,
             testCases: [
                 ...newProblem.testCases,
-                { input: '', output: '', explanation: '', isHidden: false },
+                { input: '', output: '', explanation: '', isHidden: false, difficulty: newProblem.difficultyLevel || '' },
             ],
         });
     };
@@ -64,6 +64,15 @@ const AddProblemsPage = () => {
         if (!newProblem.difficultyLevel.trim()) newErrors.difficulty = 'Difficulty is required';
         if (!newProblem.points) newErrors.points = 'Points is required';
         if (!newProblem.testCases.length) newErrors.testCases = 'Test cases are required';
+
+        // Validate test case difficulties
+        newProblem.testCases.forEach((testCase, index) => {
+            if (!testCase.difficulty) {
+                if (!newErrors.testCases) newErrors.testCases = {};
+                newErrors.testCases[index] = 'Test case difficulty is required';
+            }
+        });
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -78,7 +87,7 @@ const AddProblemsPage = () => {
             output: test.output || '',
             explanation: test.explanation || null,
             isHidden: test.isHidden || false,
-            difficulty: newProblem.difficultyLevel,
+            difficulty: test.difficulty,
             points: newProblem.points,
         }));
 
@@ -97,6 +106,20 @@ const AddProblemsPage = () => {
             toast.error(res?.data?.message || 'Something went wrong');
             setLoading(false);
         }
+    };
+
+    // Update all test case difficulties when main difficulty changes
+    const handleMainDifficultyChange = (value) => {
+        const updatedTestCases = newProblem.testCases.map(testCase => ({
+            ...testCase,
+            difficulty: value
+        }));
+
+        setNewProblem({
+            ...newProblem,
+            difficultyLevel: value,
+            testCases: updatedTestCases
+        });
     };
 
     const handleCancel = () => navigate('/contests');
@@ -143,28 +166,26 @@ const AddProblemsPage = () => {
                         <div>
                             <Label htmlFor="problem-description">Description</Label>
                             <div data-color-mode="light">
-
-                            <MDEditor
-                                value={newProblem.description}
-                                onChange={(value) => setNewProblem({ ...newProblem, description: value || '' })}
-                                height={300}
-                                theme='light'
-                                className='mt-2'
-                                // preview="edit"
-                            />
-                        </div>
+                                <MDEditor
+                                    value={newProblem.description}
+                                    onChange={(value) => setNewProblem({ ...newProblem, description: value || '' })}
+                                    height={300}
+                                    theme='light'
+                                    className='mt-2'
+                                />
+                            </div>
 
                             {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
-                                <Label htmlFor="difficulty">Difficulty</Label>
+                                <Label htmlFor="difficulty">Problem Difficulty</Label>
                                 <Select
                                     value={newProblem.difficultyLevel}
-                                    onValueChange={(value) => setNewProblem({ ...newProblem, difficultyLevel: value })}
+                                    onValueChange={handleMainDifficultyChange}
                                 >
-                                    <SelectTrigger className="mt-1 w-[200px]">
+                                    <SelectTrigger className="mt-1 w-full">
                                         <SelectValue placeholder="Select difficulty" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -186,32 +207,13 @@ const AddProblemsPage = () => {
                                 />
                                 {errors.points && <p className="text-red-500 text-sm mt-1">{errors.points}</p>}
                             </div>
-                            <div className="flex items-end space-x-2">
-                                <div className="pt-6">
-                                    <Switch
-                                        id="problem-visibility"
-                                        checked={newProblem.isVisible}
-                                        onCheckedChange={(checked) => setNewProblem({ ...newProblem, isVisible: checked })}
-                                    />
-                                </div>
-                                <Label htmlFor="problem-visibility" className="pb-2">Visible to students</Label>
-                            </div>
                         </div>
 
                         {/* Test Cases */}
                         <div>
                             <div className="flex justify-between items-center mb-2">
                                 <Label>Test Cases</Label>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleAddTestCase}
-                                    className="text-xs"
-                                >
-                                    <Plus className="h-3 w-3 mr-1" /> Add Test Case
-                                </Button>
                             </div>
-
                             {newProblem.testCases.map((testCase, index) => (
                                 <div key={index} className="p-4 border rounded-md mb-3 bg-gray-50 space-y-3">
                                     <div className="flex justify-between items-center mb-1">
@@ -254,15 +256,47 @@ const AddProblemsPage = () => {
                                             rows={2}
                                         />
                                     </div>
-                                    <div className="flex items-center gap-3">
-                                        <Switch
-                                            checked={testCase.isHidden}
-                                            onCheckedChange={(value) => updateTestCase(index, 'isHidden', value)}
-                                        />
-                                        <Label>Hidden Test Case</Label>
+                                    <div className="flex gap-4 items-center">
+                                        <div className="flex items-center gap-3">
+                                            <Switch
+                                                checked={testCase.isHidden}
+                                                onCheckedChange={(value) => updateTestCase(index, 'isHidden', value)}
+                                            />
+                                            <Label>Hidden Test Case</Label>
+                                        </div>
+                                        <div className="w-48">
+                                            <Label>Test Case Difficulty</Label>
+                                            <Select
+                                                value={testCase.difficulty}
+                                                onValueChange={(value) => updateTestCase(index, 'difficulty', value)}
+                                            >
+                                                <SelectTrigger className="mt-1 w-full">
+                                                    <SelectValue placeholder="Select difficulty" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="EASY">Easy</SelectItem>
+                                                    <SelectItem value="MEDIUM">Medium</SelectItem>
+                                                    <SelectItem value="HARD">Hard</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            {errors.testCases && errors.testCases[index] &&
+                                                <p className="text-red-500 text-sm mt-1">{errors.testCases[index]}</p>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             ))}
+                            <div className="flex justify-end mt-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={handleAddTestCase}
+                                    className="text-sm"
+                                    size={"sm"}
+                                >
+                                    <Plus className="h-4 w-4 mr-2" /> Add Test Case
+                                </Button>
+                            </div>
+
                         </div>
                     </CardContent>
 
