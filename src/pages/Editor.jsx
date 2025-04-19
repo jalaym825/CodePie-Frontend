@@ -37,8 +37,6 @@ const CodeEditor = () => {
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
 
     const { id, contestId, problemId } = useParams();
-    console.log("contestId", contestId, "problemId", problemId, "id", id);
-    
     const navigate = useNavigate();
 
     // Determine if this is a competition problem

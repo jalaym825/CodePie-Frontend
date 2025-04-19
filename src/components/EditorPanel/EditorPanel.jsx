@@ -73,7 +73,7 @@ const EditorPanel = () => {
     // Save solution to localStorage with expiration
     const saveSolutionToStorage = (codeToSave) => {
         if (!selectedProblem?.id) return;
-        
+
         const storageKey = getStorageKey(selectedProblem.id, language.id);
         if (!storageKey) return;
 
@@ -101,7 +101,7 @@ const EditorPanel = () => {
 
         try {
             const solutionData = JSON.parse(storedData);
-            
+
             // Check if solution has expired
             if (solutionData.expiry && new Date().getTime() > solutionData.expiry) {
                 localStorage.removeItem(storageKey); // Remove expired solution
@@ -131,6 +131,15 @@ const EditorPanel = () => {
 
     const handleEditorMount = (editor, monaco) => {
         editorRef.current = editor;
+        editorRef.current = editor;
+        editor.focus();
+
+        editor.onKeyDown((event) => {
+            const { keyCode, ctrlKey, metaKey } = event;
+            if ((keyCode === 33 || keyCode === 52) && (metaKey || ctrlKey)) {
+                event.preventDefault();
+            }
+        });
         handleEditorDidMount(editor, monaco);
     };
 
@@ -152,7 +161,7 @@ const EditorPanel = () => {
             }
         }
     }, [selectedProblem?.id, language.id]);
-    
+
     // Save code on unmount and periodically
     useEffect(() => {
         // Periodic saving (every 3 seconds)
@@ -161,7 +170,7 @@ const EditorPanel = () => {
                 saveSolutionToStorage(currentCodeRef.current);
             }
         }, 3000);
-        
+
         // Save on unmount
         return () => {
             clearInterval(intervalId);
@@ -170,7 +179,7 @@ const EditorPanel = () => {
             }
         };
     }, [selectedProblem?.id, language.id]);
-    
+
     // Save code when losing focus (additional safety)
     useEffect(() => {
         const handleBlur = () => {
@@ -178,11 +187,11 @@ const EditorPanel = () => {
                 saveSolutionToStorage(currentCodeRef.current);
             }
         };
-        
+
         window.addEventListener('blur', handleBlur);
         return () => window.removeEventListener('blur', handleBlur);
     }, [selectedProblem?.id, language.id]);
-    
+
     useEffect(() => {
         const handleResize = () => {
             if (editorRef.current) {
@@ -304,6 +313,7 @@ const EditorPanel = () => {
                         automaticLayout: true,
                         tabSize: 4,
                         suggestOnTriggerCharacters: true,
+                        contextmenu: false,
                         quickSuggestions: true,
                         bracketPairColorization: { enabled: true },
                         scrollbar: {
@@ -312,6 +322,7 @@ const EditorPanel = () => {
                         },
                         wordWrap: lineWrap ? 'on' : 'off',
                     }}
+
                 />
             </CardContent>
 
