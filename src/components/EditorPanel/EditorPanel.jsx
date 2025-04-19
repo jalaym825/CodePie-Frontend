@@ -4,12 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { FileCode, Settings as SettingsIcon, Copy, Download, Play, Loader2 } from 'lucide-react';
+import { FileCode, Settings as SettingsIcon, Copy, Download, Play, Loader2, Minus, Plus } from 'lucide-react';
 import { Clock, Database } from 'lucide-react';
 import EditorSettings from './EditorSettings';
 import { ThemeContext } from '../../context/ThemeContext';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../../context/EditorSettingsContext';
+import ThemeToggle from '../ui/ThemeToggle';
 
 // Constants for localStorage
 const SOLUTION_STORAGE_KEY_PREFIX = 'codeduel_solution_';
@@ -42,20 +43,19 @@ const EditorPanel = () => {
         memoryUsage,
         isRunning,
         runCustomTest,
-        selectedProblem
+        formatCode,
+        selectedProblem,
     } = useContext(CodeExecutionContext);
 
     const {
         language,
         editorFontSize,
+        setEditorFontSize,
         lineWrap,
         autoFormat,
         showSettings,
         toggleSettings,
         handleEditorDidMount,
-        formatCode,
-        copyCode,
-        downloadCode
     } = useContext(EditorSettingsContext);
 
     const { theme } = useContext(ThemeContext);
@@ -130,7 +130,6 @@ const EditorPanel = () => {
     };
 
     const handleEditorMount = (editor, monaco) => {
-        editorRef.current = editor;
         editorRef.current = editor;
         editor.focus();
 
@@ -226,7 +225,36 @@ const EditorPanel = () => {
                         {language.monacoLanguage.toUpperCase()}
                     </span>
                 </CardTitle>
-                <div className="flex space-x-1">
+                <div className="flex space-x-2">
+                    <div className="scale-75 mt-[1px]">
+                        <ThemeToggle />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {/* <label htmlFor="font-size" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Font Size:
+                        </label> */}
+                        <div className="flex items-center space-x-[8px] bg-gray-200 dark:bg-gray-700 rounded-lg">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-8 h-8 text-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700 shadow-none text-gray-800 dark:text-gray-200"
+                                onClick={() => setEditorFontSize(Math.max(10, editorFontSize - 1))}
+                            >
+                                <Minus className='w-4 h-4' />
+                            </Button>
+                            <div className='text-sm font-medium text-gray-700 dark:text-gray-300'>
+                                {editorFontSize}px
+                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-8 h-8 text-lg bg-white dark:bg-gray-800 border-4 border-gray-200 dark:border-gray-700 shadow-none text-gray-800 dark:text-gray-200"
+                                onClick={() => setEditorFontSize(Math.min(24, editorFontSize + 1))}
+                            >
+                                <Plus className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
@@ -261,38 +289,6 @@ const EditorPanel = () => {
                             <TooltipContent>Format Code</TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
-
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={copyCode}
-                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    <Copy className="h-4 w-4" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Copy Code</TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
-
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={downloadCode}
-                                    className="h-8 w-8 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-100 dark:hover:bg-gray-700"
-                                >
-                                    <Download className="h-4 w-4" />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>Download Code</TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
                 </div>
             </CardHeader>
 
@@ -311,7 +307,7 @@ const EditorPanel = () => {
                         fontLigatures: true,
                         scrollBeyondLastLine: false,
                         automaticLayout: true,
-                        tabSize: 4,
+                        tabSize: 2,
                         suggestOnTriggerCharacters: true,
                         contextmenu: false,
                         quickSuggestions: true,
@@ -322,7 +318,6 @@ const EditorPanel = () => {
                         },
                         wordWrap: lineWrap ? 'on' : 'off',
                     }}
-
                 />
             </CardContent>
 

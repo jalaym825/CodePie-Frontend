@@ -7,6 +7,7 @@ import { CodeExecutionContext } from './CodeExecutionContext';
 // import { problems } from "../helpers/editorData";
 import { UserContext } from './UserContext';
 import { EditorSettingsContext } from './EditorSettingsContext';
+import postApi from '@/helpers/API/postApi';
 
 export default function CodeExecutionContextProvider({ children }) {
     const [code, setCode] = useState('');
@@ -32,7 +33,7 @@ export default function CodeExecutionContextProvider({ children }) {
     const [loading, setLoading] = useState(false);
 
     const { userInfo } = useContext(UserContext);
-    const { language, setActiveTab } = useContext(EditorSettingsContext);
+    const { language, setActiveTab, editorRef } = useContext(EditorSettingsContext);
 
     // Socket effects
     useEffect(() => {
@@ -42,7 +43,7 @@ export default function CodeExecutionContextProvider({ children }) {
             if (!data.testCaseId) {
                 setIsRunning(false);
                 console.log('Submission result:', data);
-                
+
                 setActiveTab("output");
 
                 let resultOutput = '';
@@ -80,7 +81,7 @@ export default function CodeExecutionContextProvider({ children }) {
 
                 if (data.time) setExecutionTime(data.time);
                 if (data.memory) setMemoryUsage((data.memory / 1024).toFixed(2));
-                
+
                 setRecentSubmissions((prev) => [
                     {
                         id: Date.now(),
@@ -91,7 +92,7 @@ export default function CodeExecutionContextProvider({ children }) {
                     },
                     ...prev
                 ].slice(0, 5));
-                
+
                 return;
             }
 
@@ -163,6 +164,8 @@ export default function CodeExecutionContextProvider({ children }) {
 
             if (response.status === 200) {
                 const contest = response.data.data;
+                console.log('Contest data:', contest);
+
                 setContest(contest);
                 setProblems(contest.problems);
             }
@@ -190,7 +193,7 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [handleFetchProblem, problems]);
 
     const executeCode = useCallback(async (input, expectedOutput = '', testCaseId = '') => {
-        if(code.trim() === '') {
+        if (code.trim() === '') {
             toast.error('Code cannot be empty');
             return;
         }
@@ -232,14 +235,14 @@ export default function CodeExecutionContextProvider({ children }) {
     }, [executeCode, stdin]);
 
     const runTestCase = useCallback(async (testCase, index) => {
-        if(code.trim() === '') {
+        if (code.trim() === '') {
             toast.error('Code cannot be empty');
             return;
         }
 
         // Add this test case to running state
         setRunningTestCases(prev => new Set(prev).add(testCase.id));
-        
+
         try {
             await executeCode(testCase.input, testCase.output, testCase.id);
         } catch (error) {
@@ -255,39 +258,39 @@ export default function CodeExecutionContextProvider({ children }) {
                 };
                 return newResults;
             });
-            
+
             // Remove this test case from running state in case of error
             setRunningTestCases(prev => {
                 const updated = new Set(prev);
                 updated.delete(testCase.id);
                 return updated;
             });
-            
+
             return { passed: false, error: true };
         }
     }, [executeCode]);
 
     const runAllTests = useCallback(async () => {
-        if(code.trim() === '') {
+        if (code.trim() === '') {
             toast.error('Code cannot be empty');
             return;
         }
 
         setIsTestingAll(true);
         setTestResults([]);
-        
+
         try {
             const visibleTestCases = selectedProblem.testCases.filter(tc => !tc.isHidden);
-            
+
             // Add all test cases to running state
             const testCaseIds = new Set(visibleTestCases.map(tc => tc.id));
             setRunningTestCases(testCaseIds);
-            
+
             // Run all test cases in parallel
-            const testPromises = visibleTestCases.map((testCase, index) => 
+            const testPromises = visibleTestCases.map((testCase, index) =>
                 runTestCase(testCase, index)
             );
-            
+
             await Promise.all(testPromises);
         } catch (error) {
             console.error('Error running all test cases:', error);
@@ -301,7 +304,7 @@ export default function CodeExecutionContextProvider({ children }) {
         try {
             // Reset test results before submitting
             setTestResults([]);
-            if(code.trim() === '') {
+            if (code.trim() === '') {
                 toast.error('Code cannot be empty');
                 return;
             }
@@ -314,7 +317,7 @@ export default function CodeExecutionContextProvider({ children }) {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" }
             })
-            
+
             if (res.status === 201) {
                 setShowResultDialog(true);
                 toast.success('Solution submitted successfully!');
@@ -324,6 +327,20 @@ export default function CodeExecutionContextProvider({ children }) {
             toast.error('Error submitting solution');
         }
     }, [selectedProblem, code, language]);
+
+    const formatCode = useCallback(async () => {
+        console.log('Formatting code...');
+        const res = await postApi("/users/api/format", {
+            language: language.monacoLanguage,
+            code: code,
+        });
+
+        console.log(res);
+        if (res.status === 200) {
+            setCode(res.data.data);
+        }
+    }, [language, code]);
+
     const ctxValue = useMemo(() => ({
         contest,
         setContest,
@@ -354,7 +371,8 @@ export default function CodeExecutionContextProvider({ children }) {
         setShowResultDialog,
         loading,
         setLoading,
-        runningTestCases
+        runningTestCases,
+        formatCode,
     }), [
         contest,
         handleFetchContest,
@@ -378,7 +396,8 @@ export default function CodeExecutionContextProvider({ children }) {
         handleFetchProblem,
         showResultDialog,
         loading,
-        runningTestCases
+        runningTestCases,
+        formatCode,
     ]);
 
     return (

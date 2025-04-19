@@ -34,7 +34,7 @@ import NoCopyPasteComponent from '@/components/Utilities/NoCopyPasteComponent';
 const CodeEditor = () => {
     const [isLoading, setIsLoading] = useState(true);
 
-    const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults, loading } = useContext(CodeExecutionContext);
+    const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults, loading, contest } = useContext(CodeExecutionContext);
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
 
     const { id, contestId, problemId } = useParams();
@@ -89,7 +89,7 @@ const CodeEditor = () => {
 
     return (
         <>
-            <NoCopyPasteComponent className='select-none'>
+            <NoCopyPasteComponent className='select-none' strictMode={contest?.strictMode}>
                 <Toaster position="bottom-right" richColors />
                 <div className={`${isFullscreen ? 'fixed inset-0 z-50 bg-white flex flex-col h-screen' : 'h-screen md:h-[100vh] flex flex-col'}`}>
                     <Header />

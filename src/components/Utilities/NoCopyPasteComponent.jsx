@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const NoCopyPasteComponent = ({ children, className = "" }) => {
+const NoCopyPasteComponent = ({ children, className = "", strictMode }) => {
     const componentRef = useRef(null);
 
     useEffect(() => {
@@ -34,6 +34,14 @@ const NoCopyPasteComponent = ({ children, className = "" }) => {
             element.removeEventListener('contextmenu', preventContextMenu);
         };
     }, []);
+
+    if(!strictMode){
+        return (
+            <div>
+                {children}
+            </div>
+        );
+    }
 
     return (
         <div

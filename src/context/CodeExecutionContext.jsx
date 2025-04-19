@@ -33,4 +33,5 @@ export const CodeExecutionContext = createContext({
     setShowResultDialog: () => {},
     loading: Boolean,
     setLoading: () => {},
+    formatCode: () => {},
 });
