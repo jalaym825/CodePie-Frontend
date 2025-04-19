@@ -15,11 +15,11 @@ const IOPanel = () => {
         recentSubmissions,
     } = useContext(CodeExecutionContext);
 
-    const { editorFontSize } = useContext(EditorSettingsContext);
+    const { editorFontSize, activeTab, setActiveTab } = useContext(EditorSettingsContext);
 
     return (
         <div className="flex-grow h-full overflow-hidden rounded-xl border dark:border-gray-700">
-            <Tabs defaultValue="output" className="h-full flex gap-0">
+            <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="output" className="h-full flex gap-0">
                 <CardHeader className="p-[5px] gap-0 mb-0 bg-gray-50 dark:bg-gray-800 border-b-1">
                     <TabsList className="bg-gray-200 dark:bg-gray-700 gap-x-2">
                         <TabsTrigger 

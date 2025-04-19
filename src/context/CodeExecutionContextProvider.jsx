@@ -32,7 +32,7 @@ export default function CodeExecutionContextProvider({ children }) {
     const [loading, setLoading] = useState(false);
 
     const { userInfo } = useContext(UserContext);
-    const { language } = useContext(EditorSettingsContext);
+    const { language, setActiveTab } = useContext(EditorSettingsContext);
 
     // Socket effects
     useEffect(() => {
@@ -41,6 +41,9 @@ export default function CodeExecutionContextProvider({ children }) {
             // For custom run operation
             if (!data.testCaseId) {
                 setIsRunning(false);
+                console.log('Submission result:', data);
+                
+                setActiveTab("output");
 
                 let resultOutput = '';
                 if (data.stdout) resultOutput += data.stdout;

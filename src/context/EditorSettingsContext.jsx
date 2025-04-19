@@ -32,5 +32,7 @@ export const EditorSettingsContext = createContext({
         monacoLanguage: String,
     },
     setLanguage: () => {},
-    updateMonacoLanguage: () => {}
+    updateMonacoLanguage: () => {},
+    activeTab: String,
+    setActiveTab: () => {},
 });

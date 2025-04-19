@@ -15,6 +15,7 @@ export default function EditorSettingsContextProvider({ children }) {
     const [showFullscreenPrompt, setShowFullscreenPrompt] = useState(false);
     const [showProblem, setShowProblem] = useState(true);
     const [language, setLanguage] = useState(languages['Python']);
+    const [activeTab, setActiveTab] = useState('output');
 
     // Show fullscreen prompt when component mounts
     useEffect(() => {
@@ -155,6 +156,8 @@ export default function EditorSettingsContextProvider({ children }) {
         toggleProblemPanel,
         language,
         setLanguage: updateLanguage,
+        activeTab,
+        setActiveTab,
     }), [
         editorFontSize,
         lineWrap,
@@ -176,6 +179,8 @@ export default function EditorSettingsContextProvider({ children }) {
         toggleProblemPanel,
         language,
         updateLanguage,
+        activeTab,
+        setActiveTab,
     ]);
 
     return (
