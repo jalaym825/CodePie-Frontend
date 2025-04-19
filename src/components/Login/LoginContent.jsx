@@ -40,7 +40,6 @@ const LoginContent = () => {
     if (checkEmptyFields()) return;
     setIsPending(true);
     const res = await loginUser();
-    console.log(res);
     if (res?.status === 200) {
       toast.success(res.message);
       setCredentials({})
@@ -48,7 +47,6 @@ const LoginContent = () => {
       navigate('/');
       return true;
     } else {
-      console.log(res)
       toast.error(res.data.message || "An error occurred");
       setIsPending(false);
       return false;

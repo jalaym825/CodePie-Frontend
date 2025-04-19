@@ -1,13 +1,12 @@
-import React, { useContext } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Book, AlignLeft, Code2, TestTube, Save, Loader2 } from 'lucide-react';
-import ProblemDescription from './ProblemDescription';
-import ProblemExamples from './ProblemExamples';
-import ProblemTestCases from './ProblemTestCases';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { AlignLeft, Book, Loader2, Save, TestTube } from 'lucide-react';
+import { useContext } from 'react';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import ProblemDescription from './ProblemDescription';
+import ProblemTestCases from './ProblemTestCases';
 
 const ProblemPanel = ({ className }) => {
     const {

@@ -16,10 +16,10 @@ import LoadingScreen from "./components/ui/LoadingScreen";
 // Layouts
 import HomeLayout from "./pages/Layouts/HomeLayout";
 import HeaderWrapper from "./pages/Layouts/HeaderWrapper";
-import AuthInitializer from "./pages/Layouts/AuthInitializer";
 
 function App() {
   const { userInfo } = useContext(UserContext);
+  console.log(userInfo)
   const isLoading = userInfo?.id?.length === 0;
 
   return (
@@ -27,47 +27,51 @@ function App() {
       <Routes>
         {/* Auth Route */}
         <Route path="/login" element={<LoginSignUp />} />
-        
+
         {/* Main Application with Header */}
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<Homepage />} />
-          
-          {/* Contests Section */}
-          <Route path="/contests" element={<HeaderWrapper />}>
+        </Route>
+
+        {/* Contests Section */}
+        <Route path="/contests" element={<HomeLayout />}>
+          {/* Routes that use HeaderWrapper */}
+          <Route element={<HeaderWrapper />}>
             {/* Contest List */}
             <Route index element={<Dashboard />} />
-            
+
             {/* Create New Contest (Admin only) */}
             <Route path="create" element={<NewContestPage />} />
-            
+
             {/* Contest Specific Routes */}
             <Route path=":contestId">
-              {/* Contest Details Page - Shows overview, problems, and join button */}
+              {/* Contest Details Page */}
               <Route index element={<ContestDetails />} />
-              
-              {/* Contest Leaderboard */}
+
+              {/* Leaderboard */}
               <Route path="leaderboard" element={<ContestLeaderBoard />} />
-              
-              {/* Individual Problem Solving */}
-              <Route path="problems/:problemId" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
-              
+
               {/* Add Problems to Contest (Admin only) */}
               <Route path="add-problems" element={<AddProblemsPage />} />
             </Route>
           </Route>
-          
-          {/* Independent Problems Section */}
-          <Route path="/problems" element={<HeaderWrapper />}>
-            {/* Problems List */}
-            <Route index element={<h1>Problems Page</h1>} />
-            
-            {/* Create New Problem (Admin only) */}
-            <Route path="create" element={<AddProblemsPage />} />
-            
-            {/* Individual Problem Solving */}
-            <Route path=":id" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
-          </Route>
+
+          {/* EXCLUDED from HeaderWrapper */}
+          <Route path=":contestId/problems/:problemId" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
         </Route>
+
+        {/* Independent Problems Section */}
+        <Route path="/problems">
+          {/* Problems List */}
+          <Route index element={<h1>Problems Page</h1>} />
+
+          {/* Create New Problem (Admin only) */}
+          <Route path="create" element={<AddProblemsPage />} />
+
+          {/* Individual Problem Solving */}
+          <Route path=":id" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
+        </Route>
+
       </Routes>
     </Router>
   );

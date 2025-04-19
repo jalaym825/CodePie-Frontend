@@ -21,8 +21,6 @@ export default function UserContextProvider({ children }) {
         async function syncTime() {
             try {
                 const res = await getApi("/users/api/time");
-                // const data = await res.json();
-                console.log(new Date(res.data.data.serverTime));
                 
                 setSyncedTime(new Date(res.data.data.serverTime).getTime());
                 setSyncedAt(performance.now());
@@ -41,7 +39,7 @@ export default function UserContextProvider({ children }) {
 
     async function handleGetUserProfile() {
         const res = await getApi("/auth/me");
-        console.log(res);
+        console.log(res.data.data)
         if (res.status === 200) {
             setUserInfo(res.data.data);
             return res.data.data;
@@ -51,7 +49,6 @@ export default function UserContextProvider({ children }) {
 
     async function handleLogout() {
         const res = await postApi("/auth/logout");
-        console.log(res);
         if (res.status === 200) {
             setUserInfo({});
             return true;
@@ -61,7 +58,6 @@ export default function UserContextProvider({ children }) {
 
     async function handleCreateContest(newContest) {
         const res = await postApi("/contests/", newContest);
-        console.log(res);
         if (res.status === 201) {
             return ({
                 status: res.status,
@@ -74,7 +70,6 @@ export default function UserContextProvider({ children }) {
 
     async function handlegetAllContests() {
         const res = await getApi("/contests/");
-        console.log(res);
         if (res.status === 200) {
             return ({
                 status: res.status,
@@ -87,9 +82,7 @@ export default function UserContextProvider({ children }) {
     }
 
     async function handlegetProblem(id) {
-        console.log(id)
         const res = await getApi(`/problems/${id}`);
-        console.log(res);
         if (res.status === 200) {
             return ({
                 status: res.status,
@@ -102,9 +95,7 @@ export default function UserContextProvider({ children }) {
     }
 
     async function handleGetContest(id, userId) {
-        // console.log(id, userId)
         const res = await postApi(`/contests/${id}`, { userId: userId });
-        console.log(res);
         if (res.status === 200) {
             return ({
                 status: res.status,
@@ -121,7 +112,6 @@ export default function UserContextProvider({ children }) {
             ...newContest,
             isPractice: false,
         });
-        console.log(res);
         if (res.status === 201) {
             return ({
                 status: res.status,
@@ -137,7 +127,6 @@ export default function UserContextProvider({ children }) {
             ...newContest,
             isPractice: true,
         });
-        console.log(res);
         if (res.status === 201) {
             return ({
                 status: res.status,
@@ -150,7 +139,6 @@ export default function UserContextProvider({ children }) {
 
     async function handleContestJoin(id) {
         const res = await postApi(`/contests/${id}/join`);
-        console.log(res);
         if (res.status === 201) {
             return {
                 data: res.data.data,
@@ -164,7 +152,6 @@ export default function UserContextProvider({ children }) {
 
     async function handleContestLeaderBoard(id) {
         const res = await getApi(`/contests/${id}/leaderboard`);
-        console.log(res);
         if (res.status === 200) {
             return ({
                 status: res.status,
@@ -178,6 +165,19 @@ export default function UserContextProvider({ children }) {
     }
 
 
+    async function handleGetProblemSubmissions(id) {
+        const res = await getApi(`/submissions/problem/${id}`);
+        if (res.status === 200) {
+            return ({
+                status: res.status,
+                message: res.data.message,
+                data: res.data.data
+            })
+        } else {
+            return res.response;
+        }
+    }
+    
     const ctxValue = {
         userInfo: userInfo,
         setUserInfo: setUserInfo,
@@ -191,7 +191,8 @@ export default function UserContextProvider({ children }) {
         getProblem: handlegetProblem,
         getContest: handleGetContest,
         joinContest: handleContestJoin,
-        contestleaderBoard: handleContestLeaderBoard
+        contestleaderBoard: handleContestLeaderBoard,
+        getProblemSubmissions: handleGetProblemSubmissions
     }
 
     return (

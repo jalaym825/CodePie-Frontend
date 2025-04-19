@@ -24,7 +24,6 @@ export default function AuthContextProvider({ children }) {
             email: credentials.email,
             password: credentials.password
         });
-        console.log(res);
         
         if(res.status === 200){
             // toast.success("User Logged in Successfully");
@@ -39,9 +38,7 @@ export default function AuthContextProvider({ children }) {
 
     async function handleSignUp() {
         const res = await postApi("/auth/register", { name: signUpCredentials.username, email: signUpCredentials.email, password: signUpCredentials.password });
-        console.log(res.response);
         if (res?.status === 201) {
-            console.log(res.status);
             return {
                 status: res.status,
                 message: res.data.message
@@ -72,7 +69,6 @@ export default function AuthContextProvider({ children }) {
 
     async function verifyToken(token) {
         const res = await getApi(`/auth/reset-password/${token}`);
-        console.log(res);
         if (res.status === 200) {
             return res.data;
         } else {

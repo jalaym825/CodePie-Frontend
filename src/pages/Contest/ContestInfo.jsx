@@ -244,7 +244,6 @@ const ContestDetails = () => {
                                         {timeStatus === 'in-progress' && 'Active'}
                                         {timeStatus === 'completed' && 'Completed'}
                                     </Badge>
-                                    <span className="text-sm opacity-75 font-mono">ID: {contestData?.id.substring(0, 8)}...</span>
                                 </div>
                                 <h1 className="text-3xl md:text-4xl font-bold mb-2 tracking-tight leading-tight">{contestData?.title}</h1>
                                 <p className="opacity-90 max-w-3xl font-light">{contestData?.description}</p>

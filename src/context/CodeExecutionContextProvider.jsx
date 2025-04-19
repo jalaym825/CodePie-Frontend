@@ -38,8 +38,6 @@ export default function CodeExecutionContextProvider({ children }) {
     useEffect(() => {
         socket.emit('register', userInfo.id);
         const handleSubmissionResult = (data) => {
-            console.log('Submission result:', data);
-
             // For custom run operation
             if (!data.testCaseId) {
                 setIsRunning(false);
@@ -126,11 +124,9 @@ export default function CodeExecutionContextProvider({ children }) {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" }
             });
-            // console.log('Problem fetched:', response);
 
             if (response.status === 200) {
                 const problem = response.data.data;
-                console.log('Fetched problem:', problem);
 
                 setSelectedProblem(problem);
                 setCode('');
@@ -161,11 +157,9 @@ export default function CodeExecutionContextProvider({ children }) {
                 withCredentials: true,
                 headers: { "Content-Type": "application/json" },
             });
-            // console.log('Problem fetched:', response);
 
             if (response.status === 200) {
                 const contest = response.data.data;
-                console.log('Fetched contest:', contest);
                 setContest(contest);
                 setProblems(contest.problems);
             }
@@ -184,7 +178,6 @@ export default function CodeExecutionContextProvider({ children }) {
         const problem = problems.find((p) => p.id === problemId);
         if (problem) {
             setLoading(true);
-            console.log('Problem changed:', problemId);
             const res = await handleFetchProblem(problemId);
             if (res && res.status === 200) {
                 setLoading(false);
@@ -201,8 +194,6 @@ export default function CodeExecutionContextProvider({ children }) {
 
         // you can use expectedOutput later if needed
         try {
-            console.log('Executing code with input:', input, 'Expected Output:', expectedOutput);
-
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/run`, {
                 problemId: selectedProblem.id,
                 sourceCode: code,
@@ -296,7 +287,7 @@ export default function CodeExecutionContextProvider({ children }) {
             
             await Promise.all(testPromises);
         } catch (error) {
-            console.log('Error running all test cases:', error);
+            console.error('Error running all test cases:', error);
             toast.error('Error running all test cases');
         } finally {
             setIsTestingAll(false);
@@ -311,12 +302,7 @@ export default function CodeExecutionContextProvider({ children }) {
                 toast.error('Code cannot be empty');
                 return;
             }
-            console.log('Submitting solution:', {
-                problemId: selectedProblem.id,
-                sourceCode: code,
-                languageId: language.id,
-            });
-    
+
             const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/submissions/`, {
                 problemId: selectedProblem.id,
                 sourceCode: code,
@@ -330,10 +316,8 @@ export default function CodeExecutionContextProvider({ children }) {
                 setShowResultDialog(true);
                 toast.success('Solution submitted successfully!');
             }
-            
-            console.log('Submission response:', res.data);
         } catch (error) {
-            console.log('Error submitting solution:', error);
+            console.error('Error submitting solution:', error);
             toast.error('Error submitting solution');
         }
     }, [selectedProblem, code, language]);

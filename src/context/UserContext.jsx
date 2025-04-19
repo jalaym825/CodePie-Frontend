@@ -13,4 +13,5 @@ export const UserContext = createContext({
     getContest: () => { },
     joinContest: () => { },
     contestleaderBoard: () => { },
+    getProblemSubmissions: () => { },
 })

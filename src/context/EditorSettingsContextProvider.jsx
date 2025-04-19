@@ -29,7 +29,7 @@ export default function EditorSettingsContextProvider({ children }) {
         setShowFullscreenPrompt(false);
         if (document.documentElement.requestFullscreen) {
             document.documentElement.requestFullscreen().catch(err => {
-                console.log("Error attempting to enable fullscreen:", err);
+                console.error("Error attempting to enable fullscreen:", err);
             });
         }
     }, []);

@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-// Editor.jsx
 import { Toaster } from '@/components/ui/sonner';
 import { useContext, useEffect, useState } from 'react';
 import EditorPanel from '../components/EditorPanel/EditorPanel';
@@ -23,7 +22,6 @@ import {
 } from "@/components/ui/dialog"
 
 import { Button } from "@/components/ui/button";
-// import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../context/EditorSettingsContext';
 import { Maximize2 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router';
