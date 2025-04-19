@@ -3,6 +3,7 @@ import { Trophy, Medal, Award, User, Crown, CheckCircle, Clock, Filter, ChevronD
 import { UserContext } from '../../context/UserContext';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 const LeaderboardTable = () => {
     const { contestId } = useParams();
@@ -148,20 +149,30 @@ const LeaderboardTable = () => {
     }
 
     return (
-        <div className="w-full max-w-7xl mt-20 mx-auto">
+        <div className="w-full max-w-7xl mx-auto">
             <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-t-lg p-6">
-                <h2 className="text-2xl font-bold flex items-center justify-center gap-2 text-white">
-                    <Trophy size={28} />
-                    Contest Leaderboard
-                </h2>
-                <div className="flex justify-end mt-2 ">
-                    <button
-                        onClick={() => setShowDetails(!showDetails)}
-                        className="flex items-center bg-white text-blue-700 px-3 py-1 rounded-lg text-sm hover:bg-blue-100 transition-all font-medium"
-                    >
-                        {showDetails ? 'Hide' : 'Show'} Problem Details
-                        {showDetails ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
-                    </button>
+                <div className="flex items-center justify-between text-white">
+                    <div className="flex-1" />
+
+                    <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
+                        <Trophy size={28} />
+                        Contest Leaderboard
+                    </h2>
+
+                    <div className="flex-1 flex justify-end">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShowDetails(!showDetails)}
+                            className="flex items-center bg-white text-blue-700 hover:bg-blue-100 font-medium"
+                        >
+                            {showDetails ? 'Hide' : 'Show'} Problem Details
+                            {showDetails ? (
+                                <ChevronUp size={16} className="ml-1" />
+                            ) : (
+                                <ChevronDown size={16} className="ml-1" />
+                            )}
+                        </Button>
+                    </div>
                 </div>
             </div>
 
@@ -241,12 +252,12 @@ const LeaderboardTable = () => {
                                                 {entry.problemScores && entry.problemScores[problem.id] ? (
                                                     <div className="flex items-center justify-center">
                                                         <div className={`text-sm font-medium px-2 py-1 rounded ${entry.problemScores[problem.id].status === 'ACCEPTED'
-                                                                ? 'bg-green-100 text-green-600'
-                                                                : entry.problemScores[problem.id].score > 0
-                                                                    ? 'bg-yellow-100 text-yellow-600'
-                                                                    : entry.problemScores[problem.id].attempts > 0
-                                                                        ? 'bg-red-100 text-red-600'
-                                                                        : 'text-gray-400'
+                                                            ? 'bg-green-100 text-green-600'
+                                                            : entry.problemScores[problem.id].score > 0
+                                                                ? 'bg-yellow-100 text-yellow-600'
+                                                                : entry.problemScores[problem.id].attempts > 0
+                                                                    ? 'bg-red-100 text-red-600'
+                                                                    : 'text-gray-400'
                                                             }`}>
                                                             {entry.problemScores[problem.id].score}
                                                             {entry.problemScores[problem.id].attempts > 0 && (

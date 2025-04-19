@@ -1,49 +1,71 @@
-import CodeEditor from "./pages/Editor";
-import { BrowserRouter as Router, Routes, Route } from "react-router"
-// import 'prismjs/themes/prism-tomorrow.css';
+import React, { useContext } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import { UserContext } from "./context/UserContext";
+
+// Pages
 import LoginSignUp from "./Pages/LoginSignUp";
 import Homepage from "./Pages/Homepage";
-import MainHeader from "./components/Header/MainHeader";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import NewContestPage from "./pages/Contests/NewContestPage";
-import ContestInfo from "./pages/Contest/ContestInfo";
-import JoinContest from "./Pages/Contests/JoinContest";
+import ContestDetails from "./Pages/Contest/ContestInfo"; // New merged component
 import ContestLeaderBoard from "./Pages/Contest/ContestLeaderBoard";
-import React, { useContext } from "react";
-import { UserContext } from "./context/UserContext";
-import LoadingScreen from "./components/ui/LoadingScreen";
-import AuthInitializer from "./pages/Layouts/AuthInitializer";
+import CodeEditor from "./pages/Editor";
 import AddProblemsPage from "./pages/Problems/AddProblemsPage";
+import LoadingScreen from "./components/ui/LoadingScreen";
+
+// Layouts
 import HomeLayout from "./pages/Layouts/HomeLayout";
 import HeaderWrapper from "./pages/Layouts/HeaderWrapper";
+import AuthInitializer from "./pages/Layouts/AuthInitializer";
 
 function App() {
   const { userInfo } = useContext(UserContext);
+  const isLoading = userInfo?.id?.length === 0;
 
   return (
     <Router>
       <Routes>
+        {/* Auth Route */}
         <Route path="/login" element={<LoginSignUp />} />
+        
+        {/* Main Application with Header */}
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<Homepage />} />
-
+          
+          {/* Contests Section */}
           <Route path="/contests" element={<HeaderWrapper />}>
-            <Route path="/contests/" element={<Dashboard />} />                                 //contests List page
-            <Route path="/contests/create" element={<NewContestPage />} />                 //Create Competition page
-            <Route path="/contests/:contestId/add-problems" element={<AddProblemsPage />} />
-            <Route path="/contests/:contestId/leaderboard" element={<ContestLeaderBoard />} />        //Competition details page
-            <Route path="/contests/:contestId/problems" element={<ContestInfo />} />            //Competition details page
-            <Route path="/contests/:contestId" element={<JoinContest />} />      //Competition details page
+            {/* Contest List */}
+            <Route index element={<Dashboard />} />
+            
+            {/* Create New Contest (Admin only) */}
+            <Route path="create" element={<NewContestPage />} />
+            
+            {/* Contest Specific Routes */}
+            <Route path=":contestId">
+              {/* Contest Details Page - Shows overview, problems, and join button */}
+              <Route index element={<ContestDetails />} />
+              
+              {/* Contest Leaderboard */}
+              <Route path="leaderboard" element={<ContestLeaderBoard />} />
+              
+              {/* Individual Problem Solving */}
+              <Route path="problems/:problemId" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
+              
+              {/* Add Problems to Contest (Admin only) */}
+              <Route path="add-problems" element={<AddProblemsPage />} />
+            </Route>
           </Route>
-
-          <Route path="/contests">
-            <Route path="/contests/:contestId/problems/:problemId" element={userInfo?.id?.length === 0 ? <LoadingScreen /> : <CodeEditor />} />  //Problem details page inside competition
-          </Route>
-
+          
+          {/* Independent Problems Section */}
           <Route path="/problems" element={<HeaderWrapper />}>
-            <Route path="/problems/" element={<h1>Problems Page</h1>} />        //Problems List page
-            <Route path="/problems/create" element={<AddProblemsPage />} />
-            <Route path="/problems/:id" element={<CodeEditor />} />             //Problem details page
+            {/* Problems List */}
+            <Route index element={<h1>Problems Page</h1>} />
+            
+            {/* Create New Problem (Admin only) */}
+            <Route path="create" element={<AddProblemsPage />} />
+            
+            {/* Individual Problem Solving */}
+            <Route path=":id" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
           </Route>
         </Route>
       </Routes>
