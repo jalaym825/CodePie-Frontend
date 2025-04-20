@@ -36,17 +36,14 @@ const ContestDetails = () => {
 
     async function handleGetContest() {
         try {
-            const userId = userInfo?.id;
-            const res = await getContest(contestId, userId);
+            const res = await handleFetchContest();
 
             if (res.status === 200) {
-                setContestData(res.data.data);
+                console.log(res)
+                setContestData(res.contest);
                 setLoading(false);
-
-                // Also fetch problems
-                handleFetchContest();
             } else {
-                toast.error(res.data.message || "Failed to load contest");
+                toast.error(res.message || "Failed to load contest");
                 setLoading(false);
             }
         } catch (error) {
@@ -62,6 +59,7 @@ const ContestDetails = () => {
             if (res.status !== 200) {
                 toast.error("Failed to fetch contest problems");
             }
+            return res;
         } catch (error) {
             toast.error("Error loading contest problems");
         }

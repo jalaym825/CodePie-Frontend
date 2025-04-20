@@ -157,10 +157,7 @@ export default function CodeExecutionContextProvider({ children }) {
 
     const handleFetchContest = useCallback(async (contestId) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, { userId: userInfo.id }, {
-                withCredentials: true,
-                headers: { "Content-Type": "application/json" },
-            });
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`);
 
             if (response.status === 200) {
                 const contest = response.data.data;

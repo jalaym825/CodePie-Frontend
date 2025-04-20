@@ -18,8 +18,7 @@ const JoinContest = () => {
     const [joining, setJoining] = useState(false);
 
     async function handleGetContest() {
-        const userId = userInfo.id;
-        const res = await getContest(contestId, userId);
+        const res = await getContest(contestId);
         console.log(res.data);
         if (res.status === 200) {
             setContestData(res.data.data);
