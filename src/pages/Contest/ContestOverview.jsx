@@ -1,11 +1,10 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowRight, Info, Loader, Trophy } from 'lucide-react'
-import React from 'react'
+import { Info, Trophy } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm';
+import remarkGfm from 'remark-gfm'
 
-const ContestOverview = ({ contestData, timeStatus, setActiveTab, handleJoinContest, joining, formatDate }) => {
+const ContestOverview = ({ contestData, timeStatus, setActiveTab, formatDate }) => {
   return (
     <Card className="shadow-sm border border-gray-200">
       <CardHeader>
