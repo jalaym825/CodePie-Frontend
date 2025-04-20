@@ -219,7 +219,7 @@ const ContestDetails = ({tab="overview"}) => {
     }
 
     return (
-        <div className="min-h-screen pt-16 pb-12 bg-gray-50">
+        <div className="max-h-screen overflow-auto pt-16 pb-12 bg-gray-50 preserve-scrollbar">
             {/* Breadcrumbs */}
             <div className="max-w-7xl mx-auto px-4 py-4 flex items-center text-sm">
                 <Link to="/contests" className="text-gray-500 hover:text-blue-600">
@@ -229,7 +229,7 @@ const ContestDetails = ({tab="overview"}) => {
                 <span className="text-gray-700 font-medium">{contestData?.title}</span>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 space-y-6">
+            <div className="max-w-7xl mx-auto px-4 space-y-6 preserve-scrollbar">
                 {/* Header Card with Gradient */}
                 <Card className="overflow-hidden border-none shadow-xl p-0 gap-0">
                     {/* Header with non-rounded gradient */}

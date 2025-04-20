@@ -25,54 +25,29 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Auth Route */}
         <Route path="/login" element={<LoginSignUp />} />
-
-        {/* Main Application with Header */}
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<Homepage />} />
         </Route>
 
-        {/* Contests Section */}
         <Route path="/contests" element={<HomeLayout />}>
-          {/* Routes that use HeaderWrapper */}
           <Route element={<HeaderWrapper />}>
-            {/* Contest List */}
             <Route index element={<Dashboard />} />
-
-            {/* Create New Contest (Admin only) */}
             <Route path="create" element={<NewContestPage />} />
-
-            {/* Contest Specific Routes */}
             <Route path=":contestId">
-              {/* Contest Details Page */}
               <Route index element={<ContestDetails />} />
-
-              {/* Leaderboard */}
               <Route path="leaderboard" element={<ContestDetails tab="leaderboard"/>} />
               <Route path="problems" element={<ContestDetails tab="problems"/>} />
-
-              {/* Add Problems to Contest (Admin only) */}
               <Route path="add-problems" element={<AddProblemsPage />} />
             </Route>
           </Route>
-
-          {/* EXCLUDED from HeaderWrapper */}
           <Route path=":contestId/problems/:problemId" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
         </Route>
-
-        {/* Independent Problems Section */}
         <Route path="/problems">
-          {/* Problems List */}
           <Route index element={<h1>Problems Page</h1>} />
-
-          {/* Create New Problem (Admin only) */}
           <Route path="create" element={<AddProblemsPage />} />
-
-          {/* Individual Problem Solving */}
           <Route path=":id" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
         </Route>
-
       </Routes>
     </Router>
   );

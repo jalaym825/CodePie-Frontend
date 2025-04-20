@@ -137,54 +137,92 @@ body {
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Add to your global CSS file */
-/* Default (light mode) scrollbar styles */
+/* Custom scrollbar styles for all elements */
 * {
   scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #d4d4d4 #f1f1f1; /* For Firefox (thumb track) */
+  scrollbar-color: rgba(180, 180, 180, 0.6) transparent; /* For Firefox (thumb track) */
+}
+
+.preserve-scrollbar{
+  scrollbar-gutter: stable !important;
 }
 
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
 }
 
 *::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: transparent;
+  margin: 4px 0;
 }
 
 *::-webkit-scrollbar-thumb {
-  background-color: #d4d4d4;
-  border-radius: 4px;
-  border: 2px solid #f1f1f1;
+  background-color: rgba(180, 180, 180, 0.6);
+  border-radius: 10px;
+  border: 0;
+  background-clip: padding-box;
 }
 
 *::-webkit-scrollbar-thumb:hover {
-  background-color: #a1a1a1;
+  background-color: rgba(160, 160, 160, 0.8);
 }
 
-/* Dark mode scrollbar styles */
+/* Hide scrollbar when not in use, show on hover */
+.floating-scrollbar {
+  scrollbar-width: thin;
+}
+
+.floating-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent; 
+}
+
+.floating-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(180, 180, 180, 0.6);
+}
+
+/* Dark mode floating scrollbar styles */
 .dark * {
   scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #444 #1a1a1a; /* For Firefox (thumb track) */
+  scrollbar-color: rgba(100, 100, 100, 0.6) transparent; /* For Firefox (thumb track) */
 }
 
 .dark *::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: transparent;
 }
 
 .dark *::-webkit-scrollbar-thumb {
-  background-color: #444;
-  border: 2px solid #1a1a1a;
+  background-color: rgba(100, 100, 100, 0.6);
+  border: 0;
 }
 
 .dark *::-webkit-scrollbar-thumb:hover {
-  background-color: #666;
+  background-color: rgba(130, 130, 130, 0.8);
 }
 
 .dark *::-webkit-scrollbar-corner {
-  background: #1a1a1a;
+  background: transparent;
+}
+
+.dark .floating-scrollbar::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+.dark .floating-scrollbar:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(100, 100, 100, 0.6);
+}
+
+/* Add auto-hiding scrollbar functionality */
+@media (hover: hover) {
+  .auto-hide-scrollbar::-webkit-scrollbar-thumb {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .auto-hide-scrollbar:hover::-webkit-scrollbar-thumb {
+    opacity: 1;
+  }
 }
 
 @layer base {

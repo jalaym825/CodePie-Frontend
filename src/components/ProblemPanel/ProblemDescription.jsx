@@ -48,7 +48,7 @@ const ProblemDescription = () => {
                         if (isInline) {
                             return (
                                 <code
-                                    className="!font-geist-mono border-1 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.2 pb-[0.1rem] rounded text-sm dark:text-gray-200"
+                                    className="!font-geist-mono border-1 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.2 pb-[0.1rem] text-wrap rounded text-sm dark:text-gray-200"
                                     {...props}
                                 >
                                     {children}
@@ -66,9 +66,13 @@ const ProblemDescription = () => {
                                         fontSize: '0.85rem',
                                         fontFamily: '"Geist Mono", monospace',
                                         backgroundColor: 'rgb(243 244 246)',
+                                        maxWidth: '100%',
                                         padding: '.6rem',
                                         borderRadius: '0.5rem',
                                         margin: 0,
+                                        wordBreak: 'break-word',
+                                        whiteSpace: 'pre-wrap',
+                                        overflowWrap: 'break-word',
                                         ...(document.documentElement.classList.contains('dark') ? {
                                             backgroundColor: 'rgb(31 41 55)',
                                             color: 'rgb(229 231 235)'
@@ -78,6 +82,8 @@ const ProblemDescription = () => {
                                         style: {
                                             fontFamily: '"Geist Mono", monospace',
                                             display: 'block',
+                                            whiteSpace: 'pre-wrap',
+                                            wordBreak: 'break-word',
                                         },
                                         className: 'code-block',
                                     }}
@@ -88,6 +94,7 @@ const ProblemDescription = () => {
                                             backgroundColor: 'transparent',
                                         }
                                     }}
+                                    wrapLines={true}
                                     {...props}
                                 >
                                     {String(children).replace(/\n$/, '')}
