@@ -49,7 +49,8 @@ function App() {
               <Route index element={<ContestDetails />} />
 
               {/* Leaderboard */}
-              <Route path="leaderboard" element={<ContestLeaderBoard />} />
+              <Route path="leaderboard" element={<ContestDetails tab="leaderboard"/>} />
+              <Route path="problems" element={<ContestDetails tab="problems"/>} />
 
               {/* Add Problems to Contest (Admin only) */}
               <Route path="add-problems" element={<AddProblemsPage />} />

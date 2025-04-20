@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Calendar, Clock, Users, FileText, Trophy, ArrowRight, Loader, ChevronRight, BarChart2, List, MessageSquare, CheckCircle, PlusIcon, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Link, useNavigate, useParams } from 'react-router';
-import { UserContext } from '../../context/UserContext';
-import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowRight, Calendar, CheckCircle, ChevronRight, Clock, FileText, Info, Loader, Trophy, Users } from 'lucide-react';
+import { useContext, useEffect, useState } from 'react';
+import { Link, useLocation, useParams } from 'react-router';
 import { toast } from 'sonner';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { CodeExecutionContext } from '../../context/CodeExecutionContext';
+import { UserContext } from '../../context/UserContext';
 
 // Assume a LeaderboardComponent is imported
 import LeaderboardComponent from '../Contest/ContestLeaderBoard';
@@ -16,15 +15,24 @@ import ContestProblems from './ContestProblems';
 
 const ContestDetails = () => {
     const { contestId } = useParams();
+    const location = useLocation();
     const { getContest, joinContest, userInfo, getAccurateTime } = useContext(UserContext);
     const { contest, fetchContest } = useContext(CodeExecutionContext);
     const [timeStatus, setTimeStatus] = useState('not-started');
     const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
     const [contestData, setContestData] = useState(null);
-    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [joining, setJoining] = useState(false);
-    const [activeTab, setActiveTab] = useState('overview'); // 'overview', 'problems', or 'leaderboard'
+
+    // Determine active tab based on current URL path
+    const getActiveTab = () => {
+        const path = location.pathname;
+        if (path.endsWith('/problems')) return 'problems';
+        if (path.endsWith('/leaderboard')) return 'leaderboard';
+        return 'overview';
+    };
+
+    const activeTab = getActiveTab();
 
     async function handleGetContest() {
         try {
@@ -275,14 +283,15 @@ const ContestDetails = () => {
 
                             {(['in-progress', 'not-started'].includes(timeStatus) && contestData?.isJoined || timeStatus === 'completed') && (
                                 <div className="shrink-0">
-                                    <Button
-                                        onClick={() => setActiveTab('problems')}
-                                        className="bg-white/90 text-emerald-700 hover:bg-white shadow-lg transition-all duration-300 backdrop-blur-sm cursor-pointer"
-                                        size="lg"
-                                    >
-                                        View Problems
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Button>
+                                    <Link to={`/contests/${contestId}/problems`}>
+                                        <Button
+                                            className="bg-white/90 text-emerald-700 hover:bg-white shadow-lg transition-all duration-300 backdrop-blur-sm cursor-pointer"
+                                            size="lg"
+                                        >
+                                            View Problems
+                                            <ArrowRight className="ml-2 h-4 w-4" />
+                                        </Button>
+                                    </Link>
                                 </div>
                             )}
                         </div>
@@ -317,29 +326,31 @@ const ContestDetails = () => {
                         </div>
                     )}
 
-                    {/* Replace manual tabs with shadcn Tabs component */}
-                    <div className="bg-white p-4">
-                        <Tabs 
-                            defaultValue="overview" 
-                            value={activeTab} 
-                            onValueChange={setActiveTab}
-                            className="w-full"
-                        >
-                            <TabsList className="w-full gap-3 p-0 bg-background justify-start rounded-none">
-                                <TabsTrigger value="overview" className="rounded-none bg-background h-full data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-b-primary">
-                                    <FileText className="h-4 w-4" />
-                                    <span>Overview</span>
-                                </TabsTrigger>
-                                <TabsTrigger value="problems" className="rounded-none bg-background h-full data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-b-primary">
-                                    <CheckCircle className="h-4 w-4" />
-                                    <span>Problems</span>
-                                </TabsTrigger>
-                                <TabsTrigger value="leaderboard" className="rounded-none bg-background h-full data-[state=active]:shadow-none border-b-2 border-transparent data-[state=active]:border-b-primary">
-                                    <Trophy className="h-4 w-4" />
-                                    <span>Leaderboard</span>
-                                </TabsTrigger>
-                            </TabsList>
-                        </Tabs>
+                    {/* Tab navigation with Link components */}
+                    <div className="bg-white pt-3">
+                        <div className="flex border-b border-gray-200 justify-between  px-4">
+                            <Link
+                                to={`/contests/${contestId}`}
+                                className={`pb-3 flex-1 flex items-center justify-center space-x-2 px-4 py-2 ${activeTab === 'overview' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                <FileText className="h-4 w-4" />
+                                <span>Overview</span>
+                            </Link>
+                            <Link
+                                to={`/contests/${contestId}/problems`}
+                                className={`pb-3 flex-1 flex items-center justify-center space-x-2 px-4 py-2 ${activeTab === 'problems' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                <CheckCircle className="h-4 w-4" />
+                                <span>Problems</span>
+                            </Link>
+                            <Link
+                                to={`/contests/${contestId}/leaderboard`}
+                                className={`pb-3 flex-1 flex items-center justify-center space-x-2 px-4 py-2 ${activeTab === 'leaderboard' ? 'border-b-2 border-primary text-primary' : 'text-gray-600 hover:text-gray-900'}`}
+                            >
+                                <Trophy className="h-4 w-4" />
+                                <span>Leaderboard</span>
+                            </Link>
+                        </div>
                     </div>
                 </Card>
 
@@ -347,51 +358,43 @@ const ContestDetails = () => {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     {/* Main Content - 3/4 width */}
                     <div className="md:col-span-3">
-                        <Tabs value={activeTab} className="w-full">
-                            {/* Overview Tab */}
-                            <TabsContent value="overview">
-                                <ContestOverview 
-                                    contestData={contestData} 
-                                    timeStatus={timeStatus} 
-                                    setActiveTab={setActiveTab} 
-                                    handleJoinContest={handleJoinContest} 
-                                    joining={joining} 
-                                    formatDate={formatDate} 
-                                />
-                            </TabsContent>
+                        {activeTab === 'overview' && (
+                            <ContestOverview
+                                contestData={contestData}
+                                timeStatus={timeStatus}
+                                handleJoinContest={handleJoinContest}
+                                joining={joining}
+                                formatDate={formatDate}
+                            />
+                        )}
 
-                            {/* Problems Tab */}
-                            <TabsContent value="problems">
-                                {contest && contest.problems && (
-                                    <ContestProblems 
-                                        timeStatus={timeStatus} 
-                                        contestData={contestData} 
-                                        handleJoinContest={handleJoinContest} 
-                                        joining={joining} 
-                                        contest={contest} 
-                                        contestId={contestId} 
-                                    />
-                                )}
-                            </TabsContent>
+                        {activeTab === 'problems' && contest && contest.problems && (
+                            <ContestProblems
+                                timeStatus={timeStatus}
+                                contestData={contestData}
+                                handleJoinContest={handleJoinContest}
+                                joining={joining}
+                                contest={contest}
+                                contestId={contestId}
+                            />
+                        )}
 
-                            {/* Leaderboard Tab */}
-                            <TabsContent value="leaderboard">
-                                <Card className="shadow-sm border border-gray-200">
-                                    <CardHeader>
-                                        <CardTitle className="text-xl flex items-center">
-                                            <Trophy className="text-blue-500 mr-2" size={20} />
-                                            Contest Leaderboard
-                                        </CardTitle>
-                                        <CardDescription>
-                                            See how participants are ranking in this contest
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <LeaderboardComponent contestId={contestId} />
-                                    </CardContent>
-                                </Card>
-                            </TabsContent>
-                        </Tabs>
+                        {activeTab === 'leaderboard' && (
+                            <Card className="shadow-sm border border-gray-200">
+                                <CardHeader>
+                                    <CardTitle className="text-xl flex items-center">
+                                        <Trophy className="text-blue-500 mr-2" size={20} />
+                                        Contest Leaderboard
+                                    </CardTitle>
+                                    <CardDescription>
+                                        See how participants are ranking in this contest
+                                    </CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <LeaderboardComponent contestId={contestId} />
+                                </CardContent>
+                            </Card>
+                        )}
                     </div>
 
                     {/* Sidebar - 1/4 width */}
