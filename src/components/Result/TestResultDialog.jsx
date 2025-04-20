@@ -202,7 +202,7 @@ export default function TestResultDialog({ open, onOpenChange, testCases, testRe
                         <Button 
                             className="flex-1 bg-green-600 hover:bg-green-700"
                             onClick={() => {
-                                navigate(`/contests/${contest.id}/leaderboard/`);
+                                navigate(`/contests/${contest.id}/leaderboard`);
                             }}
                         >
                             View Leaderboard

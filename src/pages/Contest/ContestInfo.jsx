@@ -13,7 +13,7 @@ import LeaderboardComponent from '../Contest/ContestLeaderBoard';
 import ContestOverview from './ContestOverview';
 import ContestProblems from './ContestProblems';
 
-const ContestDetails = () => {
+const ContestDetails = ({tab="overview"}) => {
     const { contestId } = useParams();
     const location = useLocation();
     const { getContest, joinContest, userInfo, getAccurateTime } = useContext(UserContext);
@@ -24,15 +24,7 @@ const ContestDetails = () => {
     const [loading, setLoading] = useState(true);
     const [joining, setJoining] = useState(false);
 
-    // Determine active tab based on current URL path
-    const getActiveTab = () => {
-        const path = location.pathname;
-        if (path.endsWith('/problems')) return 'problems';
-        if (path.endsWith('/leaderboard')) return 'leaderboard';
-        return 'overview';
-    };
-
-    const activeTab = getActiveTab();
+    const activeTab = tab;
 
     async function handleGetContest() {
         try {
