@@ -1,6 +1,6 @@
 import MDEditor from '@uiw/react-md-editor';
 import "@uiw/react-md-editor/markdown-editor.css";
-import { Plus, Save, Trash2 } from 'lucide-react';
+import { Check, ChevronsUpDown, Plus, Save, Trash2 } from 'lucide-react';
 import { useContext, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
@@ -12,13 +12,43 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Switch } from '../../components/ui/switch';
 import { Textarea } from '../../components/ui/textarea';
 import { UserContext } from '../../context/UserContext';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '../../components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
+import { Badge } from '../../components/ui/badge';
+import { cn } from '../../lib/utils';
+
+// DSA topics for the multiselector
+const dsaTopics = [
+  { value: "arrays", label: "Arrays" },
+  { value: "strings", label: "Strings" },
+  { value: "linked_lists", label: "Linked Lists" },
+  { value: "stacks", label: "Stacks" },
+  { value: "queues", label: "Queues" },
+  { value: "trees", label: "Trees" },
+  { value: "graphs", label: "Graphs" },
+  { value: "hash_tables", label: "Hash Tables" },
+  { value: "heaps", label: "Heaps" },
+  { value: "dynamic_programming", label: "Dynamic Programming" },
+  { value: "greedy_algorithms", label: "Greedy Algorithms" },
+  { value: "sorting", label: "Sorting" },
+  { value: "searching", label: "Searching" },
+  { value: "recursion", label: "Recursion" },
+  { value: "backtracking", label: "Backtracking" },
+  { value: "bit_manipulation", label: "Bit Manipulation" },
+  { value: "divide_and_conquer", label: "Divide and Conquer" },
+  { value: "sliding_window", label: "Sliding Window" },
+  { value: "two_pointers", label: "Two Pointers" },
+  { value: "math", label: "Mathematics" },
+];
 
 const AddProblemsPage = () => {
     const navigate = useNavigate();
     const { contestId } = useParams();
     const { createContestProblem } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
-
+    const [generating, setGenerating] = useState(false);
+    const [selectedTopics, setSelectedTopics] = useState([]);
+    
     const [newProblem, setNewProblem] = useState({
         contestId: contestId,
         title: '',
@@ -122,6 +152,80 @@ const AddProblemsPage = () => {
         });
     };
 
+    // Handle topic selection
+    const toggleTopic = (topic) => {
+        setSelectedTopics(current => 
+            current.some(item => item.value === topic.value)
+                ? current.filter(item => item.value !== topic.value)
+                : [...current, topic]
+        );
+    };
+
+    // Remove a selected topic
+    const removeTopic = (topicValue) => {
+        setSelectedTopics(current => 
+            current.filter(topic => topic.value !== topicValue)
+        );
+    };
+
+    // Generate problem from API
+    const generateProblem = async () => {
+        if (selectedTopics.length === 0) {
+            toast.error("Please select at least one DSA topic");
+            return;
+        }
+
+        setGenerating(true);
+        try {
+            const topics = selectedTopics.map(topic => topic.value);
+            const response = await fetch('http://localhost:3000/problems/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ topics }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate problem');
+            }
+
+            const result = await response.json();
+            
+            if (result && result.data) {
+                const { data } = result;
+                
+                // Map test cases from the response format to our format
+                const mappedTestCases = data.testCases.map(tc => ({
+                    input: tc.input || '',
+                    output: tc.output || '',
+                    explanation: tc.explanation || '',
+                    isHidden: tc.hidden || false,
+                    difficulty: tc.difficulty || data.difficulty || '',
+                }));
+
+                // Update the form with the response data
+                setNewProblem({
+                    ...newProblem,
+                    title: data.title || '',
+                    description: data.md || data.description || '',
+                    difficultyLevel: data.difficulty || '',
+                    points: data.points || newProblem.points,
+                    testCases: mappedTestCases.length > 0 ? mappedTestCases : newProblem.testCases,
+                });
+
+                toast.success("Problem generated successfully!");
+            } else {
+                toast.error("Invalid response format");
+            }
+        } catch (error) {
+            console.error("Error generating problem:", error);
+            toast.error("Failed to generate problem: " + error.message);
+        } finally {
+            setGenerating(false);
+        }
+    };
+
     const handleCancel = () => navigate('/contests');
 
     return (
@@ -151,6 +255,80 @@ const AddProblemsPage = () => {
                     </CardHeader>
 
                     <CardContent className="pt-6 space-y-4">
+                        {/* DSA Topics Multiselector */}
+                        <div className="space-y-2">
+                            <Label htmlFor="dsa-topics">DSA Topics</Label>
+                            <div className="flex flex-wrap gap-2 mb-2">
+                                {selectedTopics.map(topic => (
+                                    <Badge 
+                                        key={topic.value} 
+                                        variant="secondary"
+                                        className="pl-2 pr-1 py-1 flex items-center gap-1"
+                                    >
+                                        {topic.label}
+                                        <button 
+                                            className="ml-1 rounded-full hover:bg-gray-200 p-1" 
+                                            onClick={() => removeTopic(topic.value)}
+                                        >
+                                            ×
+                                        </button>
+                                    </Badge>
+                                ))}
+                            </div>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button 
+                                        variant="outline" 
+                                        role="combobox" 
+                                        className="w-full justify-between"
+                                    >
+                                        {selectedTopics.length > 0 
+                                            ? `${selectedTopics.length} topics selected` 
+                                            : "Select DSA topics"}
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[200px] p-0">
+                                    <Command>
+                                        <CommandInput placeholder="Search topics..." />
+                                        <CommandEmpty>No topic found.</CommandEmpty>
+                                        <CommandGroup>
+                                            {dsaTopics.map((topic) => (
+                                                <CommandItem
+                                                    key={topic.value}
+                                                    onSelect={() => toggleTopic(topic)}
+                                                    className="flex items-center"
+                                                >
+                                                    <div className={cn(
+                                                        "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
+                                                        selectedTopics.some(item => item.value === topic.value) 
+                                                            ? "bg-primary text-primary-foreground" 
+                                                            : "opacity-50"
+                                                    )}>
+                                                        {selectedTopics.some(item => item.value === topic.value) && (
+                                                            <Check className="h-3 w-3" />
+                                                        )}
+                                                    </div>
+                                                    {topic.label}
+                                                </CommandItem>
+                                            ))}
+                                        </CommandGroup>
+                                    </Command>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+
+                        {/* Generate Button */}
+                        <div className="flex justify-end">
+                            <Button 
+                                onClick={generateProblem}
+                                disabled={generating || selectedTopics.length === 0}
+                                className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                                {generating ? "Generating..." : "Generate Problem"}
+                            </Button>
+                        </div>
+
                         <div>
                             <Label htmlFor="problem-title">Title</Label>
                             <Input

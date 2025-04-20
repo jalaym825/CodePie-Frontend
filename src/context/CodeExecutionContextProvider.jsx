@@ -157,11 +157,12 @@ export default function CodeExecutionContextProvider({ children }) {
 
     const handleFetchContest = useCallback(async (contestId) => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`);
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/contests/${contestId}`, {
+                withCredentials: true
+            });
 
             if (response.status === 200) {
                 const contest = response.data.data;
-                console.log('Contest data:', contest);
 
                 setContest(contest);
                 setProblems(contest.problems);
