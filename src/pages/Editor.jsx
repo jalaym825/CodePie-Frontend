@@ -30,12 +30,14 @@ import TestResultDialog from '../components/Result/TestResultDialog';
 import { toast } from 'sonner';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import NoCopyPasteComponent from '@/components/Utilities/NoCopyPasteComponent';
+import { UserContext } from '@/context/UserContext';
 
 const CodeEditor = () => {
     const [isLoading, setIsLoading] = useState(true);
 
     const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults, loading, contest } = useContext(CodeExecutionContext);
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
+    const {getAccurateTime} = useContext(UserContext);
 
     const { id, contestId, problemId } = useParams();
     const navigate = useNavigate();
@@ -50,9 +52,10 @@ const CodeEditor = () => {
         if (!isContest && !currentProblemId) return;
         const res = await fetchContest(contestId);
         if (res.status === 200) {
-            if (!res.isJoined) {
+            const now = getAccurateTime();
+            if (res.contest.endTime <= now && !res.isJoined) {
                 toast.error("You have not joined this contest yet. Please join the contest to access the problem.");
-                navigate(`/contests/${contestId}/join`);
+                navigate(`/contests/${contestId}`);
             }
             return res;
         }

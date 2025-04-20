@@ -1,14 +1,27 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BarChart2, ChevronRight, Info } from 'lucide-react';
-import React from 'react'
-import { useNavigate } from 'react-router';
+import { ArrowRight, BarChart2, ChevronRight, Info, PlusIcon } from 'lucide-react';
+import React, { useContext } from 'react'
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
+import { UserContext } from '@/context/UserContext';
 
 const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
   const navigate = useNavigate();
+  const { userInfo } = useContext(UserContext);
   return (
     <div>
+      {userInfo.role === "ADMIN" && (
+        <div className='flex justify-end w-full mb-4'>
+          <Link to={`/contests/${contestId}/add-problems`}>
+            <Button
+              className="border-none cursor-pointer font-semibold font-manrope p-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white">
+              Add Problem
+              <PlusIcon className="ml-1 h-3 w-3" />
+            </Button>
+          </Link>
+        </div>
+      )}
       {
         timeStatus === 'not-started' ? (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4 flex items-start">

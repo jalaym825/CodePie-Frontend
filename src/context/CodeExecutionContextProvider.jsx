@@ -172,6 +172,7 @@ export default function CodeExecutionContextProvider({ children }) {
 
             return {
                 status: response.status,
+                contest: response.data.data,
                 isJoined: response.data.data.isJoined,
             };
         } catch (error) {
