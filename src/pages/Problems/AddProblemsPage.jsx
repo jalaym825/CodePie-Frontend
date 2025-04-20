@@ -101,7 +101,7 @@ const AddProblemsPage = () => {
         if (res?.status === 201) {
             toast.success(res.message);
             setLoading(false);
-            navigate(`/contests/${contestId}`);
+            navigate(`/contests/${contestId}/problems`);
         } else {
             toast.error(res?.data?.message || 'Something went wrong');
             setLoading(false);
