@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BarChart2, ChevronRight, Info, PlusIcon } from 'lucide-react';
+import { ArrowRight, BarChart2, CheckCircle, ChevronRight, Info, PlusIcon, Star } from 'lucide-react';
 import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -64,7 +64,7 @@ const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
                       <h3 className="text-md font-medium text-gray-800">{problem.title}</h3>
                       <div className="flex items-center mt-1 text-sm text-gray-500 space-x-4">
                         <span className="flex items-center">
-                          <BarChart2 className="h-4 w-4 mr-1 text-blue-500" /> {/* Changed from purple-500 */}
+                          <BarChart2 className="h-4 w-4 mr-1 text-blue-500" />
                           {problem.difficultyLevel === 'EASY' && <span className="text-green-600">Easy</span>}
                           {problem.difficultyLevel === 'MEDIUM' && <span className="text-amber-600">Medium</span>}
                           {problem.difficultyLevel === 'HARD' && <span className="text-red-600">Hard</span>}
@@ -73,8 +73,15 @@ const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
                             problem.difficultyLevel !== 'HARD' &&
                             <span>{problem.difficultyLevel}</span>}
                         </span>
-                      </div>
-                    </div>
+                        <span className="flex items-center">
+                          <Star className="h-4 w-4 mr-1 text-blue-500" />
+                          <span className="text-gray-500">{problem.points} Points</span>
+                        </span>
+                        <span className="flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-1 text-blue-500" />
+                          <span className="text-gray-500">{problem.acceptanceRate}% Acceptance</span>
+                        </span>
+                      </div>                    </div>
                     <div>
                       <Button
                         variant="outline"
