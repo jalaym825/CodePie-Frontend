@@ -1,27 +1,25 @@
-import React, { useContext } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Settings, Maximize, Minimize, Code2 } from 'lucide-react';
-import { languages } from '../../helpers/editorData';
+import { Code2, Link as LinkIcon, Maximize, Minimize } from 'lucide-react';
+import { useContext } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../../context/EditorSettingsContext';
-import { useNavigate, useParams } from 'react-router';
+import { languages } from '../../helpers/editorData';
 
 const Header = () => {
     const { selectedProblem, setSelectedProblem, contest } = useContext(CodeExecutionContext);
     const {
         isFullscreen,
         toggleFullscreen,
-        // showSettings,
-        // toggleSettings,
         language,
         setLanguage,
     } = useContext(EditorSettingsContext);
 
     const navigate = useNavigate();
     const { contestId } = useParams();
-    
+
     const handleProblemChange = (problemId) => {
         const problem = contest.problems.find((p) => p.id === problemId);
         if (problem) {
@@ -30,11 +28,31 @@ const Header = () => {
         }
     };
 
+    const goToContest = () => {
+        navigate(`/contests/${contestId}/problems`);
+    };
+
     return (
         <div className="flex justify-between items-center p-2 px-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
-            <div className="flex items-center space-x-1">
-                <Code2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                <h1 className="text-lg font-bold text-blue-600 dark:text-blue-400">CodePie</h1>
+            <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-1">
+                    <Code2 className="h-6 w-6 text-blue-600 dark:text-blue-400" strokeWidth={2.5} />
+                </div>
+
+                <div className="flex items-center space-x-2">
+
+                    <div className="font-bold text-sm text-gray-700 dark:text-gray-300">
+                        {contest.title || "Contest"}
+                    </div>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={goToContest}
+                        className="flex items-center text-xs h-8 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
+                    >
+                        <LinkIcon className="h-3 w-3" />
+                    </Button>
+                </div>
             </div>
 
             <div className="flex space-x-2 items-center">
