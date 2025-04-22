@@ -3,12 +3,15 @@ import { History, CheckCircle, XCircle, Clock, Cpu, HardDrive, Calendar } from '
 import { Badge } from '@/components/ui/badge';
 import { UserContext } from '@/context/UserContext';
 import { useParams } from 'react-router';
+import SubmissionDialog from './SubmissionDialog';
 
 const HistoryPanel = () => {
     const { getProblemSubmissions } = useContext(UserContext);
     const { problemId } = useParams();
     const [submissions, setSubmissions] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [selectedSubmission, setSelectedSubmission] = useState(null);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchSubmissions = async () => {
@@ -79,6 +82,11 @@ const HistoryPanel = () => {
         return `${time} ms`;
     };
 
+    const handleSubmissionClick = (submissionId) => {
+        setSelectedSubmission(submissionId);
+        setIsDialogOpen(true);
+    };
+
     return (
         <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 h-full overflow-auto">
             {loading ? (
@@ -109,13 +117,14 @@ const HistoryPanel = () => {
                             Score
                         </div>
                     </div>
-                    
+
                     {/* Table Body */}
                     <div className="divide-y divide-gray-200 dark:divide-gray-700">
                         {submissions.map((submission) => (
                             <div
                                 key={submission.id}
                                 className="grid grid-cols-12 gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 items-center text-center"
+                                onClick={() => handleSubmissionClick(submission.id)}
                             >
                                 <div className="col-span-2 flex items-center justify-center">
                                     <Badge className={getBadgeClass(submission.status)}>
@@ -158,6 +167,17 @@ const HistoryPanel = () => {
                     <p>No recent submissions</p>
                 </div>
             )}
+
+            {selectedSubmission && (
+                <SubmissionDialog
+                    submissionId={selectedSubmission}
+                    isOpen={isDialogOpen}
+                    onClose={() => setIsDialogOpen(false)}
+                    getStatusDisplay={getStatusDisplay}
+                    getBadgeClass={getBadgeClass}
+                />
+            )}
+
         </div>
     );
 };
