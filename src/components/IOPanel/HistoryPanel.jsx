@@ -123,7 +123,7 @@ const HistoryPanel = () => {
                         {submissions.map((submission) => (
                             <div
                                 key={submission.id}
-                                className="grid grid-cols-12 gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 items-center text-center"
+                                className="grid grid-cols-12 gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 items-center text-center cursor-pointer"
                                 onClick={() => handleSubmissionClick(submission.id)}
                             >
                                 <div className="col-span-2 flex items-center justify-center">
