@@ -40,7 +40,13 @@ const LeaderboardTable = () => {
 
     const formatTime = (dateString) => {
         const date = new Date(dateString);
-        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+        // in 12 hours format with am pm
+        const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+        const formattedTime = date.toLocaleTimeString([], options);
+        const [time, modifier] = formattedTime.split(' ');
+        const [hours, minutes, seconds] = time.split(':');
+        const formattedHours = (parseInt(hours) % 12 || 12).toString().padStart(2, '0');
+        return `${formattedHours}:${minutes}:${seconds} ${modifier}`;
     };
 
     const getDifficultyColor = (difficulty) => {

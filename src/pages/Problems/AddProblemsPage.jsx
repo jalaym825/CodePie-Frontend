@@ -16,29 +16,30 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from '
 import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { Badge } from '../../components/ui/badge';
 import { cn } from '../../lib/utils';
+import axios from 'axios';
 
 // DSA topics for the multiselector
 const dsaTopics = [
-  { value: "arrays", label: "Arrays" },
-  { value: "strings", label: "Strings" },
-  { value: "linked_lists", label: "Linked Lists" },
-  { value: "stacks", label: "Stacks" },
-  { value: "queues", label: "Queues" },
-  { value: "trees", label: "Trees" },
-  { value: "graphs", label: "Graphs" },
-  { value: "hash_tables", label: "Hash Tables" },
-  { value: "heaps", label: "Heaps" },
-  { value: "dynamic_programming", label: "Dynamic Programming" },
-  { value: "greedy_algorithms", label: "Greedy Algorithms" },
-  { value: "sorting", label: "Sorting" },
-  { value: "searching", label: "Searching" },
-  { value: "recursion", label: "Recursion" },
-  { value: "backtracking", label: "Backtracking" },
-  { value: "bit_manipulation", label: "Bit Manipulation" },
-  { value: "divide_and_conquer", label: "Divide and Conquer" },
-  { value: "sliding_window", label: "Sliding Window" },
-  { value: "two_pointers", label: "Two Pointers" },
-  { value: "math", label: "Mathematics" },
+    { value: "arrays", label: "Arrays" },
+    { value: "strings", label: "Strings" },
+    { value: "linked_lists", label: "Linked Lists" },
+    { value: "stacks", label: "Stacks" },
+    { value: "queues", label: "Queues" },
+    { value: "trees", label: "Trees" },
+    { value: "graphs", label: "Graphs" },
+    { value: "hash_tables", label: "Hash Tables" },
+    { value: "heaps", label: "Heaps" },
+    { value: "dynamic_programming", label: "Dynamic Programming" },
+    { value: "greedy_algorithms", label: "Greedy Algorithms" },
+    { value: "sorting", label: "Sorting" },
+    { value: "searching", label: "Searching" },
+    { value: "recursion", label: "Recursion" },
+    { value: "backtracking", label: "Backtracking" },
+    { value: "bit_manipulation", label: "Bit Manipulation" },
+    { value: "divide_and_conquer", label: "Divide and Conquer" },
+    { value: "sliding_window", label: "Sliding Window" },
+    { value: "two_pointers", label: "Two Pointers" },
+    { value: "math", label: "Mathematics" },
 ];
 
 const AddProblemsPage = () => {
@@ -48,7 +49,7 @@ const AddProblemsPage = () => {
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
     const [selectedTopics, setSelectedTopics] = useState([]);
-    
+
     const [newProblem, setNewProblem] = useState({
         contestId: contestId,
         title: '',
@@ -154,7 +155,7 @@ const AddProblemsPage = () => {
 
     // Handle topic selection
     const toggleTopic = (topic) => {
-        setSelectedTopics(current => 
+        setSelectedTopics(current =>
             current.some(item => item.value === topic.value)
                 ? current.filter(item => item.value !== topic.value)
                 : [...current, topic]
@@ -163,7 +164,7 @@ const AddProblemsPage = () => {
 
     // Remove a selected topic
     const removeTopic = (topicValue) => {
-        setSelectedTopics(current => 
+        setSelectedTopics(current =>
             current.filter(topic => topic.value !== topicValue)
         );
     };
@@ -178,23 +179,17 @@ const AddProblemsPage = () => {
         setGenerating(true);
         try {
             const topics = selectedTopics.map(topic => topic.value);
-            const response = await fetch('http://localhost:3000/problems/generate', {
-                method: 'POST',
+            const response = await axios.post('http://localhost:3000/problems/generate', { topics, difficulty: newProblem.difficultyLevel }, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ topics }),
+                withCredentials: true
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to generate problem');
-            }
 
-            const result = await response.json();
-            
-            if (result && result.data) {
-                const { data } = result;
-                
+            if (response && response.data) {
+                const { data } = response.data;
+
                 // Map test cases from the response format to our format
                 const mappedTestCases = data.testCases.map(tc => ({
                     input: tc.input || '',
@@ -260,14 +255,14 @@ const AddProblemsPage = () => {
                             <Label htmlFor="dsa-topics">DSA Topics</Label>
                             <div className="flex flex-wrap gap-2 mb-2">
                                 {selectedTopics.map(topic => (
-                                    <Badge 
-                                        key={topic.value} 
+                                    <Badge
+                                        key={topic.value}
                                         variant="secondary"
                                         className="pl-2 pr-1 py-1 flex items-center gap-1"
                                     >
                                         {topic.label}
-                                        <button 
-                                            className="ml-1 rounded-full hover:bg-gray-200 p-1" 
+                                        <button
+                                            className="ml-1 rounded-full hover:bg-gray-200 p-1"
                                             onClick={() => removeTopic(topic.value)}
                                         >
                                             ×
@@ -277,13 +272,13 @@ const AddProblemsPage = () => {
                             </div>
                             <Popover>
                                 <PopoverTrigger asChild>
-                                    <Button 
-                                        variant="outline" 
-                                        role="combobox" 
+                                    <Button
+                                        variant="outline"
+                                        role="combobox"
                                         className="w-full justify-between"
                                     >
-                                        {selectedTopics.length > 0 
-                                            ? `${selectedTopics.length} topics selected` 
+                                        {selectedTopics.length > 0
+                                            ? `${selectedTopics.length} topics selected`
                                             : "Select DSA topics"}
                                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                     </Button>
@@ -301,8 +296,8 @@ const AddProblemsPage = () => {
                                                 >
                                                     <div className={cn(
                                                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
-                                                        selectedTopics.some(item => item.value === topic.value) 
-                                                            ? "bg-primary text-primary-foreground" 
+                                                        selectedTopics.some(item => item.value === topic.value)
+                                                            ? "bg-primary text-primary-foreground"
                                                             : "opacity-50"
                                                     )}>
                                                         {selectedTopics.some(item => item.value === topic.value) && (
@@ -317,10 +312,28 @@ const AddProblemsPage = () => {
                                 </PopoverContent>
                             </Popover>
                         </div>
+                        {/* Select menu for problem difficulty */}
+                        <div className="flex items-center gap-2">
+                            <Label htmlFor="difficulty">Problem Difficulty</Label>
+                            <Select
+                                value={newProblem.difficultyLevel}
+                                onValueChange={handleMainDifficultyChange}
+                            >
+                                <SelectTrigger className="w-40">
+                                    <SelectValue placeholder="Select difficulty" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="EASY">Easy</SelectItem>
+                                    <SelectItem value="MEDIUM">Medium</SelectItem>
+                                    <SelectItem value="HARD">Hard</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
 
                         {/* Generate Button */}
                         <div className="flex justify-end">
-                            <Button 
+                            <Button
                                 onClick={generateProblem}
                                 disabled={generating || selectedTopics.length === 0}
                                 className="bg-green-600 hover:bg-green-700 text-white"
