@@ -54,14 +54,22 @@ const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
               {contest.problems.map((problem, index) => (
                 <Card
                   key={problem.id}
-                  className="border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 p-0"
+                  className={`border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-200 p-0`}
                 >
                   <div className="flex items-center p-4">
-                    <div className="mr-4 bg-blue-100 text-blue-600 h-10 w-10 rounded-full flex items-center justify-center font-medium">
+                    <div className={`mr-4 ${problem.isSolved ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"} h-10 w-10 rounded-full flex items-center justify-center font-medium`}>
                       {String.fromCharCode(65 + index)}
                     </div>
                     <div className="flex-grow">
-                      <h3 className="text-md font-medium text-gray-800">{problem.title}</h3>
+                      <div className="flex items-center">
+                        <h3 className="text-md font-medium text-gray-800">{problem.title}</h3>
+                        {problem.isSolved && (
+                          <div className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            Solved
+                          </div>
+                        )}
+                      </div>
                       <div className="flex items-center mt-1 text-sm text-gray-500 space-x-4">
                         <span className="flex items-center">
                           <BarChart2 className="h-4 w-4 mr-1 text-blue-500" />
@@ -81,14 +89,17 @@ const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
                           <CheckCircle className="h-4 w-4 mr-1 text-blue-500" />
                           <span className="text-gray-500">{problem.acceptanceRate}% Acceptance</span>
                         </span>
-                      </div>                    </div>
+                      </div>
+                    </div>
                     <div>
                       <Button
                         variant="outline"
                         size="sm"
-                        className={`border ${contestData?.isJoined
-                          ? "border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700"
-                          : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
+                        className={`border ${problem.isSolved 
+                          ? "border-green-200 bg-green-50 hover:bg-green-100 text-green-700" 
+                          : contestData?.isJoined
+                            ? "border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700"
+                            : "border-gray-200 bg-gray-50 hover:bg-gray-100 text-gray-700"
                           }`}
                         onClick={() => {
                           if (!contestData?.isJoined && timeStatus === 'in-progress') {
@@ -98,7 +109,9 @@ const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
                           navigate(`/contests/${contestId}/problems/${problem.id}`);
                         }}
                       >
-                        {contestData?.isJoined && timeStatus === 'in-progress' ? (
+                        {problem.isSolved ? (
+                          <>View Solution<CheckCircle className="ml-1 h-4 w-4" /></>
+                        ) : contestData?.isJoined && timeStatus === 'in-progress' ? (
                           <>Solve Problem<ArrowRight className="ml-1 h-4 w-4" /></>
                         ) : (
                           <>View Problem<ChevronRight className="ml-1 h-4 w-4" /></>
