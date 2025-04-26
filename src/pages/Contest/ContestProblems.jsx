@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BarChart2, CheckCircle, ChevronRight, Info, PlusIcon, Star } from 'lucide-react';
+import { ArrowRight, BarChart2, CheckCircle, ChevronRight, Edit, Info, PlusIcon, Star } from 'lucide-react';
 import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -91,7 +91,17 @@ const ContestProblems = ({ timeStatus, contestData, contest, contestId }) => {
                         </span>
                       </div>
                     </div>
-                    <div>
+                    <div className="flex space-x-2">
+                      {userInfo.role === "ADMIN" && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="border-amber-200 bg-amber-50 hover:bg-amber-100 text-amber-700"
+                          onClick={() => navigate(`/contests/${contestId}/edit-problem/${problem.id}`)}
+                        >
+                          <Edit className="mr-1 h-4 w-4" /> Edit
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"

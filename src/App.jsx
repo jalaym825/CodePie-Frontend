@@ -39,6 +39,7 @@ function App() {
               <Route path="leaderboard" element={<ContestDetails tab="leaderboard"/>} />
               <Route path="problems" element={<ContestDetails tab="problems"/>} />
               <Route path="add-problems" element={<AddProblemsPage />} />
+              <Route path="edit-problem/:problemId" element={<AddProblemsPage isEditing={true} />} />
             </Route>
           </Route>
           <Route path=":contestId/problems/:problemId" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
@@ -46,6 +47,7 @@ function App() {
         <Route path="/problems">
           <Route index element={<h1>Problems Page</h1>} />
           <Route path="create" element={<AddProblemsPage />} />
+          <Route path="edit/:id" element={<AddProblemsPage isEditing={true} />} />
           <Route path=":id" element={isLoading ? <LoadingScreen /> : <CodeEditor />} />
         </Route>
       </Routes>

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import getApi from "../helpers/API/getApi";
 import postApi from "../helpers/API/postApi";
-import axios from "axios";
+import putApi from "@/helpers/API/putApi";
 
 export default function UserContextProvider({ children }) {
     const [userInfo, setUserInfo] = useState({
@@ -177,6 +177,18 @@ export default function UserContextProvider({ children }) {
             return res.response;
         }
     }
+
+    async function handleUpdateContestProblem(id, data) {
+        const res = await putApi(`/problems/${id}`, data);
+        if (res.status === 200) {
+            return ({
+                status: res.status,
+                message: res.data.message
+            })
+        } else {
+            return res.response;
+        }
+    }
     
     const ctxValue = {
         userInfo: userInfo,
@@ -192,7 +204,8 @@ export default function UserContextProvider({ children }) {
         getContest: handleGetContest,
         joinContest: handleContestJoin,
         contestleaderBoard: handleContestLeaderBoard,
-        getProblemSubmissions: handleGetProblemSubmissions
+        getProblemSubmissions: handleGetProblemSubmissions,
+        updateContestProblem: handleUpdateContestProblem
     }
 
     return (

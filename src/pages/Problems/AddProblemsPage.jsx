@@ -1,7 +1,7 @@
 import MDEditor from '@uiw/react-md-editor';
 import "@uiw/react-md-editor/markdown-editor.css";
 import { Check, ChevronsUpDown, Plus, Save, Trash2 } from 'lucide-react';
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/button';
@@ -17,6 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/pop
 import { Badge } from '../../components/ui/badge';
 import { cn } from '../../lib/utils';
 import axios from 'axios';
+import LoadingScreen from '../../components/ui/LoadingScreen';
 
 // DSA topics for the multiselector
 const dsaTopics = [
@@ -42,12 +43,13 @@ const dsaTopics = [
     { value: "math", label: "Mathematics" },
 ];
 
-const AddProblemsPage = () => {
+const AddProblemsPage = ({ isEditing = false }) => {
     const navigate = useNavigate();
-    const { contestId } = useParams();
-    const { createContestProblem } = useContext(UserContext);
+    const { contestId, problemId } = useParams();
+    const { createContestProblem, updateContestProblem, getProblem } = useContext(UserContext);
     const [loading, setLoading] = useState(false);
     const [generating, setGenerating] = useState(false);
+    const [fetchingProblem, setFetchingProblem] = useState(isEditing);
     const [selectedTopics, setSelectedTopics] = useState([]);
 
     const [newProblem, setNewProblem] = useState({
@@ -60,11 +62,45 @@ const AddProblemsPage = () => {
         points: '',
         isVisible: true,
         testCases: [
-            { input: '', output: '', explanation: '', isHidden: false, difficulty: '' },
+            { id: '', input: '', output: '', explanation: '', isHidden: false, difficulty: '' },
         ],
         isPractice: false
     });
     const [errors, setErrors] = useState({});
+
+    // Fetch problem data if in edit mode
+    useEffect(() => {
+        const fetchProblemData = async () => {
+            if (isEditing && problemId) {
+                try {
+                    const res = await getProblem(problemId);
+                    const problem = res?.data?.data;
+                    if (problem) {
+                        console.log("Fetched problem data: ", problem);
+                        setNewProblem({
+                            ...problem,
+                            contestId: contestId || problem.contestId,
+                        });
+                        
+                        // Extract topics if available in the problem data
+                        if (problem.topics && Array.isArray(problem.topics)) {
+                            const topicsArray = problem.topics.map(topic => {
+                                const foundTopic = dsaTopics.find(t => t.value === topic);
+                                return foundTopic || { value: topic, label: topic.charAt(0).toUpperCase() + topic.slice(1) };
+                            });
+                            setSelectedTopics(topicsArray);
+                        }
+                    }
+                } catch (error) {
+                    toast.error("Failed to fetch problem details");
+                    console.error("Error fetching problem: ", error);
+                }
+                setFetchingProblem(false);
+            }
+        };
+
+        fetchProblemData();
+    }, [isEditing, problemId, getProblem]);
 
     const updateTestCase = (index, field, value) => {
         const updatedTestCases = [...newProblem.testCases];
@@ -108,12 +144,13 @@ const AddProblemsPage = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleCreateProblem = async () => {
+    const handleSubmitProblem = async () => {
         if (!validateForm()) return;
 
         setLoading(true);
 
         const formattedTestCases = newProblem.testCases.map((test) => ({
+            id: test.id || '',
             input: test.input || '',
             output: test.output || '',
             explanation: test.explanation || null,
@@ -125,12 +162,19 @@ const AddProblemsPage = () => {
         const payload = {
             ...newProblem,
             testCases: formattedTestCases,
+            topics: selectedTopics.map(topic => topic.value)
         };
         console.log(payload);
-        const res = await createContestProblem(payload);
 
-        if (res?.status === 201) {
-            toast.success(res.message);
+        let res;
+        if (isEditing) {
+            res = await updateContestProblem(problemId, payload);
+        } else {
+            res = await createContestProblem(payload);
+        }
+
+        if (res?.status === 201 || res?.status === 200) {
+            toast.success(isEditing ? "Problem updated successfully!" : "Problem created successfully!");
             setLoading(false);
             navigate(`/contests/${contestId}/problems`);
         } else {
@@ -221,7 +265,11 @@ const AddProblemsPage = () => {
         }
     };
 
-    const handleCancel = () => navigate('/contests');
+    const handleCancel = () => navigate(`/contests/${contestId}/problems`);
+
+    if (fetchingProblem) {
+        return <LoadingScreen />;
+    }
 
     return (
         <div className="min-h-screen bg-blue-50 relative overflow-hidden flex flex-col items-center justify-center py-12">
@@ -238,15 +286,25 @@ const AddProblemsPage = () => {
             </div>
 
             <div className="text-center mt-20 mb-8 z-10">
-                <h1 className="text-3xl font-bold text-gray-800">Create New Problem</h1>
-                <p className="text-gray-600 mt-2">Set up your coding contest details</p>
+                <h1 className="text-3xl font-bold text-gray-800">
+                    {isEditing ? 'Edit Problem' : 'Create New Problem'}
+                </h1>
+                <p className="text-gray-600 mt-2">
+                    {isEditing 
+                        ? 'Update your coding problem details and test cases'
+                        : 'Set up your coding problem details and add test cases'}
+                </p>
             </div>
 
             <div className="w-full max-w-4xl mx-auto z-10 px-4">
                 <Card className="border-2 py-0 border-blue-200 shadow-md">
                     <CardHeader className="bg-blue-50 p-5 rounded-t-xl">
-                        <CardTitle>Create New Problem</CardTitle>
-                        <CardDescription>Create a new coding problem and add test cases</CardDescription>
+                        <CardTitle>{isEditing ? 'Edit Problem' : 'Create New Problem'}</CardTitle>
+                        <CardDescription>
+                            {isEditing 
+                                ? 'Update problem details and test cases'
+                                : 'Create a new coding problem and add test cases'}
+                        </CardDescription>
                     </CardHeader>
 
                     <CardContent className="pt-6 space-y-4">
@@ -330,17 +388,18 @@ const AddProblemsPage = () => {
                             </Select>
                         </div>
 
-
-                        {/* Generate Button */}
-                        <div className="flex justify-end">
-                            <Button
-                                onClick={generateProblem}
-                                disabled={generating || selectedTopics.length === 0}
-                                className="bg-green-600 hover:bg-green-700 text-white"
-                            >
-                                {generating ? "Generating..." : "Generate Problem"}
-                            </Button>
-                        </div>
+                        {/* Generate Button - Only show in create mode */}
+                        {!isEditing && (
+                            <div className="flex justify-end">
+                                <Button
+                                    onClick={generateProblem}
+                                    disabled={generating || selectedTopics.length === 0}
+                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                >
+                                    {generating ? "Generating..." : "Generate Problem"}
+                                </Button>
+                            </div>
+                        )}
 
                         <div>
                             <Label htmlFor="problem-title">Title</Label>
@@ -414,6 +473,7 @@ const AddProblemsPage = () => {
                                             size="sm"
                                             onClick={() => removeTestCase(index)}
                                             className="h-8 w-8 p-0 text-red-600 hover:text-red-800 hover:bg-red-100"
+                                            disabled={newProblem.testCases.length <= 1}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
@@ -487,7 +547,6 @@ const AddProblemsPage = () => {
                                     <Plus className="h-4 w-4 mr-2" /> Add Test Case
                                 </Button>
                             </div>
-
                         </div>
                     </CardContent>
 
@@ -500,11 +559,15 @@ const AddProblemsPage = () => {
                                 Cancel
                             </Button>
                             <Button
-                                onClick={handleCreateProblem}
+                                onClick={handleSubmitProblem}
                                 disabled={loading}
-                                className="border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]"
+                                className={`border-[0.5px] cursor-pointer font-semibold font-manrope p-6 w-40 rounded-md 
+                                    ${isEditing 
+                                    ? "border-[#ffd7a3] hover:bg-[#fff2e0] bg-[#fffbf6] text-[#b06000]" 
+                                    : "border-[#c3deff] hover:bg-[#e5f1ff] bg-[#f6faff] text-[#4a516d]"}`}
                             >
-                                <Save className="mr-2 h-4 w-4" /> Save Problem
+                                <Save className="mr-2 h-4 w-4" /> 
+                                {isEditing ? 'Update Problem' : 'Save Problem'}
                             </Button>
                         </div>
                     </CardFooter>
