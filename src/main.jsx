@@ -8,6 +8,7 @@ import { Toaster } from 'sonner'
 import AuthContextProvider from './context/AuthContextProvider'
 import UserContextProvider from './context/UserContextProvider'
 import LanguageSyncProvider from './context/LanguageContextProvider'
+import { SubmissionProvider } from './context/SubmissionContext'
 
 createRoot(document.getElementById('root')).render(
   <ThemeContextProvider>
@@ -16,9 +17,12 @@ createRoot(document.getElementById('root')).render(
       <UserContextProvider>
         <LanguageSyncProvider>
           <EditorSettingsContextProvider>
+              <SubmissionProvider>
             <CodeExecutionContextProvider>
+
                 <App />
             </CodeExecutionContextProvider>
+              </SubmissionProvider>
           </EditorSettingsContextProvider>
         </LanguageSyncProvider>
       </UserContextProvider>

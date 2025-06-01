@@ -14,28 +14,34 @@ import {
 import {
     Dialog,
     DialogContent,
-    // DialogDescription,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogFooter,
-    // DialogTrigger,
+    DialogTrigger,
 } from "@/components/ui/dialog"
 
 import { Button } from "@/components/ui/button";
 import { EditorSettingsContext } from '../context/EditorSettingsContext';
 import { Maximize2 } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { CodeExecutionContext } from '../context/CodeExecutionContext';
 import TestResultDialog from '../components/Result/TestResultDialog';
 import { toast } from 'sonner';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import NoCopyPasteComponent from '@/components/Utilities/NoCopyPasteComponent';
 import { UserContext } from '@/context/UserContext';
+import SubmissionDetails from '@/components/IOPanel/SubmissonDetails';
 
 const CodeEditor = () => {
+    const location = useLocation();
     const [isLoading, setIsLoading] = useState(true);
-
+    
     const { fetchContest, fetchProblem, showResultDialog, setShowResultDialog, selectedProblem, testResults, loading, contest } = useContext(CodeExecutionContext);
+    useEffect(()=>{
+        if(showResultDialog)
+            setShowResultDialog(!showResultDialog);
+    },[location])
     const { isFullscreen, showProblem, showFullscreenPrompt, closeFullscreenPrompt, enableFullscreen } = useContext(EditorSettingsContext);
     const {getAccurateTime} = useContext(UserContext);
 
@@ -134,12 +140,13 @@ const CodeEditor = () => {
                     onClose={closeFullscreenPrompt}
                     onConfirm={enableFullscreen}
                 />
-                <TestResultDialog
+              
+                {/* <TestResultDialog
                     open={showResultDialog}
                     onOpenChange={setShowResultDialog}
                     testCases={selectedProblem?.testCases || []}
                     testResults={testResults}
-                />
+                /> */}
             </NoCopyPasteComponent>
         </>
     );

@@ -7,7 +7,7 @@ export default function EditorSettingsContextProvider({ children }) {
     const editorRef = useRef(null);
     const [editorFontSize, setEditorFontSize] = useState(14);
     const [lineWrap, setLineWrap] = useState(true);
-    const [autoFormat, setAutoFormat] = useState(true);
+    const [autoFormat, setAutoFormat] = useState(false);
     const [theme, setTheme] = useState('vs');
     const [showSettings, setShowSettings] = useState(false);
     const [isFullscreen, setIsFullscreen] = useState(false);

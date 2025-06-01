@@ -36,13 +36,13 @@ const IOPanel = () => {
                             <FileInput className="mr-1 h-3 w-3" />
                             Input
                         </TabsTrigger>
-                        <TabsTrigger 
+                        {/* <TabsTrigger 
                             value="history" 
                             className="text-xs h-7 data-[state=active]:bg-blue-600 data-[state=active]:text-white dark:data-[state=active]:bg-blue-500"
                         >
                             <History className="mr-1 h-3 w-3" />
                             History
-                        </TabsTrigger>
+                        </TabsTrigger> */}
                     </TabsList>
                 </CardHeader>
 
@@ -59,9 +59,7 @@ const IOPanel = () => {
                         />
                     </TabsContent>
 
-                    <TabsContent value="history" className="h-full m-0 p-0">
-                        <HistoryPanel recentSubmissions={recentSubmissions} />
-                    </TabsContent>
+                  
                 </CardContent>
             </Tabs>
         </div>

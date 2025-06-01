@@ -8,6 +8,7 @@ import { CodeExecutionContext } from './CodeExecutionContext';
 import { UserContext } from './UserContext';
 import { EditorSettingsContext } from './EditorSettingsContext';
 import postApi from '@/helpers/API/postApi';
+import { useSubmission } from './SubmissionContext';
 
 export default function CodeExecutionContextProvider({ children }) {
     const [code, setCode] = useState('');
@@ -34,8 +35,9 @@ export default function CodeExecutionContextProvider({ children }) {
 
     const { userInfo } = useContext(UserContext);
     const { language, setActiveTab, editorRef } = useContext(EditorSettingsContext);
-
+    const {handleNewSubmission} = useSubmission();
     // Socket effects
+   
     useEffect(() => {
         socket.emit('register', userInfo.id);
         const handleSubmissionResult = (data) => {
@@ -319,13 +321,15 @@ export default function CodeExecutionContextProvider({ children }) {
 
             if (res.status === 201) {
                 setShowResultDialog(true);
+                
+                handleNewSubmission(res.data.data);
                 toast.success('Solution submitted successfully!');
             }
         } catch (error) {
             console.error('Error submitting solution:', error);
             toast.error('Error submitting solution');
         }
-    }, [selectedProblem, code, language]);
+    }, [selectedProblem, code, language,handleNewSubmission]);
 
     const formatCode = useCallback(async () => {
         console.log('Formatting code...');

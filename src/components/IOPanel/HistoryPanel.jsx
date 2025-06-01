@@ -4,6 +4,31 @@ import { Badge } from '@/components/ui/badge';
 import { UserContext } from '@/context/UserContext';
 import { useParams } from 'react-router';
 import SubmissionDialog from './SubmissionDialog';
+import { useSubmission } from '@/context/SubmissionContext';
+import { AiTwotoneDatabase } from 'react-icons/ai';
+export const formatDateTime = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMs = now - date;
+    const diffInMins = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    // If less than 24 hours ago
+    if (diffInDays < 1) {
+        if (diffInMins < 1) {
+            return 'Just now';
+        } else if (diffInMins < 60) {
+            return `${diffInMins} ${diffInMins === 1 ? 'minute' : 'minutes'} ago`;
+        } else {
+            return `${diffInHours} ${diffInHours === 1 ? 'hour' : 'hours'} ago`;
+        }
+    }
+    
+    // If more than 24 hours ago, show full date-time
+    return date.toLocaleString();
+};
 
 const HistoryPanel = () => {
     const { getProblemSubmissions } = useContext(UserContext);
@@ -12,7 +37,7 @@ const HistoryPanel = () => {
     const [loading, setLoading] = useState(true);
     const [selectedSubmission, setSelectedSubmission] = useState(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+    const { handleViewSubmission, SetNewSubmission, newSubmission } = useSubmission();
     useEffect(() => {
         const fetchSubmissions = async () => {
             try {
@@ -42,6 +67,8 @@ const HistoryPanel = () => {
                 return 'Runtime Error';
             case 'COMPILATION_ERROR':
                 return 'Compilation Error';
+            case 'PROCESSING':
+                return 'Processing'
             default:
                 return status;
         }
@@ -64,11 +91,6 @@ const HistoryPanel = () => {
     };
 
     // Format timestamp nicely
-    const formatDateTime = (timestamp) => {
-        if (!timestamp) return 'N/A';
-        const date = new Date(timestamp);
-        return date.toLocaleString();
-    };
 
     // Format memory usage
     const formatMemory = (memory) => {
@@ -82,9 +104,14 @@ const HistoryPanel = () => {
         return `${time} ms`;
     };
 
-    const handleSubmissionClick = (submissionId) => {
-        setSelectedSubmission(submissionId);
-        setIsDialogOpen(true);
+    const handleSubmissionClick = async(submissionId) => {
+        // setSelectedSubmission(submissionId);
+        
+     
+            handleViewSubmission(submissionId);
+            SetNewSubmission(false);
+        
+        // setIsDialogOpen(true);
     };
 
     return (
@@ -97,8 +124,8 @@ const HistoryPanel = () => {
             ) : submissions && submissions.length > 0 ? (
                 <div className="w-full">
                     {/* Table Header */}
-                    <div className="grid grid-cols-12 gap-2 p-3 font-semibold bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 text-center">
-                        <div className="col-span-2 flex items-center justify-center">Status</div>
+                    <div className="grid grid-cols-10 gap-2 p-3 font-semibold bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 text-center">
+                        <div className="col-span-3 flex items-center justify-center">Status</div>
                         <div className="col-span-2 flex items-center justify-center">Language</div>
                         <div className="col-span-2 flex items-center justify-center">
                             <Clock className="h-4 w-4 mr-1" />
@@ -108,11 +135,7 @@ const HistoryPanel = () => {
                             <HardDrive className="h-4 w-4 mr-1" />
                             Memory
                         </div>
-                        <div className="col-span-2 flex items-center justify-center">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            Submitted At
-                        </div>
-                        <div className="col-span-2 flex items-center justify-center">
+                        <div className="col-span-1 flex items-center justify-center">
                             <Cpu className="h-4 w-4 mr-1" />
                             Score
                         </div>
@@ -123,10 +146,10 @@ const HistoryPanel = () => {
                         {submissions.map((submission) => (
                             <div
                                 key={submission.id}
-                                className="grid grid-cols-12 gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 items-center text-center cursor-pointer"
+                                className="grid grid-cols-10 gap-2 p-3 hover:bg-gray-100 dark:hover:bg-gray-800 items-center text-center cursor-pointer"
                                 onClick={() => handleSubmissionClick(submission.id)}
                             >
-                                <div className="col-span-2 flex items-center justify-center">
+                                <div className="col-span-3 flex flex-col gap-2 items-center justify-center">
                                     <Badge className={getBadgeClass(submission.status)}>
                                         <div className="flex items-center">
                                             {submission.status === 'ACCEPTED' ? (
@@ -139,6 +162,9 @@ const HistoryPanel = () => {
                                             {getStatusDisplay(submission.status)}
                                         </div>
                                     </Badge>
+                                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                                        {formatDateTime(submission.submittedAt)}
+                                    </div>
                                 </div>
                                 <div className="col-span-2 flex items-center justify-center">
                                     <Badge variant="outline" className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-800">
@@ -151,10 +177,7 @@ const HistoryPanel = () => {
                                 <div className="col-span-2 flex items-center justify-center">
                                     {formatMemory(submission.memoryUsed)}
                                 </div>
-                                <div className="col-span-2 flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
-                                    {formatDateTime(submission.submittedAt)}
-                                </div>
-                                <div className="col-span-2 flex items-center justify-center font-medium">
+                                <div className="col-span-1 flex items-center justify-center font-medium">
                                     {submission.score}
                                 </div>
                             </div>

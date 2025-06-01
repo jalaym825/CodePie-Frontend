@@ -4,13 +4,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { FileCode, Settings as SettingsIcon, Copy, Download, Play, Loader2, Minus, Plus } from 'lucide-react';
+import { FileCode, Settings as SettingsIcon, Copy, Download, Play, Loader2, Minus, Plus,History } from 'lucide-react';
 import { Clock, Database } from 'lucide-react';
 import EditorSettings from './EditorSettings';
 import { ThemeContext } from '../../context/ThemeContext';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import { EditorSettingsContext } from '../../context/EditorSettingsContext';
 import ThemeToggle from '../ui/ThemeToggle';
+import { useSubmission } from '@/context/SubmissionContext';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import SubmissionDetails from '../IOPanel/SubmissonDetails';
 
 // Constants for localStorage
 const SOLUTION_STORAGE_KEY_PREFIX = 'codeduel_solution_';
@@ -35,6 +38,7 @@ const clearExpiredSolutions = () => {
 };
 
 const EditorPanel = () => {
+
     const {
         code,
         setCode,
@@ -45,8 +49,17 @@ const EditorPanel = () => {
         runCustomTest,
         formatCode,
         selectedProblem,
+        testResults
     } = useContext(CodeExecutionContext);
 
+     const { 
+        selectedSubmissionId,
+        submissionData,
+        activeTab,
+        setActiveTab,
+        clearSubmission,
+        newSubmission
+    } = useSubmission();
     const {
         language,
         editorFontSize,
@@ -59,6 +72,41 @@ const EditorPanel = () => {
     } = useContext(EditorSettingsContext);
 
     const { theme } = useContext(ThemeContext);
+
+        const getStatusDisplay = (status) => {
+        switch (status) {
+            case 'ACCEPTED':
+                return 'Accepted';
+            case 'WRONG_ANSWER':
+                return 'Wrong Answer';
+            case 'TIME_LIMIT_EXCEEDED':
+                return 'Time Limit Exceeded';
+            case 'RUNTIME_ERROR':
+                return 'Runtime Error';
+            case 'COMPILATION_ERROR':
+                return 'Compilation Error';
+            case 'PROCESSING':
+                return 'Processing'
+            default:
+                return status;
+        }
+    };
+
+    // Get badge color based on status
+    const getBadgeClass = (status) => {
+        switch (status) {
+            case 'ACCEPTED':
+                return 'bg-green-500 dark:bg-green-600';
+            case 'WRONG_ANSWER':
+                return 'bg-red-500 dark:bg-red-600';
+            case 'TIME_LIMIT_EXCEEDED':
+                return 'bg-orange-500 dark:bg-orange-600';
+            case 'RUNTIME_ERROR':
+                return 'bg-purple-500 dark:bg-purple-600';
+            default:
+                return 'bg-yellow-500 dark:bg-yellow-600';
+        }
+    };
 
     const editorRef = useRef(null);
     const containerRef = useRef(null);
@@ -211,6 +259,7 @@ const EditorPanel = () => {
         };
     }, []);
 
+    console.log(activeTab)
     return (
         <div
             ref={containerRef}
@@ -219,12 +268,28 @@ const EditorPanel = () => {
             {showSettings && <EditorSettings />}
 
             <CardHeader className="py-2 px-2 flex flex-row items-center justify-between bg-gray-50 dark:bg-gray-800">
-                <CardTitle className="flex items-center text-xs font-medium">
-                    <FileCode className="mr-1 h-4 w-4 text-blue-600 dark:text-blue-400" />
-                    <span className="text-gray-700 dark:text-gray-300">
-                        {language.monacoLanguage.toUpperCase()}
-                    </span>
-                </CardTitle>
+                <div className="flex items-center space-x-4">
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-[400px]">
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="editor" className="flex items-center">
+                                <FileCode className="mr-1 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                <span className="text-gray-700 dark:text-gray-300">
+                                    {language.monacoLanguage.toUpperCase()}
+                                </span>
+                            </TabsTrigger>
+                         { activeTab==='submission' &&  <TabsTrigger 
+                                value="submission" 
+                                className="flex items-center"
+                                disabled={!selectedSubmissionId && !submissionData}
+                            >
+                                <History className="mr-1 h-4 w-4 text-blue-600 dark:text-blue-400" />
+                                <span className="text-gray-700 dark:text-gray-300">
+                                    Submission Details
+                                </span>
+                            </TabsTrigger>}
+                        </TabsList>
+                    </Tabs>
+                </div>
                 <div className="flex space-x-2">
                     <div className="scale-75 mt-[1px]">
                         <ThemeToggle />
@@ -274,7 +339,7 @@ const EditorPanel = () => {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button
+                                {/* <Button
                                     variant="ghost"
                                     size="icon"
                                     onClick={formatCode}
@@ -284,7 +349,7 @@ const EditorPanel = () => {
                                         <path d="M12 20h9"></path>
                                         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                     </svg>
-                                </Button>
+                                </Button> */}
                             </TooltipTrigger>
                             <TooltipContent>Format Code</TooltipContent>
                         </Tooltip>
@@ -292,34 +357,52 @@ const EditorPanel = () => {
                 </div>
             </CardHeader>
 
-            <CardContent className="p-0 flex-1 !geist-mono overflow-hidden bg-white dark:bg-gray-900">
-                <Editor
-                    language={language.monacoLanguage}
-                    value={code}
-                    theme={theme === 'dark' ? 'vs-dark' : 'vs'}
-                    onChange={handleCodeChange}
-                    onMount={handleEditorMount}
-                    className="h-full"
-                    options={{
-                        fontFamily: "'Geist Mono', monospace",
-                        minimap: { enabled: false },
-                        fontSize: editorFontSize,
-                        fontLigatures: true,
-                        scrollBeyondLastLine: false,
-                        automaticLayout: true,
-                        tabSize: 2,
-                        suggestOnTriggerCharacters: true,
-                        contextmenu: false,
-                        quickSuggestions: true,
-                        bracketPairColorization: { enabled: true },
-                        scrollbar: {
-                            verticalScrollbarSize: 6,
-                            horizontalScrollbarSize: 6,
-                        },
-                        wordWrap: lineWrap ? 'on' : 'off',
-                    }}
-                />
-            </CardContent>
+            {((activeTab === 'submission')  ) ? (
+                <div className="flex-1 overflow-auto p-4">
+                    <SubmissionDetails
+                        submissionId={selectedSubmissionId}
+                        submissionData={submissionData}
+                        isNewSubmission={newSubmission}
+                        onClose={clearSubmission}
+                        getStatusDisplay={getStatusDisplay}
+                        getBadgeClass={getBadgeClass}
+                        problemDetails={selectedProblem}
+                        testResultsData={testResults}
+                        newSubmissionLanguageName={language.name}
+                        sourceCode={code}
+                    />
+                    
+                </div>
+            ) : (
+                <CardContent className="p-0 flex-1 !geist-mono overflow-hidden bg-white dark:bg-gray-900">
+                    <Editor
+                        language={language.monacoLanguage}
+                        value={code}
+                        theme={theme === 'dark' ? 'vs-dark' : 'vs'}
+                        onChange={handleCodeChange}
+                        onMount={handleEditorMount}
+                        className="h-full"
+                        options={{
+                            fontFamily: "'Geist Mono', monospace",
+                            minimap: { enabled: false },
+                            fontSize: editorFontSize,
+                            fontLigatures: true,
+                            scrollBeyondLastLine: false,
+                            automaticLayout: true,
+                            tabSize: 2,
+                            suggestOnTriggerCharacters: true,
+                            contextmenu: false,
+                            quickSuggestions: true,
+                            bracketPairColorization: { enabled: true },
+                            scrollbar: {
+                                verticalScrollbarSize: 6,
+                                horizontalScrollbarSize: 6,
+                            },
+                            wordWrap: lineWrap ? 'on' : 'off',
+                        }}
+                    />
+                </CardContent>
+            )}
 
             <CardFooter className="justify-between py-2 px-2 bg-gray-100 dark:bg-gray-800 border-t-1 dark:border-gray-700">
                 <div className="flex items-center space-x-2">
