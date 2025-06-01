@@ -3,12 +3,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router";
 import { UserContext } from "./context/UserContext";
 
 // Pages
-import LoginSignUp from "./Pages/LoginSignUp";
-import Homepage from "./Pages/Homepage";
-import Dashboard from "./Pages/Dashboard/Dashboard";
+import LoginSignUp from "./pages/LoginSignUp";
+import Homepage from "./pages/Homepage";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import NewContestPage from "./pages/Contests/NewContestPage";
-import ContestDetails from "./Pages/Contest/ContestInfo"; // New merged component
-import ContestLeaderBoard from "./Pages/Contest/ContestLeaderBoard";
+import ContestDetails from "./pages/Contest/ContestInfo"; // New merged component
+import ContestLeaderBoard from "./pages/Contest/ContestLeaderBoard";
 import CodeEditor from "./pages/Editor";
 import AddProblemsPage from "./pages/Problems/AddProblemsPage";
 import LoadingScreen from "./components/ui/LoadingScreen";

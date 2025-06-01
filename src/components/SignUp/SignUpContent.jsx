@@ -53,7 +53,7 @@ const SignUpContent = ({ handleTogglePage }) => {
     }
 
     return (
-        <div className="w-1/2 p-8 bg-white">
+        <div className="w-full p-8 bg-white">
             <div className="mb-4">
                 <label className="block text-sm mb-2 font-medium text-gray-700">Student Name</label>
                 <div className="relative">
@@ -61,7 +61,7 @@ const SignUpContent = ({ handleTogglePage }) => {
                         type="text"
                         name='username'
                         id="username"
-                        className="w-full p-3 text-sm pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition"
+                        className="w-full p-3 text-sm h-9  pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition"
                         placeholder="Your Name"
                         value={signUpCredentials?.username || ""}
                         onChange={handleChange}
@@ -80,7 +80,7 @@ const SignUpContent = ({ handleTogglePage }) => {
                         type="email"
                         name='email'
                         id="email"
-                        className="w-full p-3 text-sm pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition"
+                        className="w-full p-3 h-9 text-sm pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition"
                         placeholder="your@email.com"
                         value={signUpCredentials?.email || ""}
                         onChange={handleChange}
@@ -100,7 +100,7 @@ const SignUpContent = ({ handleTogglePage }) => {
                         type={showPassword ? "text" : "password"}
                         name='password'
                         id='password'
-                        className="w-full p-3 text-sm pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10"
+                        className="w-full p-3 h-9 text-sm pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 transition pr-10"
                         placeholder="Enter your password"
                         value={signUpCredentials?.password || ""}
                         onChange={handleChange}
@@ -108,7 +108,7 @@ const SignUpContent = ({ handleTogglePage }) => {
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                     <button
                         type="button"
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        className="absolute right-3  top-1/2 transform -translate-y-1/2 text-gray-500"
                         onClick={() => setShowPassword(!showPassword)}
                     >
                         {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -125,7 +125,7 @@ const SignUpContent = ({ handleTogglePage }) => {
                 type="submit"
                 onClick={handleSubmit}
                 disabled={isPending}
-                className="w-full flex justify-center items-center bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-md transition shadow-md relative"
+                className="w-full flex justify-center items-center bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white h-9 font-medium py-2 px-4 rounded-lg transition shadow-md relative"
             >
                 {isPending ? (
                     <>

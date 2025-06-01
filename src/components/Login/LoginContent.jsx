@@ -54,12 +54,12 @@ const LoginContent = () => {
   }
 
   return (
-    <div className="w-1/2 p-8 bg-white">
+    <div className="w-full p-8 bg-white ">
       <div className="mb-4">
         <label className="block text-sm mb-2 font-medium text-gray-700">Email address</label>
         <div className="relative">
           <input
-            className="w-full p-3 text-sm pl-10 border  border-gray-300 rounded-md  focus:ring-blue-500 focus:border-blue-500 transition"
+            className="w-full p-3 text-sm pl-10 border h-9 border-gray-300 rounded-md  focus:ring-blue-500 focus:border-blue-500 transition"
             placeholder="your@email.com"
             type="email"
             name="email"
@@ -79,7 +79,7 @@ const LoginContent = () => {
         <label className="block text-sm mb-2 font-medium text-gray-700">Password</label>
         <div className="relative">
           <input
-            className="w-full p-3 text-sm pl-10 border border-gray-300 rounded-md  focus:ring-blue-500 focus:border-blue-500 transition pr-10"
+            className="w-full p-3 text-sm pl-10 h-9 border border-gray-300 rounded-md  focus:ring-blue-500 focus:border-blue-500 transition pr-10"
             placeholder="Enter your password"
             type={showPassword ? "password" : "text"}
             name='password'
@@ -107,7 +107,7 @@ const LoginContent = () => {
         type="submit"
         onClick={handleSubmit}
         disabled={isPending}
-        className="w-full flex cursor-pointer justify-center items-center bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-md transition shadow-md relative"
+        className="w-full flex cursor-pointer justify-center items-center bg-gradient-to-r h-9 from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium py-2 px-4 rounded-lg transition shadow-md relative"
       >
         {isPending ? (
           <>

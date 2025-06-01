@@ -7,6 +7,8 @@ import { useContext } from 'react';
 import { CodeExecutionContext } from '../../context/CodeExecutionContext';
 import ProblemDescription from './ProblemDescription';
 import ProblemTestCases from './ProblemTestCases';
+import { History } from 'lucide-react';
+import HistoryPanel from '../IOPanel/HistoryPanel';
 
 const ProblemPanel = ({ className }) => {
     const {
@@ -15,7 +17,8 @@ const ProblemPanel = ({ className }) => {
         isTestingAll,
         // runTestCase,
         // runAllTests,
-        submitSolution
+        submitSolution,
+        recentSubmissions
     } = useContext(CodeExecutionContext);
 
     return (
@@ -52,6 +55,13 @@ const ProblemPanel = ({ className }) => {
                                     <TestTube className="mr-1 h-4 w-4" />
                                     Test Cases
                                 </TabsTrigger>
+                               <TabsTrigger 
+                            value="history" 
+                         className="data-[state=active]:bg-white dark:data-[state=active]:bg-gray-800"
+                        >
+                            <History className="mr-1 h-3 w-3" />
+                            Submissions
+                        </TabsTrigger>
                             </TabsList>
                         </div>
 
@@ -62,6 +72,9 @@ const ProblemPanel = ({ className }) => {
                             <TabsContent value="tests" className="mt-0 h-full overflow-auto flex-1 min-h-0">
                                 <ProblemTestCases />
                             </TabsContent>
+                              <TabsContent value="history" className="h-full m-0 p-0">
+                        <HistoryPanel recentSubmissions={recentSubmissions} />
+                    </TabsContent>
                         </div>
                     </Tabs>
                 </CardContent>
